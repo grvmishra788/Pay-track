@@ -1,11 +1,24 @@
 <resources>
-
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+    </style>
+
+    <!-- Style for toolbar text -->
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">@dimen/textSize_18_sp</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <!-- Style for tab text -->
+    <style name="Tab.TabText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">@dimen/textSize_14_sp</item>
+        <item name="android:fontFamily">@font/noto_serif</item>
     </style>
 
 </resources>

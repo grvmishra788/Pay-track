@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="nav_header_height">150dp</dimen>
+    <dimen name="size_4_dp">4dp</dimen>
+    <dimen name="size_10_dp">10dp</dimen>
+    <dimen name="size_16_dp">16dp</dimen>
+    <dimen name="size_30_dp">30dp</dimen>
+
+    <!--textSize-->
+    <dimen name="textSize_36_sp">30sp</dimen>
+    <dimen name="textSize_18_sp">18sp</dimen>
+    <dimen name="textSize_14_sp">14sp</dimen>
+    <dimen name="textSize_12_sp">12sp</dimen>
+</resources>

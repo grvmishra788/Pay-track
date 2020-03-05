@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Pay-track</string>
+    <string name="app_subtitle">A Daily Money Tracking App</string>
+    <string name="developer_name">Gaurav Mishra</string>
+    <string name="developer_email">grvmishra788@gmail.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!--MainActivity Tab names-->
+    <string name="tab_1_name"><b>Accounts</b></string>
+    <string name="tab_2_name"><b>Transactions</b></string>
+    <string name="tab_3_name"><b>Debts</b></string>
+    
 </resources>

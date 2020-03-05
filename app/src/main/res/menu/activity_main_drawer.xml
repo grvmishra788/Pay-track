@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:id="@+id/nav_parent"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_all"
+            android:checked="true"
+            android:title="All"
+            app:actionViewClass="android.widget.TextView" />
+        <item
+            android:id="@+id/nav_categories"
+            android:title="Categories"
+            app:actionViewClass="android.widget.TextView" />
+        <item
+            android:id="@+id/nav_pending_transactions"
+            android:title="Pending Transactions"
+            app:actionViewClass="android.widget.TextView" />
+        <item
+            android:id="@+id/nav_analyze"
+            android:title="Analyze"
+            app:actionViewClass="android.widget.TextView" />
+    </group>
+
+    <item android:title="Others">
+        <menu>
+            <item
+                android:id="@+id/nav_setting"
+                android:title="Settings" />
+            <item
+                android:id="@+id/nav_about"
+                android:title="About" />
+        </menu>
+    </item>
+
+</menu>
