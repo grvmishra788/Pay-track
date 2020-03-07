@@ -32,8 +32,9 @@ public class AccountsFragment extends Fragment {
         addAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent mToDoItemIntent = new Intent(getActivity(), AddAccountActivity.class);
-                startActivityForResult(mToDoItemIntent, REQ_CODE_ADD_ACCOUNT);
+                Log.i(TAG, "addAccountButton::onClick()");
+                Intent addAccountIntent = new Intent(getActivity(), AddAccountActivity.class);
+                startActivityForResult(addAccountIntent, REQ_CODE_ADD_ACCOUNT);
             }
         });
         Log.i(TAG, "onCreateView() ends!");

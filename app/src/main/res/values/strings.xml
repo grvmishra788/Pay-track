@@ -14,6 +14,7 @@
 
     <!--Title-->
     <string name="title_add_account">Add Account</string>
+    <string name="title_add_transaction">Add Transaction</string>
 
     <!--Account Fields-->
     <string name="nick_name">Nick Name</string>
@@ -26,11 +27,24 @@
     <string name="balance">Balance</string>
     <string name="submit"><b>SUBMIT</b></string>
 
+    <!--Transaction Fields-->
+    <string name="amount">Amount</string>
+    <string name="transactionCategory">Category</string>
+    <string name="date">Date</string>
+    <string name="description">Description</string>
+    <string name="account">Account</string>
+
     <!--Account type choices-->
     <string-array name="account_type">
         <item>Bank Account</item>
         <item>Digital Account</item>
         <item>Cash Account</item>
+    </string-array>
+
+    <!--Transaction type choices-->
+    <string-array name="transaction_type">
+        <item>Debit</item>
+        <item>Credit</item>
     </string-array>
 
 </resources>
