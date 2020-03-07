@@ -9,14 +9,18 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
+    //constant Class TAG
+    private static final String TAG = "Pay-Track: " + MainActivity.class.getName();
 
     //tabLayout & viewPager variables
     private TabLayout mTabLayout;
@@ -26,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate() starts...");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -44,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         //setup action bar and navigation drawer
         setUpToolBarAndNavDrawer();
-
+        Log.i(TAG, "onCreate() ends!");
     }
 
     //function to setup action bar and navigation drawer
@@ -64,5 +69,11 @@ public class MainActivity extends AppCompatActivity {
         };
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult(): resultCode - " + resultCode + " requestCode - "+ requestCode);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

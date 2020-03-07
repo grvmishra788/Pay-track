@@ -11,5 +11,26 @@
     <string name="tab_1_name"><b>Accounts</b></string>
     <string name="tab_2_name"><b>Transactions</b></string>
     <string name="tab_3_name"><b>Debts</b></string>
-    
+
+    <!--Title-->
+    <string name="title_add_account">Add Account</string>
+
+    <!--Account Fields-->
+    <string name="nick_name">Nick Name</string>
+    <string name="type">Type</string>
+    <string name="bank_name">Bank Name</string>
+    <string name="service_name">Service Name</string>
+    <string name="account_number">Account No.</string>
+    <string name="email">E-mail</string>
+    <string name="mobile">Mobile</string>
+    <string name="balance">Balance</string>
+    <string name="submit"><b>SUBMIT</b></string>
+
+    <!--Account type choices-->
+    <string-array name="account_type">
+        <item>Bank Account</item>
+        <item>Digital Account</item>
+        <item>Cash Account</item>
+    </string-array>
+
 </resources>

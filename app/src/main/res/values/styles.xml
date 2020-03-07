@@ -1,12 +1,29 @@
 <resources>
+
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:windowBackground">@color/windowBackground</item>
+    </style>
+
+    <!-- Base theme with no action bar -->
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+    </style>
+
+    <!-- Style for submit btn text -->
+    <style name="Toolbar.BTNText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">@dimen/textSize_24_sp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <!-- Style for toolbar text -->
@@ -21,4 +38,9 @@
         <item name="android:fontFamily">@font/noto_serif</item>
     </style>
 
+    <!-- Style for editable text -->
+    <style name="EditText.Text" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">@dimen/textSize_14_sp</item>
+        <item name="android:fontFamily">@font/noto_serif</item>
+    </style>
 </resources>

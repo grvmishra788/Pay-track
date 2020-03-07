@@ -57,7 +57,6 @@
             android:background="@color/colorPrimary"
             android:layout_alignParentBottom="true"/>
 
-
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView
