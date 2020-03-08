@@ -47,4 +47,7 @@
         <item>Credit</item>
     </string-array>
 
+    <!--Errors-->
+    <string name="error_account_entry_with_same_nickname">Entry with same nick name already present</string>
+
 </resources>

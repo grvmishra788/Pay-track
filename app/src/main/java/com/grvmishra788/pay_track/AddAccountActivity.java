@@ -10,7 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.grvmishra788.pay_track.BackEnd.DbHelper;
 import com.grvmishra788.pay_track.DS.BankAccount;
 import com.grvmishra788.pay_track.DS.CashAccount;
 import com.grvmishra788.pay_track.DS.DigitalAccount;
@@ -21,6 +23,9 @@ import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.ACCOUNTS_TABLE;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.ACCOUNTS_TABLE_COL_NICK_NAME;
 
 public class AddAccountActivity extends AppCompatActivity {
     //constant Class TAG
@@ -53,36 +58,44 @@ public class AddAccountActivity extends AppCompatActivity {
             public void onClick(View view) {
                 CashAccount account = null;
                 if (parseInput()) {
-                    //set default balance as zero
-                    Long balanceAcc = Long.valueOf(0);
-                    if(!TextUtils.isEmpty(accountBalance)){
-                        balanceAcc = Long.parseLong(accountBalance);
-                    }
-                    switch (accountType.getSelectedItemPosition()) {
-                        case 0:
-                            Log.d(TAG,"Successfully added bank account");
-                            account = new BankAccount(nickName, balanceAcc, accountNumber, bankName, email, mobileNumber);
-                            break;
-                        case 1:
-                            Log.d(TAG,"Successfully added digital account");
-//                            String nickName, long accountBalance, String accountNumber, String bankName, String email, String mobileNumber
-                            account = new DigitalAccount(nickName, balanceAcc, serviceName, email, mobileNumber);
-                            break;
-                        case 2:
-                            Log.d(TAG, "Successfully added cash account");
-                            account = new CashAccount(nickName, balanceAcc);
-                            break;
-                        default:
-                            break;
-                    }
+                    if(entryPresentInDB(ACCOUNTS_TABLE, ACCOUNTS_TABLE_COL_NICK_NAME, String.valueOf(et_nickName.getText()).trim())){
+                        Toast.makeText(getBaseContext(),getString(R.string.error_account_entry_with_same_nickname), Toast.LENGTH_SHORT).show();
+                    } else {
+                        //set default balance as zero
+                        Long balanceAcc = Long.valueOf(0);
+                        if(!TextUtils.isEmpty(accountBalance)){
+                            balanceAcc = Long.parseLong(accountBalance);
+                        }
+                        switch (accountType.getSelectedItemPosition()) {
+                            case 0:
+                                Log.d(TAG,"Successfully added bank account");
+                                account = new BankAccount(nickName, balanceAcc, accountNumber, bankName, email, mobileNumber);
+                                break;
+                            case 1:
+                                Log.d(TAG,"Successfully added digital account");
+                                account = new DigitalAccount(nickName, balanceAcc, serviceName, email, mobileNumber);
+                                break;
+                            case 2:
+                                Log.d(TAG, "Successfully added cash account");
+                                account = new CashAccount(nickName, balanceAcc);
+                                break;
+                            default:
+                                break;
+                        }
 
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra(GlobalConstants.ACCOUNT_OBJECT, account);
-                    setResult(RESULT_OK, resultIntent);
-                    finish();
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra(GlobalConstants.ACCOUNT_OBJECT, account);
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+                    }
                 }
             }
         });
+    }
+
+    private boolean entryPresentInDB(String tableName, String colName, String value) {
+        DbHelper dbHelper = new DbHelper(this);
+        return dbHelper.entryPresentInDB(tableName, colName, value);
     }
 
     private boolean parseInput() {

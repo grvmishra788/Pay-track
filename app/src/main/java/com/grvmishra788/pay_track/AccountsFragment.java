@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.grvmishra788.pay_track.BackEnd.DbHelper;
 import com.grvmishra788.pay_track.DS.CashAccount;
 
 import java.util.ArrayList;
@@ -35,14 +36,23 @@ public class AccountsFragment extends Fragment {
     private RecyclerView.Adapter accountsRecyclerViewAdapter;
     private RecyclerView.LayoutManager accountsRecyclerViewLayoutManager;
 
+    private DbHelper payTrackDBHelper;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView() starts...");
         View view = inflater.inflate(R.layout.layout_accounts_fragment, container, false);
 
+
+        //init db
+        payTrackDBHelper = new DbHelper(getContext());
+
         //init accounts list
-        mAccounts = new ArrayList<>();
+        mAccounts = payTrackDBHelper.getAllAccounts();
+        if(mAccounts == null){
+            mAccounts = new ArrayList<>();
+        }
 
         //init RecyclerView
         accountsRecyclerView = (RecyclerView) view.findViewById(R.id.show_account_recycler_view);
@@ -53,9 +63,7 @@ public class AccountsFragment extends Fragment {
 //        accountsRecyclerViewAdapter.registerAdapterDataObserver(observer); //register data observer for recyclerView
         accountsRecyclerView.setLayoutManager(accountsRecyclerViewLayoutManager);
         accountsRecyclerView.setAdapter(accountsRecyclerViewAdapter);
-
-
-
+        
         //init FAB
         addAccountButton = view.findViewById(R.id.addItemFAB);
         addAccountButton.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +92,11 @@ public class AccountsFragment extends Fragment {
                         accountsRecyclerViewAdapter = new AccountsAdapter(getContext(), mAccounts);
                     }
                     mAccounts.add(account);
+                    if(payTrackDBHelper.insertDataToAccountsTable(account)){
+                        Log.d(TAG,"Account inserted to db - " + account.toString());
+                    } else {
+                        Log.e(TAG,"Couldn't insert account to db - " + account.toString());
+                    }
                     accountsRecyclerViewAdapter.notifyDataSetChanged();
                     Log.i(TAG, "Added account - " + account.toString());
                 }
