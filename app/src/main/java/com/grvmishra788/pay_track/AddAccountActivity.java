@@ -56,7 +56,7 @@ public class AddAccountActivity extends AppCompatActivity {
                     //set default balance as zero
                     Long balanceAcc = Long.valueOf(0);
                     if(!TextUtils.isEmpty(accountBalance)){
-                        balanceAcc = Long.getLong(accountBalance);
+                        balanceAcc = Long.parseLong(accountBalance);
                     }
                     switch (accountType.getSelectedItemPosition()) {
                         case 0:

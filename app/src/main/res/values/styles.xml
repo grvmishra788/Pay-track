@@ -19,6 +19,19 @@
         <item name="android:windowBackground">@color/windowBackground</item>
     </style>
 
+    <!-- Style for Account NickName text -->
+    <style name="Toolbar.AccountNickName" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">@dimen/textSize_24_sp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <!-- Style for Account show text -->
+    <style name="Toolbar.AccountText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">@dimen/textSize_14_sp</item>
+        <item name="android:fontFamily">@font/noto_serif</item>
+    </style>
+
     <!-- Style for submit btn text -->
     <style name="Toolbar.BTNText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">@dimen/textSize_24_sp</item>
