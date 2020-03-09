@@ -24,6 +24,8 @@ import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIE
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ADD_ACCOUNT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_ACCOUNT;
+import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_PARENT_CATEGORY;
+import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_ACCOUNT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_NAME;
 
 public class AddCategoryActivity extends AppCompatActivity {
@@ -46,10 +48,21 @@ public class AddCategoryActivity extends AppCompatActivity {
 
         initViews();
         initParentSelection();
-//        initAccountSelection();
+        initAccountSelection();
         initSubmitBtn();
 
         Log.i(TAG, "onCreate() ends!");
+    }
+
+    private void initAccountSelection() {
+        ib_associatedAccount = findViewById(R.id.ib_select_account);
+        ib_associatedAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent selectParentIntent = new Intent(getBaseContext(), SelectAccountActivity.class);
+                startActivityForResult(selectParentIntent, REQ_CODE_SELECT_ACCOUNT);
+            }
+        });
     }
 
     private void initParentSelection() {
@@ -59,7 +72,7 @@ public class AddCategoryActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent selectParentIntent = new Intent(getBaseContext(), CategoryActivity.class);
                 selectParentIntent.putExtra(GlobalConstants.IS_SELECT_ACCOUNT_INTENT, true);
-                startActivityForResult(selectParentIntent, REQ_CODE_SELECT_ACCOUNT);
+                startActivityForResult(selectParentIntent, REQ_CODE_SELECT_PARENT_CATEGORY);
             }
         });
     }
@@ -69,9 +82,12 @@ public class AddCategoryActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i(TAG, "onActivityResult() starts...");
         if(resultCode==RESULT_OK){
-            if(requestCode==REQ_CODE_SELECT_ACCOUNT){
+            if(requestCode==REQ_CODE_SELECT_PARENT_CATEGORY){
                 String categoryParent = (String) data.getStringExtra(SELECTED_CATEGORY_NAME);
                 et_parent.setText(categoryParent);
+            } else if (requestCode == REQ_CODE_SELECT_ACCOUNT){
+                String accountNickName = (String) data.getStringExtra(SELECTED_ACCOUNT_NAME);
+                et_associatedAccount.setText(accountNickName);
             } else {
                 Log.e(TAG, "Wrong request code - " + requestCode);
             }
@@ -94,7 +110,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                             Log.d(TAG,"Entry with  name - " + categoryName + " already present in category table");
                         } else {
                             //create category & set result in case parent is empty
-                            Category category = new Category(categoryName, null, description);
+                            Category category = new Category(categoryName, associatedAccountNickName, description);
                             resultIntent.putExtra(GlobalConstants.CATEGORY_OBJECT, category);
                         }
                     } else {
@@ -103,7 +119,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                             Log.d(TAG,"Entry with name - " + categoryName + " already present in sub_category table");
                         } else {
                             // else, create sub category & set result
-                            SubCategory subCategory = new SubCategory(categoryName, null, description, parent);
+                            SubCategory subCategory = new SubCategory(categoryName, associatedAccountNickName, description, parent);
                             resultIntent.putExtra(GlobalConstants.SUB_CATEGORY_OBJECT, subCategory);
                         }
                     }
@@ -128,8 +144,14 @@ public class AddCategoryActivity extends AppCompatActivity {
         associatedAccountNickName = String.valueOf(et_associatedAccount.getText()).trim();
         description = String.valueOf(et_description.getText()).trim();
         if(InputValidationUtilities.isValidString(categoryName)){
-            return true;
+            if(InputValidationUtilities.isValidString(associatedAccountNickName)){
+                return true;
+            } else {
+                Log.d(TAG,"Associated Account is null!");
+                return false;
+            }
         } else {
+            Log.d(TAG,"category Name is null!");
             return false;
         }
     }

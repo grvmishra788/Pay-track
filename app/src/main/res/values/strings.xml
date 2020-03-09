@@ -14,6 +14,7 @@
 
     <!--Title-->
     <string name="title_add_account">Add Account</string>
+    <string name="title_select_account">Select Account</string>
     <string name="title_add_transaction">Add Transaction</string>
     <string name="title_add_category">Add Category</string>
     <string name="title_select_categories">Select Category</string>

@@ -31,6 +31,9 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
     //Variable for accessing Accounts List in AccountsAdapter
     private ArrayList<CashAccount> mAccounts;
 
+    //Variable for onItemclickListener
+    private OnItemClickListener mOnItemClickListener;
+
     //Constructor: binds CashAccount object data to AccountsAdapter
     public AccountsAdapter(Context mContext, ArrayList<CashAccount> mAccounts) {
         Log.d(TAG, TAG + ": Constructor starts");
@@ -97,6 +100,14 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
             return 0;
     }
 
+    public OnItemClickListener getmOnItemClickListener() {
+        return mOnItemClickListener;
+    }
+
+    public void setmOnItemClickListener(OnItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
+    }
+
     public class AccountsViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_nickName, tv_bankName, tv_serviceName, tv_accountNumber, tv_email, tv_mobile, tv_balance;
         private LinearLayout ll_nickName, ll_bankName, ll_serviceName, ll_accountNumber, ll_email, ll_mobile, ll_balance;
@@ -118,6 +129,18 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
             ll_email = itemView.findViewById(R.id.ll_show_email);
             ll_mobile = itemView.findViewById(R.id.ll_show_mobile);
             ll_balance = itemView.findViewById(R.id.ll_show_balance);
+
+            //set onClickListener for item
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    if (mOnItemClickListener != null && position != RecyclerView.NO_POSITION) {
+                        mOnItemClickListener.onItemClick(position);
+                    }
+                }
+            });
+
         }
     }
 

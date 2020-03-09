@@ -11,11 +11,13 @@ public abstract class GlobalConstants {
     public static final int REQ_CODE_ADD_TRANSACTION = 1003;
 
     public static final int REQ_CODE_SELECT_ACCOUNT = 1101;
+    public static final int REQ_CODE_SELECT_PARENT_CATEGORY = 1102;
 
     //Intent params
     public static final String IS_SELECT_ACCOUNT_INTENT = "com.grvmishra788.pay_track.is_select_account_intent";
 
-    public static final String SELECTED_CATEGORY_NAME = "com.grvmishra788.pay_track.is_selected_category_name";
+    public static final String SELECTED_ACCOUNT_NAME = "com.grvmishra788.pay_track.selected_account_name";
+    public static final String SELECTED_CATEGORY_NAME = "com.grvmishra788.pay_track.selected_category_name";
 
     public static final String ACCOUNT_OBJECT = "com.grvmishra788.pay_track.object_account";
     public static final String CATEGORY_OBJECT = "com.grvmishra788.pay_track.object_category";
