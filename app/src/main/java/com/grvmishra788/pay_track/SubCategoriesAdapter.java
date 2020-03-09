@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.grvmishra788.pay_track.DS.SubCategory;
@@ -44,7 +45,15 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
         SubCategory subCategory = mSubCategories.get(position);
         subCategoriesViewHolder.tv_subCategoryName.setText(subCategory.getSubCategoryName());
         subCategoriesViewHolder.tv_defaultAccount.setText(subCategory.getAssociatedAccountNickName());
-        subCategoriesViewHolder.tv_description.setText(subCategory.getDescription());
+
+        String desc = subCategory.getDescription();
+        subCategoriesViewHolder.tv_description.setText(desc);
+        if(InputValidationUtilities.isValidString(desc)){
+            subCategoriesViewHolder.ll_show_description.setVisibility(View.VISIBLE);
+        } else {
+            subCategoriesViewHolder.ll_show_description.setVisibility(View.GONE);
+        }
+
 
     }
 
@@ -65,11 +74,18 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
 
         private TextView tv_subCategoryName, tv_defaultAccount, tv_description;
 
+        //Variables to store linear layout associated with category description
+        private LinearLayout ll_show_description;
+
+
         public SubCategoriesViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_subCategoryName = itemView.findViewById(R.id.tv_show_sub_category_name);
             tv_defaultAccount = itemView.findViewById(R.id.tv_show_default_account);
             tv_description = itemView.findViewById(R.id.tv_show_description);
+
+            //init description linear layout
+            ll_show_description = itemView.findViewById(R.id.ll_show_description);
 
         }
     }

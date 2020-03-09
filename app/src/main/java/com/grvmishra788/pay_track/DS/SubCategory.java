@@ -19,8 +19,8 @@ public class SubCategory implements Serializable {
 
     public SubCategory(String subCategoryName, String associatedAccountNickName, String description, String parent) {
         this.subCategoryName = subCategoryName;
-        this.description = description;
         this.associatedAccountNickName = associatedAccountNickName;
+        this.description = description;
         this.parent = parent;
 
     }

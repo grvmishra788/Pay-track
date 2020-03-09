@@ -18,17 +18,17 @@ public class Category implements Serializable {
         this.subCategories = null;
     }
 
-    public Category(String categoryName, String description, String associatedAccountNickName) {
+    public Category(String categoryName, String associatedAccountNickName, String description) {
         this.categoryName = categoryName;
-        this.description = description;
         this.associatedAccountNickName = associatedAccountNickName;
+        this.description = description;
         this.subCategories = null;
     }
 
-    public Category(String categoryName, String description, String associatedAccountNickName, ArrayList<SubCategory> subCategories) {
+    public Category(String categoryName, String associatedAccountNickName, String description, ArrayList<SubCategory> subCategories) {
         this.categoryName = categoryName;
-        this.description = description;
         this.associatedAccountNickName = associatedAccountNickName;
+        this.description = description;
         this.subCategories = subCategories;
     }
 

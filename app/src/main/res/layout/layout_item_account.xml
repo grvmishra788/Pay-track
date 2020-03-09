@@ -5,7 +5,7 @@
                                    android:layout_width="match_parent"
                                    android:layout_height="wrap_content"
                                    android:layout_marginTop="@dimen/size_16_dp"
-                                   app:cardCornerRadius="4dp">
+                                   app:cardCornerRadius="@dimen/radius_4_dp">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

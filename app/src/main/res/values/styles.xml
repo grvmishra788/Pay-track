@@ -19,11 +19,25 @@
         <item name="android:windowBackground">@color/windowBackground</item>
     </style>
 
+    <!-- Style for Sub-Category Name text -->
+    <style name="Toolbar.SubCategoryName" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">@dimen/textSize_18_sp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+
     <!-- Style for Account NickName text -->
     <style name="Toolbar.AccountNickName" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">@dimen/textSize_24_sp</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+
+    <!-- Style for Sub-Category show text -->
+    <style name="Toolbar.SubCategoryText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">@dimen/textSize_14_sp</item>
+        <item name="android:fontFamily">@font/noto_serif</item>
     </style>
 
     <!-- Style for Account show text -->

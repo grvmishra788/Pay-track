@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.grvmishra788.pay_track.DS.Category;
@@ -56,7 +57,14 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
 
         categoriesViewHolder.tv_categoryName.setText(category.getCategoryName());
         categoriesViewHolder.tv_defaultAccount.setText(category.getAssociatedAccountNickName());
-        categoriesViewHolder.tv_description.setText(category.getDescription());
+
+        String desc = category.getDescription();
+        categoriesViewHolder.tv_description.setText(desc);
+        if(InputValidationUtilities.isValidString(desc)){
+            categoriesViewHolder.ll_show_description.setVisibility(View.VISIBLE);
+        } else {
+            categoriesViewHolder.ll_show_description.setVisibility(View.GONE);
+        }
 
         //update subcategories
         categoriesViewHolder.subCategoryRecyclerViewAdapter.setSubCategories(subCategories);
@@ -82,6 +90,9 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
     public class CategoriesViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_categoryName, tv_defaultAccount, tv_description;
 
+        //Variables to store linear layout associated with category description
+        private LinearLayout ll_show_description;
+
         private ArrayList<SubCategory> mSubCategories;
 
         private RecyclerView subCategoryRecyclerView;
@@ -103,6 +114,10 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
             tv_categoryName = itemView.findViewById(R.id.tv_show_category_name);
             tv_defaultAccount = itemView.findViewById(R.id.tv_show_default_account);
             tv_description = itemView.findViewById(R.id.tv_show_description);
+
+            //init description linear layouts
+            ll_show_description = itemView.findViewById(R.id.ll_show_description);
+
             //init sub category RecyclerView
             subCategoryRecyclerView = itemView.findViewById(R.id.sub_items_recyclerview);
             initSubCategoryRecyclerView();

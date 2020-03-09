@@ -5,8 +5,13 @@
     <dimen name="submit_btn_width">160dp</dimen>
     <dimen name="submit_btn_marginLeft">50dp</dimen>
 
+    <!--Card corner radius-->
+    <dimen name="radius_4_dp">4dp</dimen>
+    <dimen name="radius_8_dp">8dp</dimen>
+
     <!--custom sizes in dp-->
     <dimen name="size_4_dp">4dp</dimen>
+    <dimen name="size_8_dp">8dp</dimen>
     <dimen name="size_10_dp">10dp</dimen>
     <dimen name="size_12_dp">12dp</dimen>
     <dimen name="size_20_dp">20dp</dimen>
@@ -20,5 +25,6 @@
     <dimen name="textSize_18_sp">18sp</dimen>
     <dimen name="textSize_14_sp">14sp</dimen>
     <dimen name="textSize_12_sp">12sp</dimen>
+    <dimen name="textSize_10_sp">10sp</dimen>
     <dimen name="fab_size_normal">56dp</dimen>
 </resources>

@@ -94,7 +94,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                             Log.d(TAG,"Entry with  name - " + categoryName + " already present in category table");
                         } else {
                             //create category & set result in case parent is empty
-                            Category category = new Category(categoryName, description, null);
+                            Category category = new Category(categoryName, null, description);
                             resultIntent.putExtra(GlobalConstants.CATEGORY_OBJECT, category);
                         }
                     } else {
@@ -103,7 +103,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                             Log.d(TAG,"Entry with name - " + categoryName + " already present in sub_category table");
                         } else {
                             // else, create sub category & set result
-                            SubCategory subCategory = new SubCategory(categoryName, associatedAccountNickName, description, parent);
+                            SubCategory subCategory = new SubCategory(categoryName, null, description, parent);
                             resultIntent.putExtra(GlobalConstants.SUB_CATEGORY_OBJECT, subCategory);
                         }
                     }
