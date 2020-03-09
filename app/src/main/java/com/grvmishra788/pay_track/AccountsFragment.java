@@ -44,7 +44,6 @@ public class AccountsFragment extends Fragment {
         Log.i(TAG, "onCreateView() starts...");
         View view = inflater.inflate(R.layout.layout_accounts_fragment, container, false);
 
-
         //init db
         payTrackDBHelper = new DbHelper(getContext());
 

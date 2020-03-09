@@ -15,6 +15,9 @@
     <!--Title-->
     <string name="title_add_account">Add Account</string>
     <string name="title_add_transaction">Add Transaction</string>
+    <string name="title_add_category">Add Category</string>
+    <string name="title_select_categories">Select Category</string>
+    <string name="title_categories">Categories</string>
 
     <!--Account Fields-->
     <string name="nick_name">Nick Name</string>
@@ -26,6 +29,11 @@
     <string name="mobile">Mobile</string>
     <string name="balance">Balance</string>
     <string name="submit"><b>SUBMIT</b></string>
+
+    <!--Category Fields-->
+    <string name="category_name">Name</string>
+    <string name="parent">Parent Category</string>
+    <string name="associated_account">Associated Account</string>
 
     <!--Transaction Fields-->
     <string name="amount">Amount</string>
@@ -48,6 +56,6 @@
     </string-array>
 
     <!--Errors-->
-    <string name="error_account_entry_with_same_nickname">Entry with same nick name already present</string>
+    <string name="error_account_entry_with_same_nickname">Entry with same name already present</string><string name="default_account">Default Account</string>
 
 </resources>

@@ -7,6 +7,8 @@ public class DatabaseConstants {
     public static final String DATABASE_NAME = "pay_track.db";
     //table names
     public static final String ACCOUNTS_TABLE = "accounts_table";
+    public static final String CATEGORIES_TABLE = "categories_table";
+    public static final String SUB_CATEGORIES_TABLE = "sub_categories_table";
     //coloumn names
     public static final String ACCOUNTS_TABLE_COL_NICK_NAME = "Nick_Name";
     public static final String ACCOUNTS_TABLE_COL_TYPE = "Type";
@@ -16,6 +18,16 @@ public class DatabaseConstants {
     public static final String ACCOUNTS_TABLE_COL_EMAIL = "Email";
     public static final String ACCOUNTS_TABLE_COL_MOBILE = "Mobile";
     public static final String ACCOUNTS_TABLE_COL_BALANCE = "Balance";
+
+    public static final String CATEGORIES_TABLE_COL_CATEGORY_NAME = "Category_Name";
+    public static final String CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT = "Associate_Account_Name";
+    public static final String CATEGORIES_TABLE_COL_DESCRIPTION = "Description";
+
+    public static final String SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME = "Sub_Category_Name";
+    public static final String SUB_CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT = "Associate_Account_Name";
+    public static final String SUB_CATEGORIES_TABLE_COL_DESCRIPTION = "Description";
+    public static final String SUB_CATEGORIES_TABLE_COL_PARENT = "Parent";
+
     //account types
     public static final int BANK_ACCOUNT = 101;
     public static final int DIGITAL_ACCOUNT = 102;

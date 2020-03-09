@@ -1,8 +1,10 @@
 package com.grvmishra788.pay_track;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -13,9 +15,11 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
@@ -69,6 +73,40 @@ public class MainActivity extends AppCompatActivity {
         };
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        setUpNavigationView();
+    }
+
+    private void setUpNavigationView() {
+        Log.i(TAG,"setUpNavigationView()");
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Log.i(TAG, "onNavigationItemSelected() called ");
+
+                //get ID of menu item
+                int id = item.getItemId();
+
+                // Handle navigation view item clicks here.
+                if (id == R.id.nav_about) {
+                    //TODO::create AboutActivity
+                } else if (id == R.id.nav_setting) {
+                    //TODO::create SettingsActivity
+                } else if (id == R.id.nav_categories){
+                    Intent intent = new Intent(getBaseContext(), CategoryActivity.class);
+                    startActivity(intent);
+                } else {
+                    Log.e(TAG,"No match for navigation menu click!");
+                    return false;
+                }
+
+                Log.d(TAG, "onNavigationItemSelected() completed ");
+                return true;
+            }
+        });
+
+
     }
 
     @Override

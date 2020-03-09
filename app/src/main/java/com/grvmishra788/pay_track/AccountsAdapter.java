@@ -28,7 +28,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
     //Variable to store context from which Adapter has been called
     private Context mContext;
 
-    //Variable for accessing ToDoItems List in  ToDoItemAdapter
+    //Variable for accessing Accounts List in AccountsAdapter
     private ArrayList<CashAccount> mAccounts;
 
     //Constructor: binds CashAccount object data to AccountsAdapter

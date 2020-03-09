@@ -15,7 +15,16 @@
             android:parentActivityName=".MainActivity" />
 
         <activity
+            android:name=".AddCategoryActivity"
+            android:parentActivityName=".CategoryActivity" />
+
+
+        <activity
             android:name=".AddTransactionActivity"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".CategoryActivity"
             android:parentActivityName=".MainActivity" />
 
         <activity android:name=".MainActivity"
