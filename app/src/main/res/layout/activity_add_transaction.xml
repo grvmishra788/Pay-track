@@ -89,6 +89,87 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/tv_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginTop="@dimen/size_16_dp"
+            android:text="@string/transactionCategory"
+            android:textAppearance="@style/Toolbar.TitleText" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginRight="@dimen/size_12_dp"
+            android:orientation="horizontal"
+            android:background="@color/textColorPrimary">
+
+            <EditText
+                android:id="@+id/et_select_category"
+                android:focusable="false"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/size_48_dp"
+                android:layout_weight="8"
+                android:paddingLeft="@dimen/size_10_dp"
+                android:hint="@string/transactionCategory"
+                android:background="@color/textColorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/colorPrimary"
+                android:textAppearance="@style/EditText.Text"/>
+
+            <ImageButton
+                android:id="@+id/ib_select_category"
+                android:src="@drawable/ic_add_black_24dp"
+                android:backgroundTint="@color/textColorPrimary"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="@dimen/size_48_dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginTop="@dimen/size_16_dp"
+            android:text="@string/account"
+            android:textAppearance="@style/Toolbar.TitleText" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginRight="@dimen/size_12_dp"
+            android:orientation="horizontal"
+            android:background="@color/textColorPrimary">
+
+            <EditText
+                android:id="@+id/et_select_account"
+                android:focusable="false"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/size_48_dp"
+                android:layout_weight="8"
+                android:paddingLeft="@dimen/size_10_dp"
+                android:hint="@string/account"
+                android:background="@color/textColorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/colorPrimary"
+                android:textAppearance="@style/EditText.Text"/>
+
+            <ImageButton
+                android:id="@+id/ib_select_account"
+                android:src="@drawable/ic_add_black_24dp"
+                android:backgroundTint="@color/textColorPrimary"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="@dimen/size_48_dp" />
+
+        </LinearLayout>
+
+
+        <TextView
             android:id="@+id/tv_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

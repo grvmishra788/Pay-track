@@ -7,15 +7,15 @@ import java.util.Date;
 
 public class Transaction implements Serializable {
     private long amount;
-    private TransactionCategory transactionCategory;
+    private String category;
     private Date date;
     private String description;
     private GlobalConstants.TransactionType type;
-    private CashAccount account;
+    private String account;
 
-    public Transaction(long amount, TransactionCategory transactionCategory, Date date, String description, GlobalConstants.TransactionType type, CashAccount account) {
+    public Transaction(long amount, String category, Date date, String description, GlobalConstants.TransactionType type, String account) {
         this.amount = amount;
-        this.transactionCategory = transactionCategory;
+        this.category = category;
         this.date = date;
         this.description = description;
         this.type = type;
@@ -30,12 +30,12 @@ public class Transaction implements Serializable {
         this.amount = amount;
     }
 
-    public TransactionCategory getTransactionCategory() {
-        return transactionCategory;
+    public String getCategory() {
+        return category;
     }
 
-    public void setTransactionCategory(TransactionCategory transactionCategory) {
-        this.transactionCategory = transactionCategory;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public Date getDate() {
@@ -62,11 +62,11 @@ public class Transaction implements Serializable {
         this.type = type;
     }
 
-    public CashAccount getAccount() {
+    public String getAccount() {
         return account;
     }
 
-    public void setAccount(CashAccount account) {
+    public void setAccount(String account) {
         this.account = account;
     }
 }
