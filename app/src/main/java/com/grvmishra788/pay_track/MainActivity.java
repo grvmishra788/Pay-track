@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
@@ -30,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
     private ViewPagerAdapter mViewPagerAdapter;
+
+    //
+    private DrawerLayout drawer;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //setup drawer toggle
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
             @Override
@@ -79,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setUpNavigationView() {
         Log.i(TAG,"setUpNavigationView()");
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -96,13 +100,15 @@ public class MainActivity extends AppCompatActivity {
                 } else if (id == R.id.nav_categories){
                     Intent intent = new Intent(getBaseContext(), CategoryActivity.class);
                     startActivity(intent);
+                } else if (id == R.id.nav_all){
+                    //just close drawers
                 } else {
                     Log.e(TAG,"No match for navigation menu click!");
-                    return false;
                 }
 
+                drawer.closeDrawer(GravityCompat.START);
                 Log.d(TAG, "onNavigationItemSelected() completed ");
-                return true;
+                return false; //false returned to keep 'ALL' menu item selected
             }
         });
 
