@@ -13,8 +13,11 @@ import com.grvmishra788.pay_track.DS.CashAccount;
 import com.grvmishra788.pay_track.DS.Category;
 import com.grvmishra788.pay_track.DS.DigitalAccount;
 import com.grvmishra788.pay_track.DS.SubCategory;
+import com.grvmishra788.pay_track.DS.Transaction;
+import com.grvmishra788.pay_track.GlobalConstants;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import androidx.annotation.Nullable;
 
@@ -40,6 +43,14 @@ import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIE
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_DESCRIPTION;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_PARENT;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_AMOUNT;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_CATEGORY;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_DESCRIPTION;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_ID;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_ACCOUNT;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_DATE;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_TYPE;
 
 public class DbHelper extends SQLiteOpenHelper {
 
@@ -56,6 +67,7 @@ public class DbHelper extends SQLiteOpenHelper {
         createAccountsTable(sqLiteDatabase);
         createCategoriesTable(sqLiteDatabase);
         createSubCategoriesTable(sqLiteDatabase);
+        createTransactionsTable(sqLiteDatabase);
     }
 
     private void createAccountsTable(SQLiteDatabase sqLiteDatabase) {
@@ -113,10 +125,53 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
+    private void createTransactionsTable(SQLiteDatabase sqLiteDatabase) {
+        String createTransactionsTableSQLQuery = "create table IF NOT EXISTS " + TRANSACTIONS_TABLE + " (" +
+                TRANSACTIONS_TABLE_COL_ID + " INTEGER AUTO INCREMENT PRIMARY KEY, " +
+                TRANSACTIONS_TABLE_COL_AMOUNT + " INTEGER, " +
+                TRANSACTIONS_TABLE_COL_DESCRIPTION + " TEXT, " +
+                TRANSACTIONS_TABLE_COL_CATEGORY + " TEXT, " +
+                TRANSACTIONS_TABLE_COL_TYPE + " INTEGER, " +
+                TRANSACTIONS_TABLE_COL_DATE + " DATE, " +
+                TRANSACTIONS_TABLE_COL_ACCOUNT + " TEXT, " +
+                " FOREIGN KEY (" + TRANSACTIONS_TABLE_COL_CATEGORY + ") REFERENCES " + CATEGORIES_TABLE + " (" + CATEGORIES_TABLE_COL_CATEGORY_NAME + "), " +
+                " FOREIGN KEY (" + TRANSACTIONS_TABLE_COL_ACCOUNT + ") REFERENCES " + ACCOUNTS_TABLE + " (" + ACCOUNTS_TABLE_COL_NICK_NAME + ") " +
+                ")";
+
+        try {
+            sqLiteDatabase.execSQL(createTransactionsTableSQLQuery);
+            Log.i(TAG,"Successfully executed query - " + createTransactionsTableSQLQuery);
+        } catch (SQLException e){
+            Log.e(TAG, "Unable to execute query - " + createTransactionsTableSQLQuery);
+            e.printStackTrace();
+        }
+    }
+
+
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_TABLE);
         onCreate(sqLiteDatabase);
+    }
+
+    public boolean insertDataToTransactionsTable(Transaction transaction){
+        Log.i(TAG,"insertDataToTransactionsTable()");
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TRANSACTIONS_TABLE_COL_AMOUNT, transaction.getAmount());
+        contentValues.put(TRANSACTIONS_TABLE_COL_DESCRIPTION, transaction.getDescription());
+        contentValues.put(TRANSACTIONS_TABLE_COL_CATEGORY, transaction.getCategory());
+        contentValues.put(TRANSACTIONS_TABLE_COL_TYPE, (transaction.getType()== GlobalConstants.TransactionType.CREDIT)?1:0);
+        contentValues.put(TRANSACTIONS_TABLE_COL_DATE, transaction.getDate().getTime());
+        contentValues.put(TRANSACTIONS_TABLE_COL_ACCOUNT, transaction.getAccount());
+
+        long success = database.insert(TRANSACTIONS_TABLE, null, contentValues);
+        if(success==-1){
+            return false;
+        } else {
+            return true;
+        }
+
     }
 
     public boolean insertDataToSubCategoriesTable(SubCategory subCategory){
@@ -189,6 +244,31 @@ public class DbHelper extends SQLiteOpenHelper {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public ArrayList<Transaction> getAllTransactions() {
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery("Select * FROM " + TRANSACTIONS_TABLE, null);
+        if (cursor.getCount() == 0) {
+            Log.d(TAG, "No transactions in db!");
+            return null;
+        } else {
+            ArrayList<Transaction> transactions = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                Long amount = cursor.getLong(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_AMOUNT));
+                String category = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_CATEGORY));
+                Date date = new Date(cursor.getLong(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_DATE)));
+                String description = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_DESCRIPTION));
+
+                int typeVal = cursor.getInt(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_TYPE));
+                GlobalConstants.TransactionType type = ((typeVal==1)? GlobalConstants.TransactionType.CREDIT: GlobalConstants.TransactionType.DEBIT);
+
+                String account = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_ACCOUNT));
+
+                transactions.add(new Transaction(amount, category, date, description, type, account));
+            }
+            return transactions;
         }
     }
 

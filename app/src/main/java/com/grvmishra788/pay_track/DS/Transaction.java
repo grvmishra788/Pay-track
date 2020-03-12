@@ -5,6 +5,8 @@ import com.grvmishra788.pay_track.GlobalConstants;
 import java.io.Serializable;
 import java.util.Date;
 
+import androidx.annotation.NonNull;
+
 public class Transaction implements Serializable {
     private long amount;
     private String category;
@@ -68,5 +70,17 @@ public class Transaction implements Serializable {
 
     public void setAccount(String account) {
         this.account = account;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Transaction -" +
+                " amount : " + amount +
+                " category : " + category +
+                " date : " + date.toString() +
+                " description : " + description +
+                " type : " + ((type== GlobalConstants.TransactionType.CREDIT)?1:0) +
+                " account : " + account ;
     }
 }
