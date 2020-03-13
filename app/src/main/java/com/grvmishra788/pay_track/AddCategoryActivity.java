@@ -44,7 +44,7 @@ public class AddCategoryActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate() starts...");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_category);
-        setTitle(R.string.title_add_account);
+        setTitle(R.string.title_add_category);
 
         initViews();
         initParentSelection();
