@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static android.app.Activity.RESULT_OK;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ADD_DEBT;
 
 public class DebtsFragment extends Fragment {
@@ -49,8 +50,8 @@ public class DebtsFragment extends Fragment {
         //init db
         payTrackDBHelper = new DbHelper(getContext());
 
-        //init transasctions list
-//        mDebts = payTrackDBHelper.getAllDebts();
+        //init debts list
+        mDebts = payTrackDBHelper.getAllDebts();
 
         if(mDebts == null){
             Log.d(TAG, "mDebts is null");
@@ -79,5 +80,35 @@ public class DebtsFragment extends Fragment {
         });
         
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "onActivityResult() starts...");
+        if(resultCode==RESULT_OK){
+            if(requestCode==REQ_CODE_ADD_DEBT){
+                Log.i(TAG, "Processing add debt...");
+                Debt debt =  (Debt) data.getSerializableExtra(GlobalConstants.DEBT_OBJECT);
+                if(debt!=null){
+                    if(mDebts==null){
+                        mDebts = new ArrayList<>();
+                    }
+                    mDebts.add(debt);
+
+                    if(payTrackDBHelper.insertDataToDebtsTable(debt)){
+                        Log.d(TAG,"Debt inserted to db - " + debt.toString());
+                    } else {
+                        Log.e(TAG,"Couldn't insert debt to db - " + debt.toString());
+                    }
+                    debtsRecyclerViewAdapter.notifyDataSetChanged();
+                }
+                Log.i(TAG, "Added debt - " + debt.toString());
+            } else {
+                Log.i(TAG, "Wrong request code");
+            }
+        } else {
+            Log.i(TAG, "Wrong result code - " + resultCode);
+        }
     }
 }

@@ -147,7 +147,7 @@ public class TransactionsFragment extends Fragment {
     }
 
     private void initDatedTransactionHashMap() {
-        if(mTransactions!=null || mTransactions.size()==0){
+        if(mTransactions!=null){
             for(Transaction transaction:mTransactions){
                 addTransactionToHashMap(transaction);
             }

@@ -11,6 +11,7 @@ import android.util.Log;
 import com.grvmishra788.pay_track.DS.BankAccount;
 import com.grvmishra788.pay_track.DS.CashAccount;
 import com.grvmishra788.pay_track.DS.Category;
+import com.grvmishra788.pay_track.DS.Debt;
 import com.grvmishra788.pay_track.DS.DigitalAccount;
 import com.grvmishra788.pay_track.DS.SubCategory;
 import com.grvmishra788.pay_track.DS.Transaction;
@@ -37,6 +38,14 @@ import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TA
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE_COL_CATEGORY_NAME;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE_COL_DESCRIPTION;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DATABASE_NAME;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DEBTS_TABLE;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DEBTS_TABLE_COL_ACCOUNT;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DEBTS_TABLE_COL_AMOUNT;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DEBTS_TABLE_COL_DATE;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DEBTS_TABLE_COL_DESCRIPTION;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DEBTS_TABLE_COL_ID;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DEBTS_TABLE_COL_PERSON;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DEBTS_TABLE_COL_TYPE;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DIGITAL_ACCOUNT;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT;
@@ -68,6 +77,7 @@ public class DbHelper extends SQLiteOpenHelper {
         createCategoriesTable(sqLiteDatabase);
         createSubCategoriesTable(sqLiteDatabase);
         createTransactionsTable(sqLiteDatabase);
+        createDebtsTable(sqLiteDatabase);
     }
 
     private void createAccountsTable(SQLiteDatabase sqLiteDatabase) {
@@ -147,11 +157,55 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
+    private void createDebtsTable(SQLiteDatabase sqLiteDatabase) {
+        String createDebtsTableSQLQuery = "create table IF NOT EXISTS " + DEBTS_TABLE + " (" +
+                DEBTS_TABLE_COL_ID + " INTEGER AUTO INCREMENT PRIMARY KEY, " +
+                DEBTS_TABLE_COL_AMOUNT + " INTEGER, " +
+                DEBTS_TABLE_COL_DESCRIPTION + " TEXT, " +
+                DEBTS_TABLE_COL_PERSON + " TEXT, " +
+                DEBTS_TABLE_COL_TYPE + " INTEGER, " +
+                DEBTS_TABLE_COL_DATE + " DATE, " +
+                DEBTS_TABLE_COL_ACCOUNT + " TEXT, " +
+                " FOREIGN KEY (" + DEBTS_TABLE_COL_ACCOUNT + ") REFERENCES " + ACCOUNTS_TABLE + " (" + ACCOUNTS_TABLE_COL_NICK_NAME + ") " +
+                ")";
+
+        try {
+            sqLiteDatabase.execSQL(createDebtsTableSQLQuery);
+            Log.i(TAG,"Successfully executed query - " + createDebtsTableSQLQuery);
+        } catch (SQLException e){
+            Log.e(TAG, "Unable to execute query - " + createDebtsTableSQLQuery);
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_TABLE);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + CATEGORIES_TABLE);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + SUB_CATEGORIES_TABLE);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TRANSACTIONS_TABLE);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DEBTS_TABLE);
         onCreate(sqLiteDatabase);
+    }
+
+    public boolean insertDataToDebtsTable(Debt debt){
+        Log.i(TAG,"insertDataToDebtsTable()");
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DEBTS_TABLE_COL_AMOUNT, debt.getAmount());
+        contentValues.put(DEBTS_TABLE_COL_DESCRIPTION, debt.getDescription());
+        contentValues.put(DEBTS_TABLE_COL_PERSON, debt.getPerson());
+        contentValues.put(DEBTS_TABLE_COL_TYPE, (debt.getType()== GlobalConstants.DebtType.RECEIVE)?1:0);
+        contentValues.put(DEBTS_TABLE_COL_DATE, debt.getDate().getTime());
+        contentValues.put(DEBTS_TABLE_COL_ACCOUNT, debt.getAccount());
+
+        long success = database.insert(DEBTS_TABLE, null, contentValues);
+        if(success==-1){
+            return false;
+        } else {
+            return true;
+        }
+
     }
 
     public boolean insertDataToTransactionsTable(Transaction transaction){
@@ -244,6 +298,31 @@ public class DbHelper extends SQLiteOpenHelper {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public ArrayList<Debt> getAllDebts() {
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery("Select * FROM " + DEBTS_TABLE, null);
+        if (cursor.getCount() == 0) {
+            Log.d(TAG, "No debts in db!");
+            return null;
+        } else {
+            ArrayList<Debt> debts = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                Long amount = cursor.getLong(cursor.getColumnIndex(DEBTS_TABLE_COL_AMOUNT));
+                String person = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_PERSON));
+                Date date = new Date(cursor.getLong(cursor.getColumnIndex(DEBTS_TABLE_COL_DATE)));
+                String description = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_DESCRIPTION));
+
+                int typeVal = cursor.getInt(cursor.getColumnIndex(DEBTS_TABLE_COL_TYPE));
+                GlobalConstants.DebtType type = ((typeVal==1)? GlobalConstants.DebtType.RECEIVE: GlobalConstants.DebtType.PAY);
+
+                String account = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_ACCOUNT));
+
+                debts.add(new Debt(amount,date, description, type, account, person));
+            }
+            return debts;
         }
     }
 
