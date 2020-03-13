@@ -15,6 +15,7 @@
     <!--Title-->
     <string name="title_add_account">Add Account</string>
     <string name="title_select_account">Select Account</string>
+    <string name="title_add_debt">Add Debt</string>
     <string name="title_add_transaction">Add Transaction</string>
     <string name="title_add_category">Add Category</string>
     <string name="title_select_categories">Select Category</string>
@@ -43,6 +44,11 @@
     <string name="description">Description</string>
     <string name="account">Account</string>
 
+    <!--Debt Fields-->
+    <string name="person">Name Of The Person</string>
+    <string name="lender">Lender</string>
+    <string name="borrower">Borrower</string>
+
     <!--Account type choices-->
     <string-array name="account_type">
         <item>Bank Account</item>
@@ -54,6 +60,12 @@
     <string-array name="transaction_type">
         <item>Debit</item>
         <item>Credit</item>
+    </string-array>
+
+    <!--Transaction type choices-->
+    <string-array name="debt_type">
+        <item>Pay</item>
+        <item>Receive</item>
     </string-array>
 
     <!--Errors-->

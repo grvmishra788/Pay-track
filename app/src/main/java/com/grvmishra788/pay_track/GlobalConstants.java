@@ -9,6 +9,7 @@ public abstract class GlobalConstants {
     public static final int REQ_CODE_ADD_ACCOUNT = 1001;
     public static final int REQ_CODE_ADD_CATEGORY = 1002;
     public static final int REQ_CODE_ADD_TRANSACTION = 1003;
+    public static final int REQ_CODE_ADD_DEBT = 1004;
 
     public static final int REQ_CODE_SELECT_ACCOUNT = 1101;
     public static final int REQ_CODE_SELECT_PARENT_CATEGORY = 1102;
@@ -23,6 +24,7 @@ public abstract class GlobalConstants {
     public static final String CATEGORY_OBJECT = "com.grvmishra788.pay_track.object_category";
     public static final String SUB_CATEGORY_OBJECT = "com.grvmishra788.pay_track.object_sub_category";
     public static final String TRANSACTION_OBJECT = "com.grvmishra788.pay_track.object_transaction";
+    public static final String DEBT_OBJECT = "com.grvmishra788.pay_track.object_debt";
 
 
     //Date format string to show Day and Date
@@ -30,7 +32,11 @@ public abstract class GlobalConstants {
 
     //enums
     public static enum TransactionType{
-        DEBIT,CREDIT
+        DEBIT, CREDIT
+    }
+
+    public static enum DebtType{
+        PAY, RECEIVE
     }
 
 }

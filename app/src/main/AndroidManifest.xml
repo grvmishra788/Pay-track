@@ -18,6 +18,9 @@
             android:name=".AddCategoryActivity"
             android:parentActivityName=".CategoryActivity" />
 
+        <activity
+            android:name=".AddDebtActivity"
+            android:parentActivityName=".MainActivity" />
 
         <activity
             android:name=".AddTransactionActivity"
@@ -31,7 +34,8 @@
             android:name=".SelectAccountActivity"
             android:parentActivityName=".MainActivity" />
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

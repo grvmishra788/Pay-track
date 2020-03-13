@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginTop="@dimen/size_16_dp"
+            android:text="@string/amount"
+            android:textAppearance="@style/Toolbar.TitleText" />
+
+        <EditText
+            android:id="@+id/et_amount"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_48_dp"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginRight="@dimen/size_12_dp"
+            android:background="@color/textColorPrimary"
+            android:hint="@string/amount"
+            android:paddingLeft="@dimen/size_10_dp"
+            android:textAppearance="@style/EditText.Text"
+            android:textColor="@color/colorPrimary"
+            android:textColorHint="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/tv_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginTop="@dimen/size_16_dp"
+            android:text="@string/type"
+            android:textAppearance="@style/Toolbar.TitleText" />
+
+        <Spinner
+            android:id="@+id/spinner_type"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_48_dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginRight="@dimen/size_12_dp"
+            android:background="@drawable/spinner_background" />
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginTop="@dimen/size_16_dp"
+            android:text="@string/date"
+            android:textAppearance="@style/Toolbar.TitleText" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginRight="@dimen/size_12_dp"
+            android:background="@color/textColorPrimary"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_date"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/size_48_dp"
+                android:layout_weight="8"
+                android:background="@color/textColorPrimary"
+                android:focusable="false"
+                android:hint="@string/date"
+                android:paddingLeft="@dimen/size_10_dp"
+                android:textAppearance="@style/EditText.Text"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/colorPrimary" />
+
+            <ImageButton
+                android:id="@+id/ib_date"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/size_48_dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/textColorPrimary"
+                android:src="@drawable/ic_date_picker" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_person"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginTop="@dimen/size_16_dp"
+            android:text="@string/lender"
+            android:textAppearance="@style/Toolbar.TitleText" />
+
+        <EditText
+            android:id="@+id/et_person"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_48_dp"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginRight="@dimen/size_12_dp"
+            android:background="@color/textColorPrimary"
+            android:hint="@string/person"
+            android:paddingLeft="@dimen/size_10_dp"
+            android:textAppearance="@style/EditText.Text"
+            android:textColor="@color/colorPrimary"
+            android:textColorHint="@color/colorPrimary" />
+
+
+        <TextView
+            android:id="@+id/tv_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginTop="@dimen/size_16_dp"
+            android:text="@string/account"
+            android:textAppearance="@style/Toolbar.TitleText" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginRight="@dimen/size_12_dp"
+            android:background="@color/textColorPrimary"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_select_account"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/size_48_dp"
+                android:layout_weight="8"
+                android:background="@color/textColorPrimary"
+                android:focusable="false"
+                android:hint="@string/account"
+                android:paddingLeft="@dimen/size_10_dp"
+                android:textAppearance="@style/EditText.Text"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/colorPrimary" />
+
+            <ImageButton
+                android:id="@+id/ib_select_account"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/size_48_dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/textColorPrimary"
+                android:src="@drawable/ic_add_black_24dp" />
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/tv_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginTop="@dimen/size_16_dp"
+            android:text="@string/description"
+            android:textAppearance="@style/Toolbar.TitleText" />
+
+
+        <EditText
+            android:id="@+id/et_description"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_48_dp"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginRight="@dimen/size_12_dp"
+            android:background="@color/textColorPrimary"
+            android:hint="@string/description"
+            android:paddingLeft="@dimen/size_10_dp"
+            android:textAppearance="@style/EditText.Text"
+            android:textColor="@color/colorPrimary"
+            android:textColorHint="@color/colorPrimary" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_12_dp"
+            android:layout_marginTop="@dimen/size_30_dp"
+            android:layout_marginRight="@dimen/size_12_dp"
+            android:layout_marginBottom="@dimen/size_30_dp">
+
+            <TextView
+                android:id="@+id/tv_submit"
+                android:layout_width="@dimen/submit_btn_width"
+                android:layout_height="@dimen/size_48_dp"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:background="@drawable/layout_submit_bg"
+                android:paddingTop="@dimen/size_4_dp"
+                android:text="@string/submit"
+                android:textAlignment="center"
+                android:textAppearance="@style/Toolbar.BTNText" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</ScrollView>

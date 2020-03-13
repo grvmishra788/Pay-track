@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.grvmishra788.pay_track.DS.Transaction;
 
 import java.util.ArrayList;
@@ -16,6 +15,9 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import static android.graphics.Color.GREEN;
+import static android.graphics.Color.RED;
 
 public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapter.TransactionsViewHolder> {
 
@@ -62,11 +64,37 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
             ArrayList<Transaction> curDateTransactions = datedTransactionHashMap.get(dateString);
             Log.d(TAG,"Date for position - " + position + " is - " + dateString);
             holder.tv_date.setText(dateString);
+            String amountValue = "";
+            Long groupTransactionAmount = getGroupedTransactionAmount(curDateTransactions);
+            if(groupTransactionAmount>=new Long(0)){
+                amountValue = " + " + String.valueOf(groupTransactionAmount);
+                holder.tv_group_amt.setTextColor(GREEN);
+            } else {
+                amountValue = " - " + String.valueOf(-groupTransactionAmount);
+                holder.tv_group_amt.setTextColor(RED);
+            }
+            holder.tv_group_amt.setText(amountValue);
+
             //update grouped Transactions
             holder.setmGroupedTransactions(curDateTransactions);
         } else {
             Log.e(TAG,"Date for position - " + position + " is null !");
         }
+    }
+
+    private Long getGroupedTransactionAmount(ArrayList<Transaction> curDateTransactions) {
+        Long groupTransactionAmt = new Long(0);
+
+        for (Transaction transaction:curDateTransactions){
+            Long transactionAmt = transaction.getAmount();
+            if(transaction.getType()== GlobalConstants.TransactionType.CREDIT){
+                groupTransactionAmt += transactionAmt;
+            } else {
+                groupTransactionAmt -= transactionAmt;
+            }
+        }
+
+        return groupTransactionAmt;
     }
 
     @Override
@@ -82,7 +110,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
         //constants
         private final String S_TAG = "Pay-Track: " + TransactionsViewHolder.class.getName(); //constant Class TAG
 
-        private TextView tv_date;
+        private TextView tv_date, tv_group_amt;
         
         private RecyclerView groupedTransactionsRecyclerView;
         private GroupedTransactionsAdapter groupedTransactionRecyclerViewAdapter;
@@ -94,6 +122,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
             super(itemView);
             Log.i(S_TAG, S_TAG + ": Constructor starts");
             tv_date = itemView.findViewById(R.id.tv_show_date);
+            tv_group_amt = itemView.findViewById(R.id.tv_show_group_amt);
             groupedTransactionsRecyclerView = itemView.findViewById(R.id.recyclerview_item_transaction);
             initItemTransactionRecyclerView();
             Log.i(S_TAG, S_TAG + ": Constructor ends");
