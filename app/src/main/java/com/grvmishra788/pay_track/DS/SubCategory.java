@@ -8,7 +8,7 @@ public class SubCategory implements Serializable {
 
     private String subCategoryName;
     private String description;
-    private String associatedAccountNickName;
+    private String accountNickName;
     private String parent;
 
 
@@ -17,9 +17,9 @@ public class SubCategory implements Serializable {
         this.parent = parent;
     }
 
-    public SubCategory(String subCategoryName, String associatedAccountNickName, String description, String parent) {
+    public SubCategory(String subCategoryName, String accountNickName, String description, String parent) {
         this.subCategoryName = subCategoryName;
-        this.associatedAccountNickName = associatedAccountNickName;
+        this.accountNickName = accountNickName;
         this.description = description;
         this.parent = parent;
 
@@ -49,12 +49,12 @@ public class SubCategory implements Serializable {
         this.description = description;
     }
 
-    public String getAssociatedAccountNickName() {
-        return associatedAccountNickName;
+    public String getAccountNickName() {
+        return accountNickName;
     }
 
-    public void setAssociatedAccountNickName(String associatedAccountNickName) {
-        this.associatedAccountNickName = associatedAccountNickName;
+    public void setAccountNickName(String accountNickName) {
+        this.accountNickName = accountNickName;
     }
 
     @NonNull
@@ -63,7 +63,7 @@ public class SubCategory implements Serializable {
         return  "SubCategory -" +
                 " subCategoryName : " + subCategoryName +
                 " description : " + description +
-                " associatedAccountNickName : " + associatedAccountNickName +
+                " accountNickName : " + accountNickName +
                 " parent : " + parent ;
     }
 }

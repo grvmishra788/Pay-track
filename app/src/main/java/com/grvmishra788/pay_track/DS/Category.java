@@ -8,26 +8,26 @@ import androidx.annotation.NonNull;
 public class Category implements Serializable {
     private String categoryName;
     private String description;
-    private String associatedAccountNickName;
+    private String accountNickName;
     private ArrayList<SubCategory> subCategories;
 
     public Category(String categoryName){
         this.categoryName = categoryName;
         this.description = null;
-        this.associatedAccountNickName = null;
+        this.accountNickName = null;
         this.subCategories = null;
     }
 
-    public Category(String categoryName, String associatedAccountNickName, String description) {
+    public Category(String categoryName, String accountNickName, String description) {
         this.categoryName = categoryName;
-        this.associatedAccountNickName = associatedAccountNickName;
+        this.accountNickName = accountNickName;
         this.description = description;
         this.subCategories = null;
     }
 
-    public Category(String categoryName, String associatedAccountNickName, String description, ArrayList<SubCategory> subCategories) {
+    public Category(String categoryName, String accountNickName, String description, ArrayList<SubCategory> subCategories) {
         this.categoryName = categoryName;
-        this.associatedAccountNickName = associatedAccountNickName;
+        this.accountNickName = accountNickName;
         this.description = description;
         this.subCategories = subCategories;
     }
@@ -48,12 +48,12 @@ public class Category implements Serializable {
         this.description = description;
     }
 
-    public String getAssociatedAccountNickName() {
-        return associatedAccountNickName;
+    public String getAccountNickName() {
+        return accountNickName;
     }
 
-    public void setAssociatedAccountNickName(String associatedAccountNickName) {
-        this.associatedAccountNickName = associatedAccountNickName;
+    public void setAccountNickName(String accountNickName) {
+        this.accountNickName = accountNickName;
     }
 
     public void addSubCategory(SubCategory subCategory){
@@ -77,7 +77,7 @@ public class Category implements Serializable {
         String str = "Category -" +
                         " categoryName : " + categoryName +
                         " description : " + description +
-                        " associatedAccountNickName : " + associatedAccountNickName +
+                        " accountNickName : " + accountNickName +
                         " Sub-Categories - ";
 
         if(subCategories!=null){

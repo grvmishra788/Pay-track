@@ -22,11 +22,11 @@ public class DatabaseConstants {
     public static final String ACCOUNTS_TABLE_COL_BALANCE = "Balance";
 
     public static final String CATEGORIES_TABLE_COL_CATEGORY_NAME = "Category_Name";
-    public static final String CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT = "Associate_Account_Name";
+    public static final String CATEGORIES_TABLE_COL_ACCOUNT_NAME = "Account_Name";
     public static final String CATEGORIES_TABLE_COL_DESCRIPTION = "Description";
 
     public static final String SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME = "Sub_Category_Name";
-    public static final String SUB_CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT = "Associate_Account_Name";
+    public static final String SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME = "Account_Name";
     public static final String SUB_CATEGORIES_TABLE_COL_DESCRIPTION = "Description";
     public static final String SUB_CATEGORIES_TABLE_COL_PARENT = "Parent";
 

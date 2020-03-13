@@ -34,7 +34,7 @@ import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.ACCOUNTS_TABL
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.BANK_ACCOUNT;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CASH_ACCOUNT;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE;
-import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE_COL_ACCOUNT_NAME;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE_COL_CATEGORY_NAME;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE_COL_DESCRIPTION;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DATABASE_NAME;
@@ -48,7 +48,7 @@ import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DEBTS_TABLE_C
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DEBTS_TABLE_COL_TYPE;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DIGITAL_ACCOUNT;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE;
-import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_DESCRIPTION;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_PARENT;
@@ -104,7 +104,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private void createCategoriesTable(SQLiteDatabase sqLiteDatabase) {
         String createCategoriesTableSQLQuery = "create table IF NOT EXISTS " + CATEGORIES_TABLE + " (" +
                 CATEGORIES_TABLE_COL_CATEGORY_NAME + " TEXT COLLATE NOCASE PRIMARY KEY, " +
-                CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT + " TEXT, " +
+                CATEGORIES_TABLE_COL_ACCOUNT_NAME + " TEXT, " +
                 CATEGORIES_TABLE_COL_DESCRIPTION + " TEXT " +
                 ")";
 
@@ -120,7 +120,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private void createSubCategoriesTable(SQLiteDatabase sqLiteDatabase) {
         String createSubCategoriesTableSQLQuery = "create table IF NOT EXISTS " + SUB_CATEGORIES_TABLE + " (" +
                 SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME + " TEXT COLLATE NOCASE PRIMARY KEY, " +
-                SUB_CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT + " TEXT, " +
+                SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME + " TEXT, " +
                 SUB_CATEGORIES_TABLE_COL_DESCRIPTION + " TEXT, " +
                 SUB_CATEGORIES_TABLE_COL_PARENT + " TEXT, " +
                 " FOREIGN KEY (" + SUB_CATEGORIES_TABLE_COL_PARENT + ") REFERENCES " + CATEGORIES_TABLE + " (" + CATEGORIES_TABLE_COL_CATEGORY_NAME + ")" +
@@ -233,7 +233,7 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME, subCategory.getSubCategoryName());
-        contentValues.put(SUB_CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT, subCategory.getAssociatedAccountNickName());
+        contentValues.put(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME, subCategory.getAccountNickName());
         contentValues.put(SUB_CATEGORIES_TABLE_COL_DESCRIPTION, subCategory.getDescription());
         contentValues.put(SUB_CATEGORIES_TABLE_COL_PARENT, subCategory.getParent());
 
@@ -252,7 +252,7 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(CATEGORIES_TABLE_COL_CATEGORY_NAME, category.getCategoryName());
-        contentValues.put(CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT, category.getAssociatedAccountNickName());
+        contentValues.put(CATEGORIES_TABLE_COL_ACCOUNT_NAME, category.getAccountNickName());
         contentValues.put(CATEGORIES_TABLE_COL_DESCRIPTION, category.getDescription());
         long success = database.insert(CATEGORIES_TABLE, null, contentValues);
         if(success==-1){
@@ -361,10 +361,10 @@ public class DbHelper extends SQLiteOpenHelper {
             ArrayList<SubCategory> subCategories = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String subCategoryName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME));
-                String associatedAccountNickName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT));
+                String accountNickName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME));
                 String description = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_DESCRIPTION));
                 String parent = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_PARENT));
-                subCategories.add(new SubCategory(subCategoryName, associatedAccountNickName, description, parent));
+                subCategories.add(new SubCategory(subCategoryName, accountNickName, description, parent));
             }
             return subCategories;
         }
@@ -381,9 +381,9 @@ public class DbHelper extends SQLiteOpenHelper {
             ArrayList<SubCategory> subCategoriesUnderParent = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String subCategoryName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME));
-                String associatedAccountNickName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT));
+                String accountNickName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME));
                 String description = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_DESCRIPTION));
-                subCategoriesUnderParent.add(new SubCategory(subCategoryName, associatedAccountNickName, description, parent));
+                subCategoriesUnderParent.add(new SubCategory(subCategoryName, accountNickName, description, parent));
             }
             return subCategoriesUnderParent;
         }
@@ -399,10 +399,10 @@ public class DbHelper extends SQLiteOpenHelper {
             ArrayList<Category> categories = new ArrayList<>();
             while (cursor.moveToNext()) {
                 String categoryName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_CATEGORY_NAME));
-                String associatedAccountNickName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_ASSOCIATED_ACCOUNT));
+                String accountNickName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_ACCOUNT_NAME));
                 String description = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_DESCRIPTION));
                 ArrayList<SubCategory> subCategories = getAllSubCategoriesInParent(categoryName);
-                categories.add(new Category(categoryName, associatedAccountNickName, description, subCategories));
+                categories.add(new Category(categoryName, accountNickName, description, subCategories));
             }
             return categories;
         }

@@ -13,11 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.grvmishra788.pay_track.DS.CashAccount;
-import com.grvmishra788.pay_track.DS.Category;
-import com.grvmishra788.pay_track.DS.SubCategory;
 import com.grvmishra788.pay_track.DS.Transaction;
 
 import java.text.SimpleDateFormat;
@@ -31,10 +27,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE;
-import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE_COL_CATEGORY_NAME;
-import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE;
-import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_ACCOUNT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_PARENT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_ACCOUNT_NAME;
@@ -192,7 +184,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         validInputs.put(getString(R.string.amount), InputValidationUtilities.isValidNumber(amount));
         validInputs.put(getString(R.string.date), (date==null)?false:true);
         validInputs.put(getString(R.string.type), (type==null)?false:true);
-        validInputs.put(getString(R.string.transactionCategory), InputValidationUtilities.isValidString(category));
+        validInputs.put(getString(R.string.category), InputValidationUtilities.isValidString(category));
         validInputs.put(getString(R.string.account), InputValidationUtilities.isValidString(account));
 
         boolean isValid = true;

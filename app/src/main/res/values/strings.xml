@@ -35,11 +35,10 @@
     <!--Category Fields-->
     <string name="category_name">Name</string>
     <string name="parent">Parent Category</string>
-    <string name="associated_account">Associated Account</string>
 
     <!--Transaction Fields-->
     <string name="amount">Amount</string>
-    <string name="transactionCategory">Category</string>
+    <string name="category">Category</string>
     <string name="date">Date</string>
     <string name="description">Description</string>
     <string name="account">Account</string>
@@ -48,6 +47,10 @@
     <string name="person">Name Of The Person</string>
     <string name="lender">Lender</string>
     <string name="borrower">Borrower</string>
+
+    <!--Default Options-->
+    <string name="default_parent">None</string>
+
 
     <!--Account type choices-->
     <string-array name="account_type">
@@ -69,6 +72,6 @@
     </string-array>
 
     <!--Errors-->
-    <string name="error_account_entry_with_same_nickname">Entry with same name already present</string><string name="default_account">Default Account</string>
+    <string name="error_account_entry_with_same_nickname">Entry with same name already present</string>
 
 </resources>

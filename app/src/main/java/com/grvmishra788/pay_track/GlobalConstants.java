@@ -20,6 +20,8 @@ public abstract class GlobalConstants {
     public static final String SELECTED_ACCOUNT_NAME = "com.grvmishra788.pay_track.selected_account_name";
     public static final String SELECTED_CATEGORY_NAME = "com.grvmishra788.pay_track.selected_category_name";
 
+    public static final String SELECTED_CATEGORY_ACCOUNT_NAME = "com.grvmishra788.pay_track.selected_category_account_name";
+
     public static final String ACCOUNT_OBJECT = "com.grvmishra788.pay_track.object_account";
     public static final String CATEGORY_OBJECT = "com.grvmishra788.pay_track.object_category";
     public static final String SUB_CATEGORY_OBJECT = "com.grvmishra788.pay_track.object_sub_category";

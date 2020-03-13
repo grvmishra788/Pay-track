@@ -54,7 +54,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/transactionCategory"
+                    android:text="@string/category"
                     android:textAppearance="@style/Toolbar.SubCategoryText"
                     android:textColor="@color/colorPrimary" />
 

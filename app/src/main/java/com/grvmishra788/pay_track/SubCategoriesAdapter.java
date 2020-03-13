@@ -44,7 +44,7 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
     public void onBindViewHolder(@NonNull SubCategoriesViewHolder subCategoriesViewHolder, int position) {
         SubCategory subCategory = mSubCategories.get(position);
         subCategoriesViewHolder.tv_subCategoryName.setText(subCategory.getSubCategoryName());
-        subCategoriesViewHolder.tv_defaultAccount.setText(subCategory.getAssociatedAccountNickName());
+        subCategoriesViewHolder.tv_account.setText(subCategory.getAccountNickName());
 
         String desc = subCategory.getDescription();
         subCategoriesViewHolder.tv_description.setText(desc);
@@ -72,7 +72,7 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
 
     public class SubCategoriesViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView tv_subCategoryName, tv_defaultAccount, tv_description;
+        private TextView tv_subCategoryName, tv_account, tv_description;
 
         //Variables to store linear layout associated with category description
         private LinearLayout ll_show_description;
@@ -81,7 +81,7 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
         public SubCategoriesViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_subCategoryName = itemView.findViewById(R.id.tv_show_sub_category_name);
-            tv_defaultAccount = itemView.findViewById(R.id.tv_show_default_account);
+            tv_account = itemView.findViewById(R.id.tv_show_default_account);
             tv_description = itemView.findViewById(R.id.tv_show_description);
 
             //init description linear layout

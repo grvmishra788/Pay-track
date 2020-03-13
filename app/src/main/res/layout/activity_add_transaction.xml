@@ -94,7 +94,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/size_12_dp"
             android:layout_marginTop="@dimen/size_16_dp"
-            android:text="@string/transactionCategory"
+            android:text="@string/category"
             android:textAppearance="@style/Toolbar.TitleText" />
 
         <LinearLayout
@@ -112,7 +112,7 @@
                 android:layout_height="@dimen/size_48_dp"
                 android:layout_weight="8"
                 android:paddingLeft="@dimen/size_10_dp"
-                android:hint="@string/transactionCategory"
+                android:hint="@string/category"
                 android:background="@color/textColorPrimary"
                 android:textColor="@color/colorPrimary"
                 android:textColorHint="@color/colorPrimary"
