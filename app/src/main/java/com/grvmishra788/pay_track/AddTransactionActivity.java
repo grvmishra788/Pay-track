@@ -31,6 +31,8 @@ import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_ACCOUNT
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_PARENT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_ACCOUNT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_NAME;
+import static com.grvmishra788.pay_track.GlobalConstants.SELECT_CATEGORY;
+import static com.grvmishra788.pay_track.GlobalConstants.SELECT_PARENT_CATEGORY;
 
 public class AddTransactionActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     //constant Class TAG
@@ -114,7 +116,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         @Override
         public void onClick(View view) {
             Intent selectParentIntent = new Intent(getBaseContext(), CategoryActivity.class);
-            selectParentIntent.putExtra(GlobalConstants.IS_SELECT_ACCOUNT_INTENT, true);
+            selectParentIntent.putExtra(GlobalConstants.CATEGORY_INTENT_TYPE, SELECT_CATEGORY);
             startActivityForResult(selectParentIntent, REQ_CODE_SELECT_PARENT_CATEGORY);
         }
     };

@@ -18,6 +18,7 @@
     <string name="title_add_debt">Add Debt</string>
     <string name="title_add_transaction">Add Transaction</string>
     <string name="title_add_category">Add Category</string>
+    <string name="title_select_parent_categories">Select Parent Category</string>
     <string name="title_select_categories">Select Category</string>
     <string name="title_categories">Categories</string>
 
@@ -50,6 +51,7 @@
 
     <!--Default Options-->
     <string name="default_parent">None</string>
+    <string name="default_account">None</string>
 
 
     <!--Account type choices-->
@@ -72,6 +74,11 @@
     </string-array>
 
     <!--Errors-->
-    <string name="error_account_entry_with_same_nickname">Entry with same name already present</string>
+    <string name="title_general_error">Uh Oh..</string>
+    <string name="error_duplicate_entry">You already have this entry in your database - </string>
+    <string name="error_field_empty_account"> You must fill in the following fields - </string>
+
+    <!--Button titles-->
+    <string name="button_ok"><b>OK</b></string>
 
 </resources>

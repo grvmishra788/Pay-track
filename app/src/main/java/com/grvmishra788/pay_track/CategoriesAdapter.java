@@ -17,6 +17,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static com.grvmishra788.pay_track.GlobalConstants.SELECT_PARENT_CATEGORY;
+import static com.grvmishra788.pay_track.GlobalConstants.SHOW_CATEGORY;
+
 class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.CategoriesViewHolder> {
 
     //constants
@@ -31,11 +34,15 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
     //Variable for onItemclickListener
     private OnItemClickListener mOnItemClickListener;
 
+    //Variable to store categoryActivityType
+    private int categoryActivityType = SHOW_CATEGORY;
+
     //Constructor: binds Category object data to CategoriesAdapter
-    public CategoriesAdapter(Context context, ArrayList<Category> categories) {
+    public CategoriesAdapter(Context context, ArrayList<Category> categories, int categoryActivityType) {
         Log.d(TAG, TAG + ": Constructor starts");
         this.mContext = context;
         this.mCategories = categories;
+        this.categoryActivityType = categoryActivityType;
         Log.d(TAG, TAG + ": Constructor ends");
     }
 
@@ -53,7 +60,7 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
     public void onBindViewHolder(@NonNull CategoriesViewHolder categoriesViewHolder, int position) {
         Category category = mCategories.get(position);
         ArrayList<SubCategory> subCategories = category.getSubCategories();
-        if(subCategories==null){
+        if(subCategories==null||categoryActivityType==SELECT_PARENT_CATEGORY){
             categoriesViewHolder.horizontal_bar.setVisibility(View.GONE);
         } else {
             categoriesViewHolder.horizontal_bar.setVisibility(View.VISIBLE);
@@ -61,7 +68,7 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
         categoriesViewHolder.setSubCategories(subCategories);
 
         categoriesViewHolder.tv_categoryName.setText(category.getCategoryName());
-        categoriesViewHolder.tv_defaultAccount.setText(category.getAssociatedAccountNickName());
+        categoriesViewHolder.tv_defaultAccount.setText(category.getAccountNickName());
 
         String desc = category.getDescription();
         categoriesViewHolder.tv_description.setText(desc);
@@ -131,6 +138,9 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
             //init sub category RecyclerView
             subCategoryRecyclerView = itemView.findViewById(R.id.sub_items_recyclerview);
             initSubCategoryRecyclerView();
+            if(categoryActivityType==SELECT_PARENT_CATEGORY){
+                subCategoryRecyclerView.setVisibility(View.GONE);
+            }
         }
 
         public void setSubCategories(ArrayList<SubCategory> subCategories) {

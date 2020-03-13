@@ -59,7 +59,7 @@ public class AddAccountActivity extends AppCompatActivity {
                 CashAccount account = null;
                 if (parseInput()) {
                     if(entryPresentInDB(ACCOUNTS_TABLE, ACCOUNTS_TABLE_COL_NICK_NAME, String.valueOf(et_nickName.getText()).trim())){
-                        Toast.makeText(getBaseContext(),getString(R.string.error_account_entry_with_same_nickname), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getBaseContext(),getString(R.string.error_duplicate_entry), Toast.LENGTH_SHORT).show();
                     } else {
                         //set default balance as zero
                         Long balanceAcc = Long.valueOf(0);

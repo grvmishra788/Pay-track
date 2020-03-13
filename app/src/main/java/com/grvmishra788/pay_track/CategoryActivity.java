@@ -18,9 +18,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import static com.grvmishra788.pay_track.GlobalConstants.IS_SELECT_ACCOUNT_INTENT;
+import static com.grvmishra788.pay_track.GlobalConstants.CATEGORY_INTENT_TYPE;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ADD_CATEGORY;
+import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_ACCOUNT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_NAME;
+import static com.grvmishra788.pay_track.GlobalConstants.SELECT_CATEGORY;
+import static com.grvmishra788.pay_track.GlobalConstants.SELECT_PARENT_CATEGORY;
+import static com.grvmishra788.pay_track.GlobalConstants.SHOW_CATEGORY;
 
 public class CategoryActivity extends AppCompatActivity {
 
@@ -30,7 +34,7 @@ public class CategoryActivity extends AppCompatActivity {
     private FloatingActionButton addCategoryButton;
 
     //boolean to store activity type
-    private boolean isSelectCategoryActivity;
+    private int categoryActivityType;
 
     //Categories list
     private ArrayList<Category> mCategories;
@@ -48,15 +52,15 @@ public class CategoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
-        //get Starting intent
+        //get categoryActivityType from Starting intent
         Intent startingIntent = getIntent();
-        if(startingIntent.hasExtra(IS_SELECT_ACCOUNT_INTENT)){
-            setTitle(R.string.title_select_categories);
-            isSelectCategoryActivity = true;
+        if(startingIntent.hasExtra(CATEGORY_INTENT_TYPE)){
+            categoryActivityType = startingIntent.getIntExtra(CATEGORY_INTENT_TYPE, SHOW_CATEGORY);
         } else {
-            setTitle(R.string.title_categories);
-            isSelectCategoryActivity = false;
+            categoryActivityType = SHOW_CATEGORY;
         }
+
+        setTitleAsPerActivityType();
 
         //init db
         payTrackDBHelper = new DbHelper(this);
@@ -71,7 +75,7 @@ public class CategoryActivity extends AppCompatActivity {
         categoriesRecyclerView = (RecyclerView) findViewById(R.id.show_category_recycler_view);
         categoriesRecyclerView.setHasFixedSize(true);    //hasFixedSize=true increases app performance as Recyclerview is not going to change in size
         categoriesRecyclerViewLayoutManager = new LinearLayoutManager(this);
-        categoriesRecyclerViewAdapter = new CategoriesAdapter(this, mCategories);
+        categoriesRecyclerViewAdapter = new CategoriesAdapter(this, mCategories, categoryActivityType);
         //TODO : set observer to check if data is empty
 //        categoriesRecyclerViewAdapter.registerAdapterDataObserver(observer); //register data observer for recyclerView
         categoriesRecyclerView.setLayoutManager(categoriesRecyclerViewLayoutManager);
@@ -79,17 +83,33 @@ public class CategoryActivity extends AppCompatActivity {
 
         //init FAB
         addCategoryButton = findViewById(R.id.addItemFAB);
-        if(isSelectCategoryActivity){
+        if(categoryActivityType==SELECT_CATEGORY){
             addCategoryButton.setVisibility(View.GONE);
-            ((CategoriesAdapter) categoriesRecyclerViewAdapter).setmOnItemClickListener(new OnItemClickListener() {
+            categoriesRecyclerViewAdapter.setmOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(int position) {
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra(SELECTED_CATEGORY_NAME, mCategories.get(position).getCategoryName());
+                    resultIntent.putExtra(SELECTED_CATEGORY_ACCOUNT_NAME, mCategories.get(position).getAccountNickName());
                     setResult(RESULT_OK, resultIntent);
                     finish();
                 }
+                @Override
+                public void onItemLongClick(int position) {
 
+                }
+            });
+        } else if(categoryActivityType==SELECT_PARENT_CATEGORY){
+            addCategoryButton.setVisibility(View.GONE);
+            categoriesRecyclerViewAdapter.setmOnItemClickListener(new OnItemClickListener() {
+                @Override
+                public void onItemClick(int position) {
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra(SELECTED_CATEGORY_NAME, mCategories.get(position).getCategoryName());
+                    resultIntent.putExtra(SELECTED_CATEGORY_ACCOUNT_NAME, mCategories.get(position).getAccountNickName());
+                    setResult(RESULT_OK, resultIntent);
+                    finish();
+                }
                 @Override
                 public void onItemLongClick(int position) {
 
@@ -106,6 +126,16 @@ public class CategoryActivity extends AppCompatActivity {
             });
         }
         Log.i(TAG, "onCreate() ends!");
+    }
+
+    private void setTitleAsPerActivityType() {
+        if(categoryActivityType==SELECT_PARENT_CATEGORY){
+            setTitle(R.string.title_select_parent_categories);
+        } else if (categoryActivityType==SELECT_CATEGORY){
+            setTitle(R.string.title_select_categories);
+        } else {
+            setTitle(R.string.title_categories);
+        }
     }
 
     @Override
