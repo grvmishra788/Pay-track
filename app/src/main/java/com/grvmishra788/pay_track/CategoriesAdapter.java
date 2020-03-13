@@ -53,6 +53,11 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
     public void onBindViewHolder(@NonNull CategoriesViewHolder categoriesViewHolder, int position) {
         Category category = mCategories.get(position);
         ArrayList<SubCategory> subCategories = category.getSubCategories();
+        if(subCategories==null){
+            categoriesViewHolder.horizontal_bar.setVisibility(View.GONE);
+        } else {
+            categoriesViewHolder.horizontal_bar.setVisibility(View.VISIBLE);
+        }
         categoriesViewHolder.setSubCategories(subCategories);
 
         categoriesViewHolder.tv_categoryName.setText(category.getCategoryName());
@@ -99,6 +104,8 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
         private SubCategoriesAdapter subCategoryRecyclerViewAdapter;
         private RecyclerView.LayoutManager subCategoryRecyclerViewLayoutManager;
 
+        private View horizontal_bar;
+
         public CategoriesViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +121,9 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
             tv_categoryName = itemView.findViewById(R.id.tv_show_category_name);
             tv_defaultAccount = itemView.findViewById(R.id.tv_show_default_account);
             tv_description = itemView.findViewById(R.id.tv_show_description);
+
+            //init horizontal bar
+            horizontal_bar = itemView.findViewById(R.id.horizontal_bar);
 
             //init description linear layouts
             ll_show_description = itemView.findViewById(R.id.ll_show_description);

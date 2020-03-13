@@ -165,6 +165,34 @@ public class AddCategoryActivity extends AppCompatActivity {
         ib_parent = findViewById(R.id.ib_select_parent);
         ib_associatedAccount = findViewById(R.id.ib_select_account);
 
+        //set onFocusChangeListener for editTexts
+        et_categoryName.setOnFocusChangeListener(onFocusChangeListener);
+        et_description.setOnFocusChangeListener(onFocusChangeListener);
     }
+
+    private EditText.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View view, boolean hasFocus) {
+            Log.d(TAG,"onFocusChange() - viewID: " + view.getId() +" hasFocus:" + hasFocus);
+            if (hasFocus) {
+                //make hint disappear on edit view focus
+                ((EditText) view).setHint("");
+            } else {
+                String hint = "";
+                switch (view.getId()) {
+                    case R.id.et_category_name:
+                        hint = getString(R.string.category_name);
+                        break;
+                    case R.id.et_description:
+                        hint = getString(R.string.description);
+                        break;
+                    default:
+                        hint = "";
+                }
+                ((EditText) view).setHint(hint);
+            }
+        }
+    };
+
 
 }
