@@ -78,6 +78,7 @@
     <string name="title_general_error">Uh Oh..</string>
     <string name="error_duplicate_entry">You already have this entry in your database - </string>
     <string name="error_field_empty_account"> You must fill in the following fields - </string>
+    <string name="error_cast_category_to_sub_category"> Can not cast this category to sub-category as it contains its own child sub-categories :( </string>
 
     <!--Button titles-->
     <string name="button_ok"><b>OK</b></string>

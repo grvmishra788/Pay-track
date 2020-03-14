@@ -28,11 +28,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_ACCOUNT;
-import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_PARENT_CATEGORY;
+import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_ACCOUNT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_NAME;
+import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_SUB_CATEGORY_NAME;
+import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_SUB_CATEGORY_PARENT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECT_CATEGORY;
-import static com.grvmishra788.pay_track.GlobalConstants.SELECT_PARENT_CATEGORY;
 
 public class AddTransactionActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     //constant Class TAG
@@ -117,7 +118,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         public void onClick(View view) {
             Intent selectParentIntent = new Intent(getBaseContext(), CategoryActivity.class);
             selectParentIntent.putExtra(GlobalConstants.CATEGORY_INTENT_TYPE, SELECT_CATEGORY);
-            startActivityForResult(selectParentIntent, REQ_CODE_SELECT_PARENT_CATEGORY);
+            startActivityForResult(selectParentIntent, REQ_CODE_SELECT_CATEGORY);
         }
     };
 
@@ -126,9 +127,15 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         super.onActivityResult(requestCode, resultCode, data);
         Log.i(TAG, "onActivityResult() starts...");
         if(resultCode==RESULT_OK){
-            if(requestCode==REQ_CODE_SELECT_PARENT_CATEGORY){
-                String categoryParent = (String) data.getStringExtra(SELECTED_CATEGORY_NAME);
-                et_category.setText(categoryParent);
+            if(requestCode==REQ_CODE_SELECT_CATEGORY){
+                if(data.hasExtra(SELECTED_CATEGORY_NAME)){
+                    String category = (String) data.getStringExtra(SELECTED_CATEGORY_NAME);
+                    et_category.setText(category);
+                } else if(data.hasExtra(SELECTED_SUB_CATEGORY_NAME)){
+                    String category = (String) data.getStringExtra(SELECTED_SUB_CATEGORY_NAME);
+                    String parent = (String) data.getStringExtra(SELECTED_SUB_CATEGORY_PARENT_NAME);
+                    et_category.setText(parent+"/"+category);
+                }
             } else if (requestCode == REQ_CODE_SELECT_ACCOUNT){
                 String accountNickName = (String) data.getStringExtra(SELECTED_ACCOUNT_NAME);
                 et_account.setText(accountNickName);

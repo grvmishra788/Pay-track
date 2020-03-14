@@ -71,5 +71,20 @@ public class Utilities {
         alert.show();
     }
 
+    public static void showSimpleErrorDialog(Context mContext, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        //Uncomment the below code to Set the message and title from the strings.xml file
+        builder.setMessage(message);
+        builder.setTitle(R.string.title_general_error);
+        builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        //Creating dialog box
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 
 }

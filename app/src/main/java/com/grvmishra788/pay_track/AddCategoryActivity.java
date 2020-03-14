@@ -12,6 +12,7 @@ import com.grvmishra788.pay_track.DS.Category;
 import com.grvmishra788.pay_track.DS.SubCategory;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import androidx.annotation.Nullable;
@@ -30,6 +31,7 @@ import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_ACCOUNT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_ACCOUNT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECT_PARENT_CATEGORY;
+import static com.grvmishra788.pay_track.GlobalConstants.SUB_ITEM_TO_EDIT;
 
 public class AddCategoryActivity extends AppCompatActivity {
 
@@ -44,6 +46,8 @@ public class AddCategoryActivity extends AppCompatActivity {
 
     private Category categoryToEdit;
     private int positionCategoryToEdit;
+
+    private SubCategory subCategoryToEdit;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,7 +70,19 @@ public class AddCategoryActivity extends AppCompatActivity {
             et_description.setText(categoryToEdit.getDescription());
 
             ib_cancelAccount.setVisibility(View.VISIBLE);
-        } else {
+        } else if(activityStartingIntent.hasExtra(SUB_ITEM_TO_EDIT)){
+            setTitle(R.string.title_edit_category);
+            subCategoryToEdit = (SubCategory) activityStartingIntent.getSerializableExtra(SUB_ITEM_TO_EDIT);
+
+            et_categoryName.setText(subCategoryToEdit.getSubCategoryName());
+            et_parent.setText(subCategoryToEdit.getParent());
+            et_account.setText(subCategoryToEdit.getAccountNickName());
+            et_description.setText(subCategoryToEdit.getDescription());
+
+            ib_cancelParent.setVisibility(View.VISIBLE);
+            ib_cancelAccount.setVisibility(View.VISIBLE);
+        }
+        else {
             setTitle(R.string.title_add_category);
         }
 
@@ -152,45 +168,118 @@ public class AddCategoryActivity extends AppCompatActivity {
         tv_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(parseInput()) {
-                    if(!InputValidationUtilities.isValidString(parent)){
-                        if(Utilities.entryPresentInDB(AddCategoryActivity.this, CATEGORIES_TABLE, CATEGORIES_TABLE_COL_CATEGORY_NAME, categoryName)){
-                            String error = "\n\n" + BULLET_SYMBOL + " " +  getString(R.string.category_name) + " : " + categoryName;
-                            Utilities.showDuplicateFieldErrorDialog(AddCategoryActivity.this, error);
-                            Log.d(TAG,"Entry with  name - " + categoryName + " already present in category table");
-                        } else {
-                            Intent resultIntent = new Intent();
-                            //create category & set result in case parent is empty
-                            if(categoryToEdit==null){
+                if (parseInput()) { //input parsed properly
+
+                    if (!InputValidationUtilities.isValidString(parent)) {    //Dealing with Category
+
+                        if (categoryToEdit == null && subCategoryToEdit == null) {   // Add activity
+
+                            boolean isPresentInDb = Utilities.entryPresentInDB(AddCategoryActivity.this, CATEGORIES_TABLE, CATEGORIES_TABLE_COL_CATEGORY_NAME, categoryName);
+                            if (isPresentInDb) {      //duplicate entry
+
+                                //show alert
+                                String error = "\n\n" + BULLET_SYMBOL + " " + getString(R.string.category_name) + " : " + categoryName;
+                                Utilities.showDuplicateFieldErrorDialog(AddCategoryActivity.this, error);
+                                Log.d(TAG, "Entry with  name - " + categoryName + " already present in category table");
+
+                            } else {    //not duplicate
+
+                                // complete add category activity
+                                Intent resultIntent = new Intent();
                                 Category category = new Category(categoryName, accountNickName, description);
                                 resultIntent.putExtra(GlobalConstants.CATEGORY_OBJECT, category);
-                            } else {
+                                setResult(RESULT_OK, resultIntent);
+                                finish();
+
+                            }
+
+                        } else {    //Edit Activity
+
+                            if (categoryToEdit != null) {   //Editing category to category
+
+                                Intent resultIntent = new Intent();
                                 categoryToEdit.setCategoryName(categoryName);
                                 categoryToEdit.setAccountNickName(accountNickName);
                                 categoryToEdit.setDescription(description);
                                 resultIntent.putExtra(POSITION_ITEM_TO_EDIT, positionCategoryToEdit);
                                 resultIntent.putExtra(GlobalConstants.CATEGORY_OBJECT, categoryToEdit);
+                                setResult(RESULT_OK, resultIntent);
+                                finish();
+
+                            } else {    //Editing Sub-Category to category
+
+                                Intent resultIntent = new Intent();
+                                Category category = new Category(categoryName, accountNickName, description);
+                                resultIntent.putExtra(GlobalConstants.OLD_SUB_CATEGORY_OBJECT, subCategoryToEdit);
+                                resultIntent.putExtra(GlobalConstants.NEW_CATEGORY_OBJECT, category);
+                                setResult(RESULT_OK, resultIntent);
+                                finish();
+
                             }
-                            setResult(RESULT_OK, resultIntent);
-                            finish();
+
                         }
-                    } else {
-                        if(Utilities.entryPresentInDB(AddCategoryActivity.this, SUB_CATEGORIES_TABLE, SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME, categoryName)){
-                            String error = "\n\n" + BULLET_SYMBOL + " " +  getString(R.string.category_name) + " : " + categoryName;
-                            error += "\n" + BULLET_SYMBOL + " " + getString(R.string.parent) + " : " + parent;
-                            Utilities.showDuplicateFieldErrorDialog(AddCategoryActivity.this, error);
-                            Log.d(TAG,"Entry with name - " + categoryName + " already present in sub_category table");
-                        } else {
-                            Intent resultIntent = new Intent();
-                            // else, create sub category & set result
-                            SubCategory subCategory = new SubCategory(categoryName, accountNickName, description, parent);
-                            resultIntent.putExtra(GlobalConstants.SUB_CATEGORY_OBJECT, subCategory);
-                            setResult(RESULT_OK, resultIntent);
-                            finish();
+                    } else {    //Dealing with sub-category
+
+                        if (categoryToEdit == null && subCategoryToEdit == null) {   // Add activity
+
+                            boolean isPresentInDb = Utilities.entryPresentInDB(AddCategoryActivity.this, SUB_CATEGORIES_TABLE, SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME, categoryName);
+                            if (isPresentInDb) {      //duplicate entry
+
+                                //show error
+                                String error = "\n\n" + BULLET_SYMBOL + " " + getString(R.string.category_name) + " : " + categoryName;
+                                error += "\n" + BULLET_SYMBOL + " " + getString(R.string.parent) + " : " + parent;
+                                Utilities.showDuplicateFieldErrorDialog(AddCategoryActivity.this, error);
+                                Log.d(TAG, "Entry with name - " + categoryName + " already present in sub_category table");
+
+                            } else {    //not duplicate
+
+                                //complete add sub-category activity
+                                Intent resultIntent = new Intent();
+                                SubCategory subCategory = new SubCategory(categoryName, accountNickName, description, parent);
+                                resultIntent.putExtra(GlobalConstants.SUB_CATEGORY_OBJECT, subCategory);
+                                setResult(RESULT_OK, resultIntent);
+                                finish();
+
+                            }
+                        } else {    //Edit Activity
+
+                            if(categoryToEdit!=null){   //Editing Category to sub-category
+
+                                //category to sub-category edit
+                                ArrayList<SubCategory> subCategories = categoryToEdit.getSubCategories();
+                                if(subCategories==null){    //original category doesn't have sub-category
+
+                                    Intent resultIntent = new Intent();
+                                    SubCategory subCategory = new SubCategory(categoryName, accountNickName, description, parent);
+                                    resultIntent.putExtra(POSITION_ITEM_TO_EDIT, positionCategoryToEdit);   //with position one can get old category object
+                                    resultIntent.putExtra(GlobalConstants.SUB_CATEGORY_OBJECT, subCategory);
+                                    setResult(RESULT_OK, resultIntent);
+                                    finish();
+
+                                } else {    //original category has sub-category
+
+                                    Utilities.showSimpleErrorDialog(AddCategoryActivity.this, getString(R.string.error_cast_category_to_sub_category));
+
+                                }
+
+                            } else {        ////Editing sub-category to sub-category
+
+                                Intent resultIntent = new Intent();
+                                SubCategory newSubCategory =  subCategoryToEdit.copy();
+                                newSubCategory.setSubCategoryName(categoryName);
+                                newSubCategory.setParent(parent);
+                                newSubCategory.setAccountNickName(accountNickName);
+                                newSubCategory.setDescription(description);
+                                resultIntent.putExtra(GlobalConstants.OLD_SUB_CATEGORY_OBJECT, subCategoryToEdit);
+                                resultIntent.putExtra(GlobalConstants.NEW_SUB_CATEGORY_OBJECT, newSubCategory);
+                                setResult(RESULT_OK, resultIntent);
+                                finish();
+
+                            }
+
                         }
                     }
-
-                } else {
+                } else {    //input not parsed properly
                     Log.d(TAG,"Input not parsed properly - Some field entry is wrong");
                 }
             }
@@ -214,7 +303,13 @@ public class AddCategoryActivity extends AppCompatActivity {
             Utilities.showEmptyFieldsErrorDialog(this, emptyFields);
             return false;
         } else {
-            return true;
+            if(InputValidationUtilities.isCategoryDiffFromParent(categoryName, parent))
+                return true;
+            else {
+                String msg = getString(R.string.category_name) + " can not be same as " + getString(R.string.parent);
+                Utilities.showSimpleErrorDialog(AddCategoryActivity.this, msg);
+                return false;
+            }
         }
     }
 

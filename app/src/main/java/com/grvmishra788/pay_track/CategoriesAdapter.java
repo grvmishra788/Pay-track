@@ -31,8 +31,9 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
     //Variable for accessing Categories List in  CategoriesAdapter
     private ArrayList<Category> mCategories;
 
-    //Variable for onItemclickListener
+    //Variable for onItemClickListener
     private OnItemClickListener mOnItemClickListener;
+    private OnSubCategoryClickListener subCategoryClickListener;
 
     //Variable to store categoryActivityType
     private int categoryActivityType = SHOW_CATEGORY;
@@ -99,6 +100,10 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
         this.mOnItemClickListener = mOnItemClickListener;
     }
 
+    public void setSubCategoryClickListener(OnSubCategoryClickListener subCategoryClickListener) {
+        this.subCategoryClickListener = subCategoryClickListener;
+    }
+
     public class CategoriesViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_categoryName, tv_defaultAccount, tv_description;
 
@@ -147,7 +152,6 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
             this.mSubCategories = subCategories;
             subCategoryRecyclerViewAdapter.notifyDataSetChanged();
         }
-
         public ArrayList<SubCategory> getSubCategories() {
             return mSubCategories;
         }
@@ -160,6 +164,8 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
             subCategoryRecyclerView.setHasFixedSize(true);
             subCategoryRecyclerViewLayoutManager = new LinearLayoutManager(mContext);
             subCategoryRecyclerViewAdapter = new SubCategoriesAdapter(mContext, mSubCategories);
+            if(subCategoryClickListener !=null)
+                subCategoryRecyclerViewAdapter.setOnSubCategoryClickListener(subCategoryClickListener);
             subCategoryRecyclerView.setLayoutManager(subCategoryRecyclerViewLayoutManager);
             subCategoryRecyclerView.setAdapter(subCategoryRecyclerViewAdapter);
         }

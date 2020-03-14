@@ -72,6 +72,12 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        db.execSQL("PRAGMA foreign_keys=ON");
+    }
+
+    @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         createAccountsTable(sqLiteDatabase);
         createCategoriesTable(sqLiteDatabase);
@@ -82,20 +88,20 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private void createAccountsTable(SQLiteDatabase sqLiteDatabase) {
         String createAccountsTableSQLQuery = "create table IF NOT EXISTS " + ACCOUNTS_TABLE + " (" +
-                        ACCOUNTS_TABLE_COL_NICK_NAME + " TEXT COLLATE NOCASE PRIMARY KEY, " +
-                        ACCOUNTS_TABLE_COL_TYPE + " INTEGER, " +
-                        ACCOUNTS_TABLE_COL_BANK_NAME + " TEXT, " +
-                        ACCOUNTS_TABLE_COL_SERVICE_NAME + " TEXT, " +
-                        ACCOUNTS_TABLE_COL_ACCOUNT_NO + " TEXT, " +
-                        ACCOUNTS_TABLE_COL_EMAIL + " TEXT, " +
-                        ACCOUNTS_TABLE_COL_MOBILE + " TEXT, " +
-                        ACCOUNTS_TABLE_COL_BALANCE + " INTEGER" +
-                        ")";
+                ACCOUNTS_TABLE_COL_NICK_NAME + " TEXT COLLATE NOCASE PRIMARY KEY, " +
+                ACCOUNTS_TABLE_COL_TYPE + " INTEGER, " +
+                ACCOUNTS_TABLE_COL_BANK_NAME + " TEXT, " +
+                ACCOUNTS_TABLE_COL_SERVICE_NAME + " TEXT, " +
+                ACCOUNTS_TABLE_COL_ACCOUNT_NO + " TEXT, " +
+                ACCOUNTS_TABLE_COL_EMAIL + " TEXT, " +
+                ACCOUNTS_TABLE_COL_MOBILE + " TEXT, " +
+                ACCOUNTS_TABLE_COL_BALANCE + " INTEGER" +
+                ")";
 
         try {
             sqLiteDatabase.execSQL(createAccountsTableSQLQuery);
-            Log.i(TAG,"Successfully executed query - " + createAccountsTableSQLQuery);
-        } catch (SQLException e){
+            Log.i(TAG, "Successfully executed query - " + createAccountsTableSQLQuery);
+        } catch (SQLException e) {
             Log.e(TAG, "Unable to execute query - " + createAccountsTableSQLQuery);
             e.printStackTrace();
         }
@@ -105,13 +111,14 @@ public class DbHelper extends SQLiteOpenHelper {
         String createCategoriesTableSQLQuery = "create table IF NOT EXISTS " + CATEGORIES_TABLE + " (" +
                 CATEGORIES_TABLE_COL_CATEGORY_NAME + " TEXT COLLATE NOCASE PRIMARY KEY, " +
                 CATEGORIES_TABLE_COL_ACCOUNT_NAME + " TEXT, " +
-                CATEGORIES_TABLE_COL_DESCRIPTION + " TEXT " +
+                CATEGORIES_TABLE_COL_DESCRIPTION + " TEXT, " +
+                " FOREIGN KEY (" + CATEGORIES_TABLE_COL_ACCOUNT_NAME + ") REFERENCES " + ACCOUNTS_TABLE + " (" + ACCOUNTS_TABLE_COL_NICK_NAME + ") ON UPDATE CASCADE ON DELETE CASCADE" +
                 ")";
 
         try {
             sqLiteDatabase.execSQL(createCategoriesTableSQLQuery);
-            Log.i(TAG,"Successfully executed query - " + createCategoriesTableSQLQuery);
-        } catch (SQLException e){
+            Log.i(TAG, "Successfully executed query - " + createCategoriesTableSQLQuery);
+        } catch (SQLException e) {
             Log.e(TAG, "Unable to execute query - " + createCategoriesTableSQLQuery);
             e.printStackTrace();
         }
@@ -123,13 +130,14 @@ public class DbHelper extends SQLiteOpenHelper {
                 SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME + " TEXT, " +
                 SUB_CATEGORIES_TABLE_COL_DESCRIPTION + " TEXT, " +
                 SUB_CATEGORIES_TABLE_COL_PARENT + " TEXT, " +
-                " FOREIGN KEY (" + SUB_CATEGORIES_TABLE_COL_PARENT + ") REFERENCES " + CATEGORIES_TABLE + " (" + CATEGORIES_TABLE_COL_CATEGORY_NAME + ")" +
+                " FOREIGN KEY (" + SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME + ") REFERENCES " + ACCOUNTS_TABLE + " (" + ACCOUNTS_TABLE_COL_NICK_NAME + ") ON UPDATE CASCADE ON DELETE CASCADE," +
+                " FOREIGN KEY (" + SUB_CATEGORIES_TABLE_COL_PARENT + ") REFERENCES " + CATEGORIES_TABLE + " (" + CATEGORIES_TABLE_COL_CATEGORY_NAME + ") ON UPDATE CASCADE ON DELETE CASCADE" +
                 ")";
 
         try {
             sqLiteDatabase.execSQL(createSubCategoriesTableSQLQuery);
-            Log.i(TAG,"Successfully executed query - " + createSubCategoriesTableSQLQuery);
-        } catch (SQLException e){
+            Log.i(TAG, "Successfully executed query - " + createSubCategoriesTableSQLQuery);
+        } catch (SQLException e) {
             Log.e(TAG, "Unable to execute query - " + createSubCategoriesTableSQLQuery);
             e.printStackTrace();
         }
@@ -144,14 +152,14 @@ public class DbHelper extends SQLiteOpenHelper {
                 TRANSACTIONS_TABLE_COL_TYPE + " INTEGER, " +
                 TRANSACTIONS_TABLE_COL_DATE + " DATE, " +
                 TRANSACTIONS_TABLE_COL_ACCOUNT + " TEXT, " +
-                " FOREIGN KEY (" + TRANSACTIONS_TABLE_COL_CATEGORY + ") REFERENCES " + CATEGORIES_TABLE + " (" + CATEGORIES_TABLE_COL_CATEGORY_NAME + "), " +
-                " FOREIGN KEY (" + TRANSACTIONS_TABLE_COL_ACCOUNT + ") REFERENCES " + ACCOUNTS_TABLE + " (" + ACCOUNTS_TABLE_COL_NICK_NAME + ") " +
+                " FOREIGN KEY (" + TRANSACTIONS_TABLE_COL_CATEGORY + ") REFERENCES " + CATEGORIES_TABLE + " (" + CATEGORIES_TABLE_COL_CATEGORY_NAME + ") ON UPDATE CASCADE ON DELETE CASCADE," +
+                " FOREIGN KEY (" + TRANSACTIONS_TABLE_COL_ACCOUNT + ") REFERENCES " + ACCOUNTS_TABLE + " (" + ACCOUNTS_TABLE_COL_NICK_NAME + ") ON UPDATE CASCADE ON DELETE CASCADE" +
                 ")";
 
         try {
             sqLiteDatabase.execSQL(createTransactionsTableSQLQuery);
-            Log.i(TAG,"Successfully executed query - " + createTransactionsTableSQLQuery);
-        } catch (SQLException e){
+            Log.i(TAG, "Successfully executed query - " + createTransactionsTableSQLQuery);
+        } catch (SQLException e) {
             Log.e(TAG, "Unable to execute query - " + createTransactionsTableSQLQuery);
             e.printStackTrace();
         }
@@ -166,13 +174,13 @@ public class DbHelper extends SQLiteOpenHelper {
                 DEBTS_TABLE_COL_TYPE + " INTEGER, " +
                 DEBTS_TABLE_COL_DATE + " DATE, " +
                 DEBTS_TABLE_COL_ACCOUNT + " TEXT, " +
-                " FOREIGN KEY (" + DEBTS_TABLE_COL_ACCOUNT + ") REFERENCES " + ACCOUNTS_TABLE + " (" + ACCOUNTS_TABLE_COL_NICK_NAME + ") " +
+                " FOREIGN KEY (" + DEBTS_TABLE_COL_ACCOUNT + ") REFERENCES " + ACCOUNTS_TABLE + " (" + ACCOUNTS_TABLE_COL_NICK_NAME + ") ON UPDATE CASCADE ON DELETE CASCADE" +
                 ")";
 
         try {
             sqLiteDatabase.execSQL(createDebtsTableSQLQuery);
-            Log.i(TAG,"Successfully executed query - " + createDebtsTableSQLQuery);
-        } catch (SQLException e){
+            Log.i(TAG, "Successfully executed query - " + createDebtsTableSQLQuery);
+        } catch (SQLException e) {
             Log.e(TAG, "Unable to execute query - " + createDebtsTableSQLQuery);
             e.printStackTrace();
         }
@@ -188,19 +196,19 @@ public class DbHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public boolean insertDataToDebtsTable(Debt debt){
-        Log.i(TAG,"insertDataToDebtsTable()");
+    public boolean insertDataToDebtsTable(Debt debt) {
+        Log.i(TAG, "insertDataToDebtsTable()");
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(DEBTS_TABLE_COL_AMOUNT, debt.getAmount());
         contentValues.put(DEBTS_TABLE_COL_DESCRIPTION, debt.getDescription());
         contentValues.put(DEBTS_TABLE_COL_PERSON, debt.getPerson());
-        contentValues.put(DEBTS_TABLE_COL_TYPE, (debt.getType()== GlobalConstants.DebtType.RECEIVE)?1:0);
+        contentValues.put(DEBTS_TABLE_COL_TYPE, (debt.getType() == GlobalConstants.DebtType.RECEIVE) ? 1 : 0);
         contentValues.put(DEBTS_TABLE_COL_DATE, debt.getDate().getTime());
         contentValues.put(DEBTS_TABLE_COL_ACCOUNT, debt.getAccount());
 
         long success = database.insert(DEBTS_TABLE, null, contentValues);
-        if(success==-1){
+        if (success == -1) {
             return false;
         } else {
             return true;
@@ -208,19 +216,19 @@ public class DbHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean insertDataToTransactionsTable(Transaction transaction){
-        Log.i(TAG,"insertDataToTransactionsTable()");
+    public boolean insertDataToTransactionsTable(Transaction transaction) {
+        Log.i(TAG, "insertDataToTransactionsTable()");
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(TRANSACTIONS_TABLE_COL_AMOUNT, transaction.getAmount());
         contentValues.put(TRANSACTIONS_TABLE_COL_DESCRIPTION, transaction.getDescription());
         contentValues.put(TRANSACTIONS_TABLE_COL_CATEGORY, transaction.getCategory());
-        contentValues.put(TRANSACTIONS_TABLE_COL_TYPE, (transaction.getType()== GlobalConstants.TransactionType.CREDIT)?1:0);
+        contentValues.put(TRANSACTIONS_TABLE_COL_TYPE, (transaction.getType() == GlobalConstants.TransactionType.CREDIT) ? 1 : 0);
         contentValues.put(TRANSACTIONS_TABLE_COL_DATE, transaction.getDate().getTime());
         contentValues.put(TRANSACTIONS_TABLE_COL_ACCOUNT, transaction.getAccount());
 
         long success = database.insert(TRANSACTIONS_TABLE, null, contentValues);
-        if(success==-1){
+        if (success == -1) {
             return false;
         } else {
             return true;
@@ -228,17 +236,22 @@ public class DbHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean insertDataToSubCategoriesTable(SubCategory subCategory){
-        Log.i(TAG,"insertDataToSubCategoriesTable()");
+    public boolean insertDataToSubCategoriesTable(SubCategory subCategory) {
+        Log.i(TAG, "insertDataToSubCategoriesTable()");
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME, subCategory.getSubCategoryName());
         contentValues.put(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME, subCategory.getAccountNickName());
         contentValues.put(SUB_CATEGORIES_TABLE_COL_DESCRIPTION, subCategory.getDescription());
         contentValues.put(SUB_CATEGORIES_TABLE_COL_PARENT, subCategory.getParent());
+        long success = -1;
+        try {
+            success = database.insert(SUB_CATEGORIES_TABLE, null, contentValues);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute insert query - error code : " + e.getMessage());
+        }
 
-        long success = database.insert(SUB_CATEGORIES_TABLE, null, contentValues);
-        if(success==-1){
+        if (success == -1) {
             return false;
         } else {
             return true;
@@ -246,16 +259,62 @@ public class DbHelper extends SQLiteOpenHelper {
 
     }
 
+    public boolean updateDataInSubCategoriesTable(SubCategory oldSubCategory, SubCategory newSubCategory) {
+        Log.i(TAG, "updateDataInSubCategoriesTable()");
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME, newSubCategory.getSubCategoryName());
+        contentValues.put(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME, newSubCategory.getAccountNickName());
+        contentValues.put(SUB_CATEGORIES_TABLE_COL_DESCRIPTION, newSubCategory.getDescription());
+        contentValues.put(SUB_CATEGORIES_TABLE_COL_PARENT, newSubCategory.getParent());
 
-    public boolean insertDataToCategoriesTable(Category category){
-        Log.i(TAG,"insertDataToCategoriesTable()");
+        long success = -1;
+        try {
+            success = database.update(SUB_CATEGORIES_TABLE, contentValues, SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME + ("='" + oldSubCategory.getSubCategoryName() + "'"), null);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute update query - error code : " + e.getMessage());
+        }
+
+        if (success == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean deleteDataInSubCategoriesTable(SubCategory oldSubCategory) {
+        Log.i(TAG, "deleteDataInSubCategoriesTable()");
+        SQLiteDatabase database = this.getWritableDatabase();
+        long success = -1;
+        try {
+            success = database.delete(SUB_CATEGORIES_TABLE, SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME + ("='" + oldSubCategory.getSubCategoryName() + "'"), null);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+        }
+
+        if (success == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    public boolean insertDataToCategoriesTable(Category category) {
+        Log.i(TAG, "insertDataToCategoriesTable()");
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(CATEGORIES_TABLE_COL_CATEGORY_NAME, category.getCategoryName());
         contentValues.put(CATEGORIES_TABLE_COL_ACCOUNT_NAME, category.getAccountNickName());
         contentValues.put(CATEGORIES_TABLE_COL_DESCRIPTION, category.getDescription());
-        long success = database.insert(CATEGORIES_TABLE, null, contentValues);
-        if(success==-1){
+        long success = -1;
+        try {
+            success = database.insert(CATEGORIES_TABLE, null, contentValues);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute insert query - error code : " + e.getMessage());
+        }
+
+        if (success == -1) {
             return false;
         } else {
             return true;
@@ -263,7 +322,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public boolean updateDataInCategoriesTable(Category oldCategory, Category newCategory) {
-        Log.i(TAG,"updateDataInCategoriesTable()");
+        Log.i(TAG, "updateDataInCategoriesTable()");
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(CATEGORIES_TABLE_COL_CATEGORY_NAME, newCategory.getCategoryName());
@@ -272,23 +331,40 @@ public class DbHelper extends SQLiteOpenHelper {
 
         long success = -1;
         try {
-            success = database.update(CATEGORIES_TABLE, contentValues, CATEGORIES_TABLE_COL_CATEGORY_NAME + ("='"+oldCategory.getCategoryName()+"'"), null);
-        } catch (SQLException e){
-            Log.e(TAG,"Unable to execute update query on - error code : " + e.getMessage());
+            success = database.update(CATEGORIES_TABLE, contentValues, CATEGORIES_TABLE_COL_CATEGORY_NAME + ("='" + oldCategory.getCategoryName() + "'"), null);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute update query - error code : " + e.getMessage());
         }
 
-        if(success==-1){
+        if (success == -1) {
             return false;
         } else {
             return true;
         }
     }
 
-    public boolean insertDataToAccountsTable(CashAccount account){
-        Log.i(TAG,"insertDataToAccountsTable()");
+    public boolean deleteDataInCategoriesTable(Category category) {
+        Log.i(TAG, "deleteDataInCategoriesTable()");
+        SQLiteDatabase database = this.getWritableDatabase();
+        long success = -1;
+        try {
+            success = database.delete(CATEGORIES_TABLE, CATEGORIES_TABLE_COL_CATEGORY_NAME + ("='" + category.getCategoryName() + "'"), null);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+        }
+
+        if (success == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean insertDataToAccountsTable(CashAccount account) {
+        Log.i(TAG, "insertDataToAccountsTable()");
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        if(account instanceof BankAccount){
+        if (account instanceof BankAccount) {
 
             contentValues.put(ACCOUNTS_TABLE_COL_NICK_NAME, account.getNickName());
             contentValues.put(ACCOUNTS_TABLE_COL_TYPE, BANK_ACCOUNT);
@@ -298,7 +374,7 @@ public class DbHelper extends SQLiteOpenHelper {
             contentValues.put(ACCOUNTS_TABLE_COL_MOBILE, ((BankAccount) account).getMobileNumber());
             contentValues.put(ACCOUNTS_TABLE_COL_BALANCE, account.getAccountBalance());
 
-        } else if (account instanceof DigitalAccount){
+        } else if (account instanceof DigitalAccount) {
 
             contentValues.put(ACCOUNTS_TABLE_COL_NICK_NAME, account.getNickName());
             contentValues.put(ACCOUNTS_TABLE_COL_TYPE, DIGITAL_ACCOUNT);
@@ -316,7 +392,7 @@ public class DbHelper extends SQLiteOpenHelper {
         }
 
         long success = database.insert(ACCOUNTS_TABLE, null, contentValues);
-        if(success==-1){
+        if (success == -1) {
             return false;
         } else {
             return true;
@@ -338,11 +414,11 @@ public class DbHelper extends SQLiteOpenHelper {
                 String description = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_DESCRIPTION));
 
                 int typeVal = cursor.getInt(cursor.getColumnIndex(DEBTS_TABLE_COL_TYPE));
-                GlobalConstants.DebtType type = ((typeVal==1)? GlobalConstants.DebtType.RECEIVE: GlobalConstants.DebtType.PAY);
+                GlobalConstants.DebtType type = ((typeVal == 1) ? GlobalConstants.DebtType.RECEIVE : GlobalConstants.DebtType.PAY);
 
                 String account = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_ACCOUNT));
 
-                debts.add(new Debt(amount,date, description, type, account, person));
+                debts.add(new Debt(amount, date, description, type, account, person));
             }
             return debts;
         }
@@ -363,7 +439,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 String description = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_DESCRIPTION));
 
                 int typeVal = cursor.getInt(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_TYPE));
-                GlobalConstants.TransactionType type = ((typeVal==1)? GlobalConstants.TransactionType.CREDIT: GlobalConstants.TransactionType.DEBIT);
+                GlobalConstants.TransactionType type = ((typeVal == 1) ? GlobalConstants.TransactionType.CREDIT : GlobalConstants.TransactionType.DEBIT);
 
                 String account = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_ACCOUNT));
 
@@ -394,7 +470,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public ArrayList<SubCategory> getAllSubCategoriesInParent(String parent) {
         SQLiteDatabase database = this.getReadableDatabase();
-        Cursor cursor = database.query(SUB_CATEGORIES_TABLE, null, SUB_CATEGORIES_TABLE_COL_PARENT+"=?", new String[]{parent}, null, null, null, null);
+        Cursor cursor = database.query(SUB_CATEGORIES_TABLE, null, SUB_CATEGORIES_TABLE_COL_PARENT + "=?", new String[]{parent}, null, null, null, null);
 
         if (cursor.getCount() == 0) {
             Log.d(TAG, "No subcategories in db with parent - " + parent);
@@ -430,17 +506,17 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public ArrayList<CashAccount> getAllAccounts(){
+    public ArrayList<CashAccount> getAllAccounts() {
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery("Select * FROM " + ACCOUNTS_TABLE, null);
-        if(cursor.getCount()==0){
-            Log.d(TAG,"No accounts in db!");
+        if (cursor.getCount() == 0) {
+            Log.d(TAG, "No accounts in db!");
             return null;
         } else {
             ArrayList<CashAccount> accounts = new ArrayList<>();
-            while (cursor.moveToNext()){
+            while (cursor.moveToNext()) {
                 int type = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_TYPE)));
-                if(type==BANK_ACCOUNT){
+                if (type == BANK_ACCOUNT) {
 
                     String nick_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_NICK_NAME));
                     String bank_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BANK_NAME));
@@ -476,19 +552,45 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = null;
         try {
-            cursor = database.query(tableName, null, colName+"=?", new String[]{value}, null, null, null, null);
-            Log.d(TAG,"Successfully executed query.");
-        } catch (SQLException e){
-            Log.e(TAG,"Unable to execute query!");
+            cursor = database.query(tableName, null, colName + "=?", new String[]{value}, null, null, null, null);
+            Log.d(TAG, "Successfully executed query.");
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute query!");
         }
 
-        if(cursor==null)
+        if (cursor == null)
             return false;
 
-        if(cursor.getCount()==0){
+        if (cursor.getCount() == 0) {
             return false;
         } else {
             return true;
         }
     }
+
+    public Category getCategory(String name) {
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = database.query(CATEGORIES_TABLE, null, CATEGORIES_TABLE_COL_CATEGORY_NAME + "=?", new String[]{name}, null, null, null, null);
+            Log.d(TAG, "Successfully executed query.");
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute query!");
+        }
+
+        if (cursor == null)
+            return null;
+
+        if (cursor.getCount() == 1) {
+            while (cursor.moveToNext()) {
+                String categoryName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_CATEGORY_NAME));
+                String accountNickName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_ACCOUNT_NAME));
+                String description = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_DESCRIPTION));
+                ArrayList<SubCategory> subCategories = getAllSubCategoriesInParent(categoryName);
+                return new Category(categoryName, accountNickName, description, subCategories);
+            }
+        }
+        return null;
+    }
+
 }

@@ -26,4 +26,11 @@ public class InputValidationUtilities {
         return (!TextUtils.isEmpty(target) && target.matches("[0-9]{7}[0-9]+"));
     }
 
+    public static Boolean isCategoryDiffFromParent(String categoryName, String parent) {
+        if (isValidString(categoryName) && isValidString(parent)) {
+            return !TextUtils.equals(categoryName,parent);
+        } else {
+            return true;
+        }
+    }
 }

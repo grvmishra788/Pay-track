@@ -1,5 +1,7 @@
 package com.grvmishra788.pay_track.DS;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -63,6 +65,15 @@ public class Category implements Serializable {
         subCategories.add(subCategory);
     }
 
+    public void removeSubCategory(SubCategory subCategory){
+        if(subCategories==null){
+            return;
+        }
+        int pos = getSubCategoryIndex(subCategory);
+        subCategories.remove(pos);
+        Log.d("DS", this.toString());
+    }
+
     public ArrayList<SubCategory> getSubCategories() {
         return subCategories;
     }
@@ -86,5 +97,15 @@ public class Category implements Serializable {
             }
         }
         return str;
+    }
+
+    private int getSubCategoryIndex(SubCategory subCategory){
+        for(int i =0; i<subCategories.size();i++){
+            SubCategory s = subCategories.get(i);
+            if(s.getSubCategoryName().equals(subCategory.getSubCategoryName())) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

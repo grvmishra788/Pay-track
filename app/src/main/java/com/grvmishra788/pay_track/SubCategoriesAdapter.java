@@ -25,6 +25,10 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
     //Variable for accessing Categories List in  CategoriesAdapter
     private ArrayList<SubCategory> mSubCategories;
 
+    //Variable for onItemclickListener
+    private OnSubCategoryClickListener onSubCategoryClickListener;
+
+
     public SubCategoriesAdapter(Context mContext, ArrayList<SubCategory> mSubCategories) {
         this.mContext = mContext;
         this.mSubCategories = mSubCategories;
@@ -70,6 +74,14 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
         this.mSubCategories = subCategories;
     }
 
+    public OnSubCategoryClickListener getOnSubCategoryClickListener() {
+        return onSubCategoryClickListener;
+    }
+
+    public void setOnSubCategoryClickListener(OnSubCategoryClickListener onSubCategoryClickListener) {
+        this.onSubCategoryClickListener = onSubCategoryClickListener;
+    }
+
     public class SubCategoriesViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tv_subCategoryName, tv_account, tv_description;
@@ -80,6 +92,16 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
 
         public SubCategoriesViewHolder(@NonNull View itemView) {
             super(itemView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    if (onSubCategoryClickListener != null && position != RecyclerView.NO_POSITION) {
+                        onSubCategoryClickListener.onItemClick(position, mSubCategories.get(position));
+                    }
+                }
+            });
+
             tv_subCategoryName = itemView.findViewById(R.id.tv_show_sub_category_name);
             tv_account = itemView.findViewById(R.id.tv_show_default_account);
             tv_description = itemView.findViewById(R.id.tv_show_description);

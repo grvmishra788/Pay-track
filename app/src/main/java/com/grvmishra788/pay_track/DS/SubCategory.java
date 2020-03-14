@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import androidx.annotation.NonNull;
 
-public class SubCategory implements Serializable {
+public class SubCategory implements Serializable, Cloneable {
 
     private String subCategoryName;
     private String description;
@@ -22,6 +22,15 @@ public class SubCategory implements Serializable {
         this.accountNickName = accountNickName;
         this.description = description;
         this.parent = parent;
+
+    }
+
+    public SubCategory(SubCategory subCategoryToEdit) {
+
+        this.subCategoryName = subCategoryToEdit.getSubCategoryName();
+        this.accountNickName = subCategoryToEdit.getAccountNickName();
+        this.description = subCategoryToEdit.getDescription();
+        this.parent = subCategoryToEdit.getParent();
 
     }
 
@@ -65,5 +74,10 @@ public class SubCategory implements Serializable {
                 " description : " + description +
                 " accountNickName : " + accountNickName +
                 " parent : " + parent ;
+    }
+
+
+    public SubCategory copy() {
+        return new SubCategory(this);
     }
 }
