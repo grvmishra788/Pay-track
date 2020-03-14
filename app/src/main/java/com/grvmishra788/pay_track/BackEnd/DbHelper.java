@@ -262,6 +262,28 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean updateDataInCategoriesTable(Category oldCategory, Category newCategory) {
+        Log.i(TAG,"updateDataInCategoriesTable()");
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(CATEGORIES_TABLE_COL_CATEGORY_NAME, newCategory.getCategoryName());
+        contentValues.put(CATEGORIES_TABLE_COL_ACCOUNT_NAME, newCategory.getAccountNickName());
+        contentValues.put(CATEGORIES_TABLE_COL_DESCRIPTION, newCategory.getDescription());
+
+        long success = -1;
+        try {
+            success = database.update(CATEGORIES_TABLE, contentValues, CATEGORIES_TABLE_COL_CATEGORY_NAME + ("='"+oldCategory.getCategoryName()+"'"), null);
+        } catch (SQLException e){
+            Log.e(TAG,"Unable to execute update query on - error code : " + e.getMessage());
+        }
+
+        if(success==-1){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public boolean insertDataToAccountsTable(CashAccount account){
         Log.i(TAG,"insertDataToAccountsTable()");
         SQLiteDatabase database = this.getWritableDatabase();

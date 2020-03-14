@@ -18,8 +18,10 @@ public abstract class GlobalConstants {
     public static final int REQ_CODE_ADD_TRANSACTION = 1003;
     public static final int REQ_CODE_ADD_DEBT = 1004;
 
-    public static final int REQ_CODE_SELECT_ACCOUNT = 1101;
-    public static final int REQ_CODE_SELECT_PARENT_CATEGORY = 1102;
+    public static final int REQ_CODE_EDIT_CATEGORY = 1102;
+
+    public static final int REQ_CODE_SELECT_ACCOUNT = 10001;
+    public static final int REQ_CODE_SELECT_PARENT_CATEGORY = 10002;
 
     //Intent params
     public static final String CATEGORY_INTENT_TYPE = "com.grvmishra788.pay_track.category_intent_type";
@@ -34,6 +36,9 @@ public abstract class GlobalConstants {
     public static final String SUB_CATEGORY_OBJECT = "com.grvmishra788.pay_track.object_sub_category";
     public static final String TRANSACTION_OBJECT = "com.grvmishra788.pay_track.object_transaction";
     public static final String DEBT_OBJECT = "com.grvmishra788.pay_track.object_debt";
+
+    public static final String ITEM_TO_EDIT = "com.grvmishra788.pay_track.item_to_edit";
+    public static final String POSITION_ITEM_TO_EDIT = "com.grvmishra788.pay_track.position_item_to_edit";
 
     //Date format string to show Day and Date
     public static final String DATE_FORMAT_DAY_AND_DATE = "EEE - MMM dd, yyyy";

@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.grvmishra788.pay_track.DS.Category;
 import com.grvmishra788.pay_track.DS.SubCategory;
@@ -23,6 +22,8 @@ import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TA
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.BULLET_SYMBOL;
+import static com.grvmishra788.pay_track.GlobalConstants.ITEM_TO_EDIT;
+import static com.grvmishra788.pay_track.GlobalConstants.POSITION_ITEM_TO_EDIT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_ACCOUNT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_PARENT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_ACCOUNT_NAME;
@@ -41,17 +42,33 @@ public class AddCategoryActivity extends AppCompatActivity {
 
     private String categoryName, parent, accountNickName, description;
 
+    private Category categoryToEdit;
+    private int positionCategoryToEdit;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreate() starts...");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_category);
-        setTitle(R.string.title_add_category);
 
         initViews();
         initParentSelection();
         initAccountSelection();
         initSubmitBtn();
+
+        Intent activityStartingIntent = getIntent();
+        if(activityStartingIntent.hasExtra(ITEM_TO_EDIT)){
+            setTitle(R.string.title_edit_category);
+            categoryToEdit = (Category) activityStartingIntent.getSerializableExtra(ITEM_TO_EDIT);
+            positionCategoryToEdit = activityStartingIntent.getIntExtra(POSITION_ITEM_TO_EDIT, -1);
+            et_categoryName.setText(categoryToEdit.getCategoryName());
+            et_account.setText(categoryToEdit.getAccountNickName());
+            et_description.setText(categoryToEdit.getDescription());
+
+            ib_cancelAccount.setVisibility(View.VISIBLE);
+        } else {
+            setTitle(R.string.title_add_category);
+        }
 
         Log.i(TAG, "onCreate() ends!");
     }
@@ -144,8 +161,16 @@ public class AddCategoryActivity extends AppCompatActivity {
                         } else {
                             Intent resultIntent = new Intent();
                             //create category & set result in case parent is empty
-                            Category category = new Category(categoryName, accountNickName, description);
-                            resultIntent.putExtra(GlobalConstants.CATEGORY_OBJECT, category);
+                            if(categoryToEdit==null){
+                                Category category = new Category(categoryName, accountNickName, description);
+                                resultIntent.putExtra(GlobalConstants.CATEGORY_OBJECT, category);
+                            } else {
+                                categoryToEdit.setCategoryName(categoryName);
+                                categoryToEdit.setAccountNickName(accountNickName);
+                                categoryToEdit.setDescription(description);
+                                resultIntent.putExtra(POSITION_ITEM_TO_EDIT, positionCategoryToEdit);
+                                resultIntent.putExtra(GlobalConstants.CATEGORY_OBJECT, categoryToEdit);
+                            }
                             setResult(RESULT_OK, resultIntent);
                             finish();
                         }

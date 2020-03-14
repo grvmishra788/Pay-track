@@ -19,7 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import static com.grvmishra788.pay_track.GlobalConstants.CATEGORY_INTENT_TYPE;
+import static com.grvmishra788.pay_track.GlobalConstants.ITEM_TO_EDIT;
+import static com.grvmishra788.pay_track.GlobalConstants.POSITION_ITEM_TO_EDIT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ADD_CATEGORY;
+import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_EDIT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_ACCOUNT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECT_CATEGORY;
@@ -120,8 +123,21 @@ public class CategoryActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Log.i(TAG, "addCategoryButton::onClick()");
-                    Intent addCategoryIntent = new Intent(getBaseContext(), AddCategoryActivity.class);
+                    Intent addCategoryIntent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
                     startActivityForResult(addCategoryIntent, REQ_CODE_ADD_CATEGORY);
+                }
+            });
+            categoriesRecyclerViewAdapter.setmOnItemClickListener(new OnItemClickListener() {
+                @Override
+                public void onItemClick(int position) {
+                    Intent editActivityIntent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
+                    editActivityIntent.putExtra(ITEM_TO_EDIT, mCategories.get(position));
+                    editActivityIntent.putExtra(POSITION_ITEM_TO_EDIT, position);
+                    startActivityForResult(editActivityIntent, REQ_CODE_EDIT_CATEGORY);
+                }
+                @Override
+                public void onItemLongClick(int position) {
+
                 }
             });
         }
@@ -149,21 +165,32 @@ public class CategoryActivity extends AppCompatActivity {
                     Category category = (Category) data.getSerializableExtra(GlobalConstants.CATEGORY_OBJECT);
                     mCategories.add(category);
                     if(payTrackDBHelper.insertDataToCategoriesTable(category)){
-                        Log.d(TAG,"Account inserted to db - " + category.toString());
+                        Log.d(TAG,"Category inserted to db - " + category.toString());
                     } else {
-                        Log.e(TAG,"Couldn't insert account to db - " + category.toString());
+                        Log.e(TAG,"Couldn't insert category to db - " + category.toString());
                     }
                 } else if (data.hasExtra(GlobalConstants.SUB_CATEGORY_OBJECT)){
                     SubCategory subCategory = (SubCategory) data.getSerializableExtra(GlobalConstants.SUB_CATEGORY_OBJECT);
                     addSubCategoryToItsParent(subCategory);
                     if(payTrackDBHelper.insertDataToSubCategoriesTable(subCategory)){
-                        Log.d(TAG,"Account inserted to db - " + subCategory.toString());
+                        Log.d(TAG,"Sub-Category inserted to db - " + subCategory.toString());
                     } else {
-                        Log.e(TAG,"Couldn't insert account to db - " + subCategory.toString());
+                        Log.e(TAG,"Couldn't insert sub-category to db - " + subCategory.toString());
                     }
 
                 }
                 categoriesRecyclerViewAdapter.notifyDataSetChanged();
+            } else if(requestCode==REQ_CODE_EDIT_CATEGORY){
+                int position = data.getIntExtra(POSITION_ITEM_TO_EDIT, -1);
+                Category oldCategory = mCategories.get(position);
+                Category newCategory = (Category) data.getSerializableExtra(GlobalConstants.CATEGORY_OBJECT);
+                if(payTrackDBHelper.updateDataInCategoriesTable(oldCategory, newCategory)){
+                    Log.d(TAG,"Category updated in db - FROM : " + oldCategory.toString() + " TO : " + newCategory.toString() );
+                } else {
+                    Log.e(TAG,"Couldn't update category to db - " + oldCategory.toString());
+                }
+                mCategories.set(position, newCategory);
+                categoriesRecyclerViewAdapter.notifyItemChanged(position);
             } else {
                 Log.i(TAG, "Wrong request code");
             }

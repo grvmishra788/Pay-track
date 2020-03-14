@@ -18,6 +18,7 @@
     <string name="title_add_debt">Add Debt</string>
     <string name="title_add_transaction">Add Transaction</string>
     <string name="title_add_category">Add Category</string>
+    <string name="title_edit_category">Edit Category</string>
     <string name="title_select_parent_categories">Select Parent Category</string>
     <string name="title_select_categories">Select Category</string>
     <string name="title_categories">Categories</string>
