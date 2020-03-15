@@ -25,18 +25,43 @@ public class Utilities {
 
     public static String checkHashMapForFalseValues( HashMap<String, Boolean> validInputs){
         String emptyFields = "";
-        int count = 0;
         Log.d(TAG, validInputs.toString());
         Iterator it = validInputs.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             if(pair.getValue().equals(false)){
-                count++;
                 emptyFields += "\n" + BULLET_SYMBOL + " " +pair.getKey();
                 Log.d(TAG, "Error in "+ pair.getKey());
             }
         }
         return emptyFields;
+    }
+
+    public static boolean hasSpecificKeyError(Context mContext, HashMap<String, Boolean> validInputs) {
+        Log.d(TAG, validInputs.toString());
+        Iterator it = validInputs.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            if(pair.getValue().equals(false)){
+                showErrorFromKey(mContext, (String)pair.getKey());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void showErrorFromKey(Context mContext, String key) {
+        String msg = "";
+        if(key.equals(mContext.getString(R.string.account_number))){
+            msg = mContext.getString(R.string.error_field_account_no);
+        } else if (key.equals(mContext.getString(R.string.balance))){
+            msg = mContext.getString(R.string.error_field_balance);
+        } else if (key.equals(mContext.getString(R.string.email))){
+            msg = mContext.getString(R.string.error_field_email);
+        } else if (key.equals(mContext.getString(R.string.mobile))){
+            msg = mContext.getString(R.string.error_field_mobile);
+        }
+        showSimpleErrorDialog(mContext, msg);
     }
 
     public static void showEmptyFieldsErrorDialog(Context mContext, String emptyFields) {

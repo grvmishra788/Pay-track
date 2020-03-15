@@ -399,6 +399,89 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
+    public int getNumberOfLinksToCategoriesTable(CashAccount account){
+        SQLiteDatabase database = this.getWritableDatabase();
+        String query = "SELECT * FROM " + CATEGORIES_TABLE + " WHERE " + CATEGORIES_TABLE_COL_ACCOUNT_NAME + "=?";
+        Cursor cursor = null;
+        try {
+            cursor = database.rawQuery(query, new String[]{account.getNickName()});
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+        }
+        if(cursor==null ) {
+            return 0;
+        } else {
+            return cursor.getCount();
+        }
+    }
+
+    public int getNumberOfLinksToSubCategoriesTable(CashAccount account){
+        SQLiteDatabase database = this.getWritableDatabase();
+        String query = "SELECT * FROM " + SUB_CATEGORIES_TABLE + " WHERE " + SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME + "=?";
+        Cursor cursor = null;
+        try {
+            cursor = database.rawQuery(query, new String[]{account.getNickName()});
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+        }
+        if(cursor==null ) {
+            return 0;
+        } else {
+            return cursor.getCount();
+        }
+    }
+
+    public int getNumberOfLinksToTransactionsTable(CashAccount account){
+        SQLiteDatabase database = this.getWritableDatabase();
+        String query = "SELECT * FROM " + TRANSACTIONS_TABLE + " WHERE " + TRANSACTIONS_TABLE_COL_ACCOUNT + "=?";
+        Cursor cursor = null;
+        try {
+            cursor = database.rawQuery(query, new String[]{account.getNickName()});
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+        }
+        if(cursor==null ) {
+            return 0;
+        } else {
+            return cursor.getCount();
+        }
+    }
+
+    public int getNumberOfLinksToDebtsTable(CashAccount account){
+        SQLiteDatabase database = this.getWritableDatabase();
+        String query = "SELECT * FROM " + DEBTS_TABLE + " WHERE " + DEBTS_TABLE_COL_ACCOUNT + "=?";
+        Cursor cursor = null;
+        try {
+            cursor = database.rawQuery(query, new String[]{account.getNickName()});
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+        }
+        if(cursor==null ) {
+            return 0;
+        } else {
+            return cursor.getCount();
+        }
+    }
+
+    public boolean deleteDataFromAccountsTable(CashAccount account) {
+        Log.i(TAG, "deleteDataFromAccountsTable()");
+
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        long success = -1;
+        try {
+            success = database.delete(ACCOUNTS_TABLE, ACCOUNTS_TABLE_COL_NICK_NAME + ("='" + account.getNickName() + "'"), null);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+        }
+
+        if (success == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public ArrayList<Debt> getAllDebts() {
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery("Select * FROM " + DEBTS_TABLE, null);

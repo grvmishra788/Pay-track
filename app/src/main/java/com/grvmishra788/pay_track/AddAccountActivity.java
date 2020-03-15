@@ -10,22 +10,19 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.grvmishra788.pay_track.BackEnd.DbHelper;
 import com.grvmishra788.pay_track.DS.BankAccount;
 import com.grvmishra788.pay_track.DS.CashAccount;
 import com.grvmishra788.pay_track.DS.DigitalAccount;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.ACCOUNTS_TABLE;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.ACCOUNTS_TABLE_COL_NICK_NAME;
+import static com.grvmishra788.pay_track.GlobalConstants.BULLET_SYMBOL;
 
 public class AddAccountActivity extends AppCompatActivity {
     //constant Class TAG
@@ -58,21 +55,24 @@ public class AddAccountActivity extends AppCompatActivity {
             public void onClick(View view) {
                 CashAccount account = null;
                 if (parseInput()) {
-                    if(entryPresentInDB(ACCOUNTS_TABLE, ACCOUNTS_TABLE_COL_NICK_NAME, String.valueOf(et_nickName.getText()).trim())){
-                        Toast.makeText(getBaseContext(),getString(R.string.error_duplicate_entry), Toast.LENGTH_SHORT).show();
+                    if (Utilities.entryPresentInDB(AddAccountActivity.this, ACCOUNTS_TABLE, ACCOUNTS_TABLE_COL_NICK_NAME, nickName)) {
+                        //show alert
+                        String error = "\n" + BULLET_SYMBOL + " " + getString(R.string.nick_name) + " : " + nickName;
+                        Utilities.showDuplicateFieldErrorDialog(AddAccountActivity.this, error);
+                        Log.d(TAG, "Entry with  name - " + nickName + " already present in category table");
                     } else {
                         //set default balance as zero
                         Long balanceAcc = Long.valueOf(0);
-                        if(!TextUtils.isEmpty(accountBalance)){
+                        if (!TextUtils.isEmpty(accountBalance)) {
                             balanceAcc = Long.parseLong(accountBalance);
                         }
                         switch (accountType.getSelectedItemPosition()) {
                             case 0:
-                                Log.d(TAG,"Successfully added bank account");
+                                Log.d(TAG, "Successfully added bank account");
                                 account = new BankAccount(nickName, balanceAcc, accountNumber, bankName, email, mobileNumber);
                                 break;
                             case 1:
-                                Log.d(TAG,"Successfully added digital account");
+                                Log.d(TAG, "Successfully added digital account");
                                 account = new DigitalAccount(nickName, balanceAcc, serviceName, email, mobileNumber);
                                 break;
                             case 2:
@@ -93,11 +93,6 @@ public class AddAccountActivity extends AppCompatActivity {
         });
     }
 
-    private boolean entryPresentInDB(String tableName, String colName, String value) {
-        DbHelper dbHelper = new DbHelper(this);
-        return dbHelper.entryPresentInDB(tableName, colName, value);
-    }
-
     private boolean parseInput() {
         accountNumber = String.valueOf(et_accountNumber.getText()).trim();
         accountBalance = String.valueOf(et_balance.getText()).trim();
@@ -109,24 +104,22 @@ public class AddAccountActivity extends AppCompatActivity {
 
         HashMap<String, Boolean> validInputs = new HashMap<>();
 
-        switch (accountType.getSelectedItemPosition()) {
+        int accountTypeID = accountType.getSelectedItemPosition();
+        switch (accountTypeID) {
             case 0:
-                validInputs.put(getString(R.string.account_number), InputValidationUtilities.isValidAccountNumber(accountNumber));
-                validInputs.put(getString(R.string.balance), InputValidationUtilities.isValidNumber(accountBalance));
+                validInputs.put(getString(R.string.account_number), InputValidationUtilities.isValidString(accountNumber));
                 validInputs.put(getString(R.string.bank_name), InputValidationUtilities.isValidString(bankName));
-                validInputs.put(getString(R.string.email), InputValidationUtilities.isValidEmail(email));
-                validInputs.put(getString(R.string.mobile), InputValidationUtilities.isValidMobileNumber(mobileNumber));
+                validInputs.put(getString(R.string.email), InputValidationUtilities.isValidString(email));
+                validInputs.put(getString(R.string.mobile), InputValidationUtilities.isValidString(mobileNumber));
                 validInputs.put(getString(R.string.nick_name), InputValidationUtilities.isValidString(nickName));
                 break;
             case 1:
-                validInputs.put(getString(R.string.balance), InputValidationUtilities.isValidNumber(accountBalance));
                 validInputs.put(getString(R.string.service_name), InputValidationUtilities.isValidString(serviceName));
-                validInputs.put(getString(R.string.email), InputValidationUtilities.isValidEmail(email));
-                validInputs.put(getString(R.string.mobile), InputValidationUtilities.isValidMobileNumber(mobileNumber));
+                validInputs.put(getString(R.string.email), InputValidationUtilities.isValidString(email));
+                validInputs.put(getString(R.string.mobile), InputValidationUtilities.isValidString(mobileNumber));
                 validInputs.put(getString(R.string.nick_name), InputValidationUtilities.isValidString(nickName));
                 break;
             case 2:
-                validInputs.put(getString(R.string.balance), InputValidationUtilities.isValidNumber(accountBalance));
                 validInputs.put(getString(R.string.nick_name), InputValidationUtilities.isValidString(nickName));
                 break;
             default:
@@ -134,21 +127,35 @@ public class AddAccountActivity extends AppCompatActivity {
                 break;
         }
 
-        boolean isValid = true;
-        if(validInputs==null){
-            isValid = false;
+        String emptyFields = Utilities.checkHashMapForFalseValues(validInputs);
+
+        if (InputValidationUtilities.isValidString(emptyFields)) {
+            Utilities.showEmptyFieldsErrorDialog(this, emptyFields);
+            return false;
         } else {
-            Log.d(TAG, validInputs.toString());
-            Iterator it = validInputs.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry)it.next();
-                if(pair.getValue().equals(false)){
-                    Log.d(TAG, "Error in "+ pair.getKey());
-                    isValid = false;
-                }
+            validInputs.clear();
+            switch (accountTypeID) {
+                case 0:
+                    validInputs.put(getString(R.string.account_number), InputValidationUtilities.isValidAccountNumber(accountNumber));
+                    validInputs.put(getString(R.string.balance), InputValidationUtilities.isValidNumber(accountBalance));
+                    validInputs.put(getString(R.string.email), InputValidationUtilities.isValidEmail(email));
+                    validInputs.put(getString(R.string.mobile), InputValidationUtilities.isValidMobileNumber(mobileNumber));
+                    break;
+                case 1:
+                    validInputs.put(getString(R.string.balance), InputValidationUtilities.isValidNumber(accountBalance));
+                    validInputs.put(getString(R.string.email), InputValidationUtilities.isValidEmail(email));
+                    validInputs.put(getString(R.string.mobile), InputValidationUtilities.isValidMobileNumber(mobileNumber));
+                    break;
+                case 2:
+                    validInputs.put(getString(R.string.balance), InputValidationUtilities.isValidNumber(accountBalance));
+                    break;
+                default:
+                    validInputs = null;
+                    break;
             }
+
+            return !Utilities.hasSpecificKeyError(AddAccountActivity.this, validInputs);
         }
-        return isValid;
     }
 
     private void initSpinner() {
@@ -189,7 +196,7 @@ public class AddAccountActivity extends AppCompatActivity {
     }
 
     private void enableDigitalAccountInput() {
-        Log.i(TAG,"enableDigitalAccountInput()");
+        Log.i(TAG, "enableDigitalAccountInput()");
         tv_accountNumber.setVisibility(View.GONE);
         tv_balance.setVisibility(View.VISIBLE);
         tv_bankName.setVisibility(View.GONE);
@@ -210,7 +217,7 @@ public class AddAccountActivity extends AppCompatActivity {
     }
 
     private void enableCashAccountInput() {
-        Log.i(TAG,"enableCashAccountInput()");
+        Log.i(TAG, "enableCashAccountInput()");
         tv_accountNumber.setVisibility(View.GONE);
         tv_balance.setVisibility(View.VISIBLE);
         tv_bankName.setVisibility(View.GONE);
@@ -231,7 +238,7 @@ public class AddAccountActivity extends AppCompatActivity {
     }
 
     private void enableBankAccountInput() {
-        Log.i(TAG,"enableBankAccountInput()");
+        Log.i(TAG, "enableBankAccountInput()");
         tv_accountNumber.setVisibility(View.VISIBLE);
         tv_balance.setVisibility(View.VISIBLE);
         tv_bankName.setVisibility(View.VISIBLE);
@@ -249,7 +256,6 @@ public class AddAccountActivity extends AppCompatActivity {
         et_mobile.setVisibility(View.VISIBLE);
         et_nickName.setVisibility(View.VISIBLE);
     }
-
 
     private void initViews() {
         tv_accountNumber = findViewById(R.id.tv_account_number);
@@ -283,7 +289,7 @@ public class AddAccountActivity extends AppCompatActivity {
     private EditText.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
-            Log.d(TAG,"onFocusChange() - viewID: " + view.getId() +" hasFocus:" + hasFocus);
+            Log.d(TAG, "onFocusChange() - viewID: " + view.getId() + " hasFocus:" + hasFocus);
             if (hasFocus) {
                 //make hint disappear on edit view focus
                 ((EditText) view).setHint("");

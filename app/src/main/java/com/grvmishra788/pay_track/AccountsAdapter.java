@@ -2,6 +2,8 @@ package com.grvmishra788.pay_track;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,9 +17,12 @@ import com.grvmishra788.pay_track.DS.CashAccount;
 import com.grvmishra788.pay_track.DS.DigitalAccount;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.AccountsViewHolder>{
@@ -33,6 +38,9 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
 
     //Variable for onItemclickListener
     private OnItemClickListener mOnItemClickListener;
+
+    //Variable to store selectedItem positions when launching Contextual action mode
+    private TreeSet<Integer> selectedItems = new TreeSet<>();
 
     //Constructor: binds CashAccount object data to AccountsAdapter
     public AccountsAdapter(Context mContext, ArrayList<CashAccount> mAccounts) {
@@ -53,6 +61,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
         return accountsViewHolder;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(@NonNull AccountsViewHolder accountsViewHolder, int position) {
         Log.d(TAG, "onBindViewHolder() :: " + position + "-th account.");
@@ -90,6 +99,14 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
             accountsViewHolder.tv_balance.setText(balance.toString());
         }
 
+        if (selectedItems.contains(position)) {
+            //if item is selected then,set foreground color of FrameLayout.
+            accountsViewHolder.itemView.setForeground(new ColorDrawable(ContextCompat.getColor(mContext, R.color.colorAccentTransparent)));
+        } else {
+            //else remove selected item color.
+            accountsViewHolder.itemView.setForeground(new ColorDrawable(ContextCompat.getColor(mContext, android.R.color.transparent)));
+        }
+
     }
 
     @Override
@@ -108,12 +125,40 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
         this.mOnItemClickListener = mOnItemClickListener;
     }
 
+    //method to update selected items
+    public void setSelectedItems(TreeSet<Integer> selectedItems) {
+        this.selectedItems = selectedItems;
+        notifyDataSetChanged();
+    }
+
     public class AccountsViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_nickName, tv_bankName, tv_serviceName, tv_accountNumber, tv_email, tv_mobile, tv_balance;
         private LinearLayout ll_nickName, ll_bankName, ll_serviceName, ll_accountNumber, ll_email, ll_mobile, ll_balance;
 
         public AccountsViewHolder(@NonNull View itemView) {
             super(itemView);
+            //perform necessary ops if current item is clicked
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    if (mOnItemClickListener != null && position != RecyclerView.NO_POSITION) {
+                        mOnItemClickListener.onItemClick(position);
+                    }
+                }
+            });
+            //perform necessary ops if current item is long clicked
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    int position = getAdapterPosition();
+                    if (mOnItemClickListener != null && position != RecyclerView.NO_POSITION) {
+                        mOnItemClickListener.onItemLongClick(position);
+                    }
+                    return true;
+                }
+            });
+
             tv_nickName = itemView.findViewById(R.id.tv_show_nick_name);
             tv_bankName = itemView.findViewById(R.id.tv_show_bank_name);
             tv_serviceName = itemView.findViewById(R.id.tv_show_service_name);
