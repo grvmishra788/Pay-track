@@ -226,8 +226,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                             if (isPresentInDb) {      //duplicate entry
 
                                 //show error
-                                String error = "\n\n" + BULLET_SYMBOL + " " + getString(R.string.category_name) + " : " + categoryName;
-                                error += "\n" + BULLET_SYMBOL + " " + getString(R.string.parent) + " : " + parent;
+                                String error = "\n" + BULLET_SYMBOL + " " + getString(R.string.category_name) + " : " + categoryName;
                                 Utilities.showDuplicateFieldErrorDialog(AddCategoryActivity.this, error);
                                 Log.d(TAG, "Entry with name - " + categoryName + " already present in sub_category table");
 

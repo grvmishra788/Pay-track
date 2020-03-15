@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import androidx.annotation.NonNull;
 
-public class SubCategory implements Serializable, Cloneable {
+public class SubCategory implements Serializable, Comparable<SubCategory> {
 
     private String subCategoryName;
     private String description;
@@ -69,15 +69,20 @@ public class SubCategory implements Serializable, Cloneable {
     @NonNull
     @Override
     public String toString() {
-        return  "SubCategory -" +
+        return "SubCategory -" +
                 " subCategoryName : " + subCategoryName +
                 " description : " + description +
                 " accountNickName : " + accountNickName +
-                " parent : " + parent ;
+                " parent : " + parent;
     }
 
 
     public SubCategory copy() {
         return new SubCategory(this);
+    }
+
+    @Override
+    public int compareTo(SubCategory subCategory) {
+        return this.subCategoryName.compareTo(subCategory.getSubCategoryName());
     }
 }

@@ -1,6 +1,8 @@
 package com.grvmishra788.pay_track;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +14,11 @@ import com.grvmishra788.pay_track.DS.Category;
 import com.grvmishra788.pay_track.DS.SubCategory;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,6 +43,12 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
     //Variable to store categoryActivityType
     private int categoryActivityType = SHOW_CATEGORY;
 
+    //Variable to store selectedItem positions when launching Contextual action mode
+    private TreeSet<Integer> selectedItems = new TreeSet<>();
+
+    //Variable to store subcategories when launching Contextual action mode
+    private TreeSet<SubCategory> selectedSubCategories = new TreeSet<>();
+
     //Constructor: binds Category object data to CategoriesAdapter
     public CategoriesAdapter(Context context, ArrayList<Category> categories, int categoryActivityType) {
         Log.d(TAG, TAG + ": Constructor starts");
@@ -57,11 +68,12 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
         return categoriesViewHolder;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(@NonNull CategoriesViewHolder categoriesViewHolder, int position) {
         Category category = mCategories.get(position);
         ArrayList<SubCategory> subCategories = category.getSubCategories();
-        if(subCategories==null||categoryActivityType==SELECT_PARENT_CATEGORY){
+        if (subCategories == null || categoryActivityType == SELECT_PARENT_CATEGORY) {
             categoriesViewHolder.horizontal_bar.setVisibility(View.GONE);
         } else {
             categoriesViewHolder.horizontal_bar.setVisibility(View.VISIBLE);
@@ -73,7 +85,7 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
 
         String desc = category.getDescription();
         categoriesViewHolder.tv_description.setText(desc);
-        if(InputValidationUtilities.isValidString(desc)){
+        if (InputValidationUtilities.isValidString(desc)) {
             categoriesViewHolder.ll_show_description.setVisibility(View.VISIBLE);
         } else {
             categoriesViewHolder.ll_show_description.setVisibility(View.GONE);
@@ -81,12 +93,21 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
 
         //update subcategories
         categoriesViewHolder.subCategoryRecyclerViewAdapter.setSubCategories(subCategories);
+        categoriesViewHolder.subCategoryRecyclerViewAdapter.setSelectedSubCategories(selectedSubCategories);
+
+        if (selectedItems.contains(position)) {
+            //if item is selected then,set foreground color of FrameLayout.
+            categoriesViewHolder.rootView.setForeground(new ColorDrawable(ContextCompat.getColor(mContext, R.color.colorAccentTransparent)));
+        } else {
+            //else remove selected item color.
+            categoriesViewHolder.rootView.setForeground(new ColorDrawable(ContextCompat.getColor(mContext, android.R.color.transparent)));
+        }
 
     }
 
     @Override
     public int getItemCount() {
-        if(mCategories==null)
+        if (mCategories == null)
             return 0;
         else
             return mCategories.size();
@@ -104,11 +125,22 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
         this.subCategoryClickListener = subCategoryClickListener;
     }
 
+    //method to update selected items
+    public void setSelectedItems(TreeSet<Integer> selectedItems) {
+        this.selectedItems = selectedItems;
+        notifyDataSetChanged();
+    }
+
+    public void setSelectedSubCategories(TreeSet<SubCategory> selectedSubCategories) {
+        this.selectedSubCategories = selectedSubCategories;
+        notifyDataSetChanged();
+    }
+
     public class CategoriesViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_categoryName, tv_defaultAccount, tv_description;
 
         //Variables to store linear layout associated with category description
-        private LinearLayout ll_show_description;
+        private LinearLayout ll_show_description, rootView;
 
         private ArrayList<SubCategory> mSubCategories;
 
@@ -120,6 +152,7 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
 
         public CategoriesViewHolder(@NonNull View itemView) {
             super(itemView);
+            //perform necessary ops if current item is clicked
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -129,7 +162,19 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
                     }
                 }
             });
+            //perform necessary ops if current item is long clicked
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    int position = getAdapterPosition();
+                    if (mOnItemClickListener != null && position != RecyclerView.NO_POSITION) {
+                        mOnItemClickListener.onItemLongClick(position);
+                    }
+                    return true;
+                }
+            });
 
+            rootView = itemView.findViewById(R.id.root_view);
             tv_categoryName = itemView.findViewById(R.id.tv_show_category_name);
             tv_defaultAccount = itemView.findViewById(R.id.tv_show_default_account);
             tv_description = itemView.findViewById(R.id.tv_show_description);
@@ -143,7 +188,7 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
             //init sub category RecyclerView
             subCategoryRecyclerView = itemView.findViewById(R.id.sub_items_recyclerview);
             initSubCategoryRecyclerView();
-            if(categoryActivityType==SELECT_PARENT_CATEGORY){
+            if (categoryActivityType == SELECT_PARENT_CATEGORY) {
                 subCategoryRecyclerView.setVisibility(View.GONE);
             }
         }
@@ -152,19 +197,20 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
             this.mSubCategories = subCategories;
             subCategoryRecyclerViewAdapter.notifyDataSetChanged();
         }
+
         public ArrayList<SubCategory> getSubCategories() {
             return mSubCategories;
         }
 
-        private void initSubCategoryRecyclerView(){
-            if(mSubCategories==null){
+        private void initSubCategoryRecyclerView() {
+            if (mSubCategories == null) {
                 mSubCategories = new ArrayList<>();
             }
 
             subCategoryRecyclerView.setHasFixedSize(true);
             subCategoryRecyclerViewLayoutManager = new LinearLayoutManager(mContext);
             subCategoryRecyclerViewAdapter = new SubCategoriesAdapter(mContext, mSubCategories);
-            if(subCategoryClickListener !=null)
+            if (subCategoryClickListener != null)
                 subCategoryRecyclerViewAdapter.setOnSubCategoryClickListener(subCategoryClickListener);
             subCategoryRecyclerView.setLayoutManager(subCategoryRecyclerViewLayoutManager);
             subCategoryRecyclerView.setAdapter(subCategoryRecyclerViewAdapter);

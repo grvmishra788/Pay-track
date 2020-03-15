@@ -1,101 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/size_20_dp"
-    app:cardCornerRadius="@dimen/radius_4_dp">
-
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ll_left_border"
-            android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/ll_show_category_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/size_20_dp"
-            android:layout_marginTop="@dimen/size_8_dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tv_show_category_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Toolbar.AccountNickName"
-                android:textColor="@color/colorPrimary" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_show_default_account"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/size_20_dp"
-            android:layout_marginTop="@dimen/size_8_dp"
-            android:layout_marginBottom="@dimen/size_8_dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/account"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-            <TextView
-                android:id="@+id/tv_show_default_account"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_show_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/size_20_dp"
-            android:layout_marginBottom="@dimen/size_8_dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/description"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-            <TextView
-                android:id="@+id/tv_show_description"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-        </LinearLayout>
-
-        <View
-            android:id="@+id/horizontal_bar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/size_2_dp"
-            android:layout_marginLeft="@dimen/size_10_dp"
-            android:background="@color/colorPrimary" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/sub_items_recyclerview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"/>
-
-    </LinearLayout>
-
-</androidx.cardview.widget.CardView>
+<LinearLayout xmlns:android = "http://schemas.android.com/apk/res/android"
+	android:id = "@+id/root_view"
+    android:layout_marginTop = "@dimen/size_20_dp"
+	android:layout_width = "match_parent"
+	android:layout_height = "wrap_content">
+	
+	<androidx.cardview.widget.CardView xmlns:android = "http://schemas.android.com/apk/res/android"
+		xmlns:app = "http://schemas.android.com/apk/res-auto"
+		android:layout_width = "match_parent"
+		android:layout_height = "wrap_content"
+		app:cardCornerRadius = "@dimen/radius_4_dp">
+		
+		<LinearLayout
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:background = "@drawable/ll_left_border"
+			android:orientation = "vertical">
+			
+			<LinearLayout
+				android:id = "@+id/ll_show_category_name"
+				android:layout_width = "match_parent"
+				android:layout_height = "wrap_content"
+				android:layout_marginLeft = "@dimen/size_20_dp"
+				android:layout_marginTop = "@dimen/size_8_dp"
+				android:orientation = "horizontal">
+				
+				<TextView
+					android:id = "@+id/tv_show_category_name"
+					android:layout_width = "match_parent"
+					android:layout_height = "wrap_content"
+					android:textAppearance = "@style/Toolbar.AccountNickName"
+					android:textColor = "@color/colorPrimary" />
+			
+			</LinearLayout>
+			
+			<LinearLayout
+				android:id = "@+id/ll_show_default_account"
+				android:layout_width = "match_parent"
+				android:layout_height = "wrap_content"
+				android:layout_marginLeft = "@dimen/size_20_dp"
+				android:layout_marginTop = "@dimen/size_8_dp"
+				android:layout_marginBottom = "@dimen/size_8_dp"
+				android:orientation = "horizontal">
+				
+				<TextView
+					android:layout_width = "0dp"
+					android:layout_height = "wrap_content"
+					android:layout_weight = "1"
+					android:text = "@string/account"
+					android:textAppearance = "@style/Toolbar.AccountText"
+					android:textColor = "@color/colorPrimary" />
+				
+				<TextView
+					android:id = "@+id/tv_show_default_account"
+					android:layout_width = "0dp"
+					android:layout_height = "wrap_content"
+					android:layout_weight = "2"
+					android:textAppearance = "@style/Toolbar.AccountText"
+					android:textColor = "@color/colorPrimary" />
+			
+			</LinearLayout>
+			
+			<LinearLayout
+				android:id = "@+id/ll_show_description"
+				android:layout_width = "match_parent"
+				android:layout_height = "wrap_content"
+				android:layout_marginLeft = "@dimen/size_20_dp"
+				android:layout_marginBottom = "@dimen/size_8_dp"
+				android:orientation = "horizontal">
+				
+				<TextView
+					android:layout_width = "0dp"
+					android:layout_height = "wrap_content"
+					android:layout_weight = "1"
+					android:text = "@string/description"
+					android:textAppearance = "@style/Toolbar.AccountText"
+					android:textColor = "@color/colorPrimary" />
+				
+				<TextView
+					android:id = "@+id/tv_show_description"
+					android:layout_width = "0dp"
+					android:layout_height = "wrap_content"
+					android:layout_weight = "2"
+					android:textAppearance = "@style/Toolbar.AccountText"
+					android:textColor = "@color/colorPrimary" />
+			
+			</LinearLayout>
+			
+			<View
+				android:id = "@+id/horizontal_bar"
+				android:layout_width = "match_parent"
+				android:layout_height = "@dimen/size_2_dp"
+				android:layout_marginLeft = "@dimen/size_10_dp"
+				android:background = "@color/colorPrimary" />
+			
+			<androidx.recyclerview.widget.RecyclerView
+				android:id = "@+id/sub_items_recyclerview"
+				android:layout_width = "match_parent"
+				android:layout_height = "wrap_content"
+				android:orientation = "horizontal" />
+		
+		</LinearLayout>
+	
+	</androidx.cardview.widget.CardView>
+ 
+</LinearLayout>

@@ -1,9 +1,13 @@
 package com.grvmishra788.pay_track;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -12,9 +16,13 @@ import com.grvmishra788.pay_track.DS.Category;
 import com.grvmishra788.pay_track.DS.SubCategory;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.TreeSet;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,6 +66,14 @@ public class CategoryActivity extends AppCompatActivity {
 
     private DbHelper payTrackDBHelper;
 
+    // fields to help keep track of app’s state for Contextual Action Mode
+    private boolean isMultiSelect = false;
+    private TreeSet<Integer> selectedItems = new TreeSet<>();
+    private ActionMode actionMode;
+
+    //Variable to store subcategories when launching Contextual action mode
+    private TreeSet<SubCategory> selectedSubCategories = new TreeSet<>();
+
     @SuppressLint("RestrictedApi")
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreate() starts...");
@@ -66,7 +82,7 @@ public class CategoryActivity extends AppCompatActivity {
 
         //get categoryActivityType from Starting intent
         Intent startingIntent = getIntent();
-        if(startingIntent.hasExtra(CATEGORY_INTENT_TYPE)){
+        if (startingIntent.hasExtra(CATEGORY_INTENT_TYPE)) {
             categoryActivityType = startingIntent.getIntExtra(CATEGORY_INTENT_TYPE, SHOW_CATEGORY);
         } else {
             categoryActivityType = SHOW_CATEGORY;
@@ -79,7 +95,7 @@ public class CategoryActivity extends AppCompatActivity {
 
         //init accounts list
         mCategories = payTrackDBHelper.getAllCategories();
-        if(mCategories == null){
+        if (mCategories == null) {
             mCategories = new ArrayList<>();
         }
 
@@ -95,7 +111,7 @@ public class CategoryActivity extends AppCompatActivity {
 
         //init FAB
         addCategoryButton = findViewById(R.id.addItemFAB);
-        if(categoryActivityType==SELECT_CATEGORY){
+        if (categoryActivityType == SELECT_CATEGORY) {
             addCategoryButton.setVisibility(View.GONE);
             categoriesRecyclerViewAdapter.setmOnItemClickListener(new OnItemClickListener() {
                 @Override
@@ -106,6 +122,7 @@ public class CategoryActivity extends AppCompatActivity {
                     setResult(RESULT_OK, resultIntent);
                     finish();
                 }
+
                 @Override
                 public void onItemLongClick(int position) {
 
@@ -122,13 +139,14 @@ public class CategoryActivity extends AppCompatActivity {
                     setResult(RESULT_OK, resultIntent);
                     finish();
                 }
+
                 @Override
                 public void onItemLongClick(int position, SubCategory subCategory) {
 
                 }
             });
 
-        } else if(categoryActivityType==SELECT_PARENT_CATEGORY){
+        } else if (categoryActivityType == SELECT_PARENT_CATEGORY) {
             addCategoryButton.setVisibility(View.GONE);
             categoriesRecyclerViewAdapter.setmOnItemClickListener(new OnItemClickListener() {
                 @Override
@@ -139,6 +157,7 @@ public class CategoryActivity extends AppCompatActivity {
                     setResult(RESULT_OK, resultIntent);
                     finish();
                 }
+
                 @Override
                 public void onItemLongClick(int position) {
 
@@ -156,41 +175,205 @@ public class CategoryActivity extends AppCompatActivity {
             });
 
             categoriesRecyclerViewAdapter.setmOnItemClickListener(new OnItemClickListener() {
+
                 @Override
                 public void onItemClick(int position) {
-
-                    Intent editActivityIntent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
-                    editActivityIntent.putExtra(ITEM_TO_EDIT, mCategories.get(position));
-                    editActivityIntent.putExtra(POSITION_ITEM_TO_EDIT, position);
-                    startActivityForResult(editActivityIntent, REQ_CODE_EDIT_CATEGORY);
-
+                    if (isMultiSelect) {
+                        //if multiple selection is enabled then select item on single click
+                        selectMultiple(position);
+                    } else {
+                        Intent editActivityIntent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
+                        editActivityIntent.putExtra(ITEM_TO_EDIT, mCategories.get(position));
+                        editActivityIntent.putExtra(POSITION_ITEM_TO_EDIT, position);
+                        startActivityForResult(editActivityIntent, REQ_CODE_EDIT_CATEGORY);
+                    }
                 }
+
                 @Override
                 public void onItemLongClick(int position) {
-
+                    Log.d(TAG, "onItemLongClick called at position - " + position);
+                    if (!isMultiSelect) {
+                        //init select items and isMultiSelect on long click
+                        selectedItems = new TreeSet<>();
+                        selectedSubCategories = new TreeSet<>();
+                        isMultiSelect = true;
+                        if (actionMode == null) {
+                            //show ActionMode on long click
+                            actionMode = startSupportActionMode(actionModeCallbacks);
+                        }
+                        selectMultiple(position);
+                    }
                 }
             });
 
             categoriesRecyclerViewAdapter.setSubCategoryClickListener(new OnSubCategoryClickListener() {
                 @Override
                 public void onItemClick(int position, SubCategory subCategory) {
-                    Intent editActivityIntent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
-                    editActivityIntent.putExtra(SUB_ITEM_TO_EDIT, subCategory);
-                    startActivityForResult(editActivityIntent, REQ_CODE_EDIT_CATEGORY);
+                    if (!isMultiSelect) {
+                        Intent editActivityIntent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
+                        editActivityIntent.putExtra(SUB_ITEM_TO_EDIT, subCategory);
+                        startActivityForResult(editActivityIntent, REQ_CODE_EDIT_CATEGORY);
+                    } else {
+                        selectMultiple(subCategory);
+                    }
                 }
+
                 @Override
                 public void onItemLongClick(int position, SubCategory subCategory) {
-
+                    Log.d(TAG, "onItemLongClick called at position - " + position);
+                    if (!isMultiSelect) {
+                        //init select items and isMultiSelect on long click
+                        selectedItems = new TreeSet<>();
+                        selectedSubCategories = new TreeSet<>();
+                        isMultiSelect = true;
+                        if (actionMode == null) {
+                            //show ActionMode on long click
+                            actionMode = startSupportActionMode(actionModeCallbacks);
+                        }
+                    }
+                    selectMultiple(subCategory);
                 }
             });
         }
         Log.i(TAG, "onCreate() ends!");
     }
 
+    //function to multi-select Category once contextual action mode is launched
+    private void selectMultiple(int position) {
+        Log.d(TAG, "selectMultiple() called at position - " + String.valueOf(position));
+        if (actionMode != null) {
+            if (selectedItems.contains(position))
+                selectedItems.remove(position);
+            else {
+                selectedItems.add(position);
+                Category category = mCategories.get(position);
+                ArrayList<SubCategory> subCategories = category.getSubCategories();
+                if (subCategories != null) {
+                    for (SubCategory subCategory : subCategories) {
+                        if (selectedSubCategories.contains(subCategory)) {
+                            selectedSubCategories.remove(subCategory);
+                        }
+                    }
+                }
+            }
+            if (selectedSubCategories.size() + selectedItems.size() > 0) {
+                actionMode.setTitle(String.valueOf(selectedSubCategories.size() + selectedItems.size())); //show selected item count on action mode.
+            } else {
+                actionMode.setTitle(""); //remove item count from action mode.
+                actionMode.finish(); //hide action mode.
+            }
+            categoriesRecyclerViewAdapter.setSelectedItems(selectedItems);
+
+        }
+    }
+
+    //function to multi-select SubCategory contextual action mode is launched
+    private void selectMultiple(SubCategory subCategory) {
+        Log.d(TAG, "selectMultiple() called at sub-category - " + subCategory.toString());
+        if (actionMode != null) {
+            int parentPos = getPositionFromCategoryName(subCategory.getParent());
+            if (!selectedItems.contains(parentPos)) {
+
+                if (selectedSubCategories.contains(subCategory))
+                    selectedSubCategories.remove(subCategory);
+                else
+                    selectedSubCategories.add(subCategory);
+
+                if (selectedSubCategories.size() + selectedItems.size() > 0) {
+                    actionMode.setTitle(String.valueOf(selectedSubCategories.size() + selectedItems.size())); //show selected item count on action mode.
+                } else {
+                    actionMode.setTitle(""); //remove item count from action mode.
+                    actionMode.finish(); //hide action mode.
+                }
+                categoriesRecyclerViewAdapter.setSelectedSubCategories(selectedSubCategories);
+
+            }
+        }
+    }
+
+    private int getPositionFromCategoryName(String name) {
+        int pos = -1;
+        for (int i = 0; i < mCategories.size(); i++) {
+            Category category = mCategories.get(i);
+            if (category.getCategoryName() == name) {
+                pos = i;
+                break;
+            }
+        }
+        return pos;
+    }
+
+    // ActionMode.Callback for contextual action mode
+    private ActionMode.Callback actionModeCallbacks = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            isMultiSelect = true;
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.contextual_action_mode_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
+
+            //create AlertDialog to check if user actually wants to delete Items
+            final AlertDialog.Builder alert = new AlertDialog.Builder(CategoryActivity.this);
+            alert.setTitle("Delete Items");
+            alert.setMessage("Are you sure you want to delete?");
+            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Log.d(TAG, "Positive button clicked on Delete alert dialog!!");
+                    //delete todos from end to start so as to avoid accidental damage to todolist
+                    Iterator<Integer> iterator = selectedItems.descendingIterator();
+                    while (iterator.hasNext()) {
+                        int pos = iterator.next();
+                        deleteCategory(pos);
+                        categoriesRecyclerViewAdapter.notifyItemRemoved(pos);
+                    }
+
+                    Iterator<SubCategory> subCategoryIterator = selectedSubCategories.descendingIterator();
+                    while (subCategoryIterator.hasNext()) {
+                        SubCategory subCategory = subCategoryIterator.next();
+                        deleteSubCategory(subCategory);
+                    }
+                    mode.finish();
+                }
+            });
+
+            alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Log.d(TAG, "Negative button clicked on Delete alert dialog!!");
+                    dialogInterface.cancel();
+                }
+            });
+
+            //show dialog
+            alert.show();
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            categoriesRecyclerViewAdapter.setSelectedItems(new TreeSet<Integer>());
+            categoriesRecyclerViewAdapter.setSelectedSubCategories(new TreeSet<SubCategory>());
+            isMultiSelect = false;
+            selectedItems.clear();
+            selectedSubCategories.clear();
+            actionMode = null;
+        }
+    };
+
     private void setTitleAsPerActivityType() {
-        if(categoryActivityType==SELECT_PARENT_CATEGORY){
+        if (categoryActivityType == SELECT_PARENT_CATEGORY) {
             setTitle(R.string.title_select_parent_categories);
-        } else if (categoryActivityType==SELECT_CATEGORY){
+        } else if (categoryActivityType == SELECT_CATEGORY) {
             setTitle(R.string.title_select_categories);
         } else {
             setTitle(R.string.title_categories);
@@ -201,41 +384,35 @@ public class CategoryActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i(TAG, "onActivityResult() starts...");
-        if(resultCode==RESULT_OK){
-            if(requestCode==REQ_CODE_ADD_CATEGORY){     //Add category activity result
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQ_CODE_ADD_CATEGORY) {     //Add category activity result
 
                 Log.i(TAG, "Processing add category...");
-                if(data.hasExtra(GlobalConstants.CATEGORY_OBJECT)){     //received category object
+                if (data.hasExtra(GlobalConstants.CATEGORY_OBJECT)) {     //received category object
 
                     Category category = (Category) data.getSerializableExtra(GlobalConstants.CATEGORY_OBJECT);
-                    mCategories.add(category);
-                    if(payTrackDBHelper.insertDataToCategoriesTable(category)){
-                        Log.d(TAG,"Category inserted to db - " + category.toString());
-                    } else {
-                        Log.e(TAG,"Couldn't insert category to db - " + category.toString());
-                    }
+                    addNewCategory(category);
 
-                } else if (data.hasExtra(GlobalConstants.SUB_CATEGORY_OBJECT)){     //received sub-category object
+                } else if (data.hasExtra(GlobalConstants.SUB_CATEGORY_OBJECT)) {     //received sub-category object
 
                     SubCategory subCategory = (SubCategory) data.getSerializableExtra(GlobalConstants.SUB_CATEGORY_OBJECT);
                     addSubCategoryToItsParent(subCategory);
-                    if(payTrackDBHelper.insertDataToSubCategoriesTable(subCategory)){
-                        Log.d(TAG,"Sub-Category inserted to db - " + subCategory.toString());
+                    if (payTrackDBHelper.insertDataToSubCategoriesTable(subCategory)) {
+                        Log.d(TAG, "Sub-Category inserted to db - " + subCategory.toString());
                     } else {
-                        Log.e(TAG,"Couldn't insert sub-category to db - " + subCategory.toString());
+                        Log.e(TAG, "Couldn't insert sub-category to db - " + subCategory.toString());
                     }
 
                 }
                 categoriesRecyclerViewAdapter.notifyDataSetChanged();
 
-            }
-            else if(requestCode==REQ_CODE_EDIT_CATEGORY){       //edit category activity result
+            } else if (requestCode == REQ_CODE_EDIT_CATEGORY) {       //edit category activity result
 
-                if(data.hasExtra(POSITION_ITEM_TO_EDIT)){       //Category sent initially
+                if (data.hasExtra(POSITION_ITEM_TO_EDIT)) {       //Category sent initially
 
                     int position = data.getIntExtra(POSITION_ITEM_TO_EDIT, -1);
 
-                    if(data.hasExtra(CATEGORY_OBJECT)){         //category to category edit
+                    if (data.hasExtra(CATEGORY_OBJECT)) {         //category to category edit
 
                         Category oldCategory = mCategories.get(position);
                         Category newCategory = (Category) data.getSerializableExtra(GlobalConstants.CATEGORY_OBJECT);
@@ -246,30 +423,24 @@ public class CategoryActivity extends AppCompatActivity {
                         }
                         updateCategoryOnCascade(position, oldCategory, newCategory);
 
-                    } else if (data.hasExtra(SUB_CATEGORY_OBJECT)){     //category to sub-category edit
+                    } else if (data.hasExtra(SUB_CATEGORY_OBJECT)) {     //category to sub-category edit
 
-                        //remove category
-                        Category category = mCategories.get(position);
-                        if (payTrackDBHelper.deleteDataInCategoriesTable(category)) {
-                            Log.d(TAG, "Category deleted from db : " + category.toString() );
-                        } else {
-                            Log.e(TAG, "Couldn't delete category from db : " + category.toString());
-                        }
-                        mCategories.remove(position);
+                        //delete category from mCategories & db
+                        deleteCategory(position);
                         //add sub-category
                         SubCategory subCategory = (SubCategory) data.getSerializableExtra(GlobalConstants.SUB_CATEGORY_OBJECT);
                         addSubCategoryToItsParent(subCategory);
-                        if(payTrackDBHelper.insertDataToSubCategoriesTable(subCategory)){
-                            Log.d(TAG,"Sub-Category inserted to db - " + subCategory.toString());
+                        if (payTrackDBHelper.insertDataToSubCategoriesTable(subCategory)) {
+                            Log.d(TAG, "Sub-Category inserted to db - " + subCategory.toString());
                         } else {
-                            Log.e(TAG,"Couldn't insert sub-category to db - " + subCategory.toString());
+                            Log.e(TAG, "Couldn't insert sub-category to db - " + subCategory.toString());
                         }
 
                     }
 
                 } else {   //sub-category sent initially
 
-                    if(data.hasExtra(OLD_SUB_CATEGORY_OBJECT) && data.hasExtra(NEW_SUB_CATEGORY_OBJECT)){   //sub-category to sub-category
+                    if (data.hasExtra(OLD_SUB_CATEGORY_OBJECT) && data.hasExtra(NEW_SUB_CATEGORY_OBJECT)) {   //sub-category to sub-category
 
                         SubCategory oldSubCategory = (SubCategory) data.getSerializableExtra(GlobalConstants.OLD_SUB_CATEGORY_OBJECT);
                         SubCategory newSubCategory = (SubCategory) data.getSerializableExtra(GlobalConstants.NEW_SUB_CATEGORY_OBJECT);
@@ -281,23 +452,12 @@ public class CategoryActivity extends AppCompatActivity {
                         removeSubCategoryFromItsParent(oldSubCategory);
                         addSubCategoryToItsParent(newSubCategory);
 
-                    } else if(data.hasExtra(OLD_SUB_CATEGORY_OBJECT) && data.hasExtra(NEW_CATEGORY_OBJECT)){      //sub-category to category edit
+                    } else if (data.hasExtra(OLD_SUB_CATEGORY_OBJECT) && data.hasExtra(NEW_CATEGORY_OBJECT)) {      //sub-category to category edit
 
                         SubCategory oldSubCategory = (SubCategory) data.getSerializableExtra(GlobalConstants.OLD_SUB_CATEGORY_OBJECT);
                         Category newCategory = (Category) data.getSerializableExtra(NEW_CATEGORY_OBJECT);
-                        if (payTrackDBHelper.deleteDataInSubCategoriesTable(oldSubCategory)) {
-                            Log.d(TAG, "SubCategory deleted from db : " + oldSubCategory.toString() );
-                        } else {
-                            Log.e(TAG, "Couldn't delete sub-category from db : " + oldSubCategory.toString());
-                        }
-                        removeSubCategoryFromItsParent(oldSubCategory);
-                        mCategories.add(newCategory);
-                        if(payTrackDBHelper.insertDataToCategoriesTable(newCategory)){
-                            Log.d(TAG,"Category inserted to db - " + newCategory.toString());
-                        } else {
-                            Log.e(TAG,"Couldn't insert category to db - " + newCategory.toString());
-                        }
-                        categoriesRecyclerViewAdapter.notifyDataSetChanged();
+                        deleteSubCategory(oldSubCategory);
+                        addNewCategory(newCategory);
 
                     }
 
@@ -315,8 +475,8 @@ public class CategoryActivity extends AppCompatActivity {
     private void updateCategoryOnCascade(int position, Category oldCategory, Category newCategory) {
         String newCategoryName = newCategory.getCategoryName();
         ArrayList<SubCategory> subCategories = oldCategory.getSubCategories();
-        if(subCategories!=null){
-            for (SubCategory subCategory: subCategories) {
+        if (subCategories != null) {
+            for (SubCategory subCategory : subCategories) {
                 subCategory.setParent(newCategoryName);
             }
             newCategory.setSubCategories(subCategories);
@@ -327,8 +487,8 @@ public class CategoryActivity extends AppCompatActivity {
 
     private void addSubCategoryToItsParent(SubCategory subCategory) {
         String parent = subCategory.getParent();
-        for(Category category:mCategories){
-            if(category.getCategoryName().equals(parent)){
+        for (Category category : mCategories) {
+            if (category.getCategoryName().equals(parent)) {
                 category.addSubCategory(subCategory);
                 break;
             }
@@ -338,11 +498,42 @@ public class CategoryActivity extends AppCompatActivity {
 
     private void removeSubCategoryFromItsParent(SubCategory subCategory) {
         String parent = subCategory.getParent();
-        for(Category category:mCategories){
-            if(category.getCategoryName().equals(parent)){
+        for (Category category : mCategories) {
+            if (category.getCategoryName().equals(parent)) {
                 category.removeSubCategory(subCategory);
                 break;
             }
+        }
+        categoriesRecyclerViewAdapter.notifyDataSetChanged();
+    }
+
+    private void deleteCategory(int position) {
+        //remove category
+        Category category = mCategories.get(position);
+        if (payTrackDBHelper.deleteDataInCategoriesTable(category)) {
+            Log.d(TAG, "Category deleted from db : " + category.toString());
+        } else {
+            Log.e(TAG, "Couldn't delete category from db : " + category.toString());
+        }
+        mCategories.remove(position);
+    }
+
+    private void deleteSubCategory(SubCategory subCategory) {
+        if (payTrackDBHelper.deleteDataInSubCategoriesTable(subCategory)) {
+            Log.d(TAG, "SubCategory deleted from db : " + subCategory.toString());
+        } else {
+            Log.e(TAG, "Couldn't delete sub-category from db : " + subCategory.toString());
+        }
+        removeSubCategoryFromItsParent(subCategory);
+        categoriesRecyclerViewAdapter.notifyDataSetChanged();
+    }
+
+    private void addNewCategory(Category newCategory) {
+        mCategories.add(newCategory);
+        if (payTrackDBHelper.insertDataToCategoriesTable(newCategory)) {
+            Log.d(TAG, "Category inserted to db - " + newCategory.toString());
+        } else {
+            Log.e(TAG, "Couldn't insert category to db - " + newCategory.toString());
         }
         categoriesRecyclerViewAdapter.notifyDataSetChanged();
     }

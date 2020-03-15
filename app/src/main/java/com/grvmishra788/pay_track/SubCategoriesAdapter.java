@@ -1,6 +1,8 @@
 package com.grvmishra788.pay_track;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +13,11 @@ import android.widget.TextView;
 import com.grvmishra788.pay_track.DS.SubCategory;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdapter.SubCategoriesViewHolder> {
@@ -27,6 +32,9 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
 
     //Variable for onItemclickListener
     private OnSubCategoryClickListener onSubCategoryClickListener;
+
+    //Variable to store subcategories when launching Contextual action mode
+    private TreeSet<SubCategory> selectedSubCategories = new TreeSet<>();
 
 
     public SubCategoriesAdapter(Context mContext, ArrayList<SubCategory> mSubCategories) {
@@ -44,6 +52,7 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
         return categoriesViewHolder;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(@NonNull SubCategoriesViewHolder subCategoriesViewHolder, int position) {
         SubCategory subCategory = mSubCategories.get(position);
@@ -52,10 +61,18 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
 
         String desc = subCategory.getDescription();
         subCategoriesViewHolder.tv_description.setText(desc);
-        if(InputValidationUtilities.isValidString(desc)){
+        if (InputValidationUtilities.isValidString(desc)) {
             subCategoriesViewHolder.ll_show_description.setVisibility(View.VISIBLE);
         } else {
             subCategoriesViewHolder.ll_show_description.setVisibility(View.GONE);
+        }
+
+        if (selectedSubCategories.contains(subCategory)) {
+            //if item is selected then,set foreground color of FrameLayout.
+            subCategoriesViewHolder.rootView.setForeground(new ColorDrawable(ContextCompat.getColor(mContext, R.color.colorAccentTransparent)));
+        } else {
+            //else remove selected item color.
+            subCategoriesViewHolder.rootView.setForeground(new ColorDrawable(ContextCompat.getColor(mContext, android.R.color.transparent)));
         }
 
 
@@ -63,7 +80,7 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
 
     @Override
     public int getItemCount() {
-        if(mSubCategories==null)
+        if (mSubCategories == null)
             return 0;
         else
             return mSubCategories.size();
@@ -82,12 +99,17 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
         this.onSubCategoryClickListener = onSubCategoryClickListener;
     }
 
+    public void setSelectedSubCategories(TreeSet<SubCategory> selectedSubCategories) {
+        this.selectedSubCategories = selectedSubCategories;
+        notifyDataSetChanged();
+    }
+
     public class SubCategoriesViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tv_subCategoryName, tv_account, tv_description;
 
         //Variables to store linear layout associated with category description
-        private LinearLayout ll_show_description;
+        private LinearLayout ll_show_description, rootView;
 
 
         public SubCategoriesViewHolder(@NonNull View itemView) {
@@ -102,6 +124,18 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
                 }
             });
 
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    int position = getAdapterPosition();
+                    if (onSubCategoryClickListener != null && position != RecyclerView.NO_POSITION) {
+                        onSubCategoryClickListener.onItemLongClick(position, mSubCategories.get(position));
+                    }
+                    return true;
+                }
+            });
+
+            rootView = itemView.findViewById(R.id.root_view);
             tv_subCategoryName = itemView.findViewById(R.id.tv_show_sub_category_name);
             tv_account = itemView.findViewById(R.id.tv_show_default_account);
             tv_description = itemView.findViewById(R.id.tv_show_description);

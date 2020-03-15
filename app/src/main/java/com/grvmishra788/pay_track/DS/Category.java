@@ -13,7 +13,7 @@ public class Category implements Serializable {
     private String accountNickName;
     private ArrayList<SubCategory> subCategories;
 
-    public Category(String categoryName){
+    public Category(String categoryName) {
         this.categoryName = categoryName;
         this.description = null;
         this.accountNickName = null;
@@ -58,20 +58,19 @@ public class Category implements Serializable {
         this.accountNickName = accountNickName;
     }
 
-    public void addSubCategory(SubCategory subCategory){
-        if(subCategories==null){
-            subCategories=new ArrayList<>();
+    public void addSubCategory(SubCategory subCategory) {
+        if (subCategories == null) {
+            subCategories = new ArrayList<>();
         }
         subCategories.add(subCategory);
     }
 
-    public void removeSubCategory(SubCategory subCategory){
-        if(subCategories==null){
+    public void removeSubCategory(SubCategory subCategory) {
+        if (subCategories == null) {
             return;
         }
         int pos = getSubCategoryIndex(subCategory);
         subCategories.remove(pos);
-        Log.d("DS", this.toString());
     }
 
     public ArrayList<SubCategory> getSubCategories() {
@@ -86,23 +85,23 @@ public class Category implements Serializable {
     @Override
     public String toString() {
         String str = "Category -" +
-                        " categoryName : " + categoryName +
-                        " description : " + description +
-                        " accountNickName : " + accountNickName +
-                        " Sub-Categories - ";
+                " categoryName : " + categoryName +
+                " description : " + description +
+                " accountNickName : " + accountNickName +
+                " Sub-Categories - ";
 
-        if(subCategories!=null){
-            for(SubCategory subCategory:subCategories){
+        if (subCategories != null) {
+            for (SubCategory subCategory : subCategories) {
                 str += ((subCategory.getSubCategoryName()) + ", ");
             }
         }
         return str;
     }
 
-    private int getSubCategoryIndex(SubCategory subCategory){
-        for(int i =0; i<subCategories.size();i++){
+    private int getSubCategoryIndex(SubCategory subCategory) {
+        for (int i = 0; i < subCategories.size(); i++) {
             SubCategory s = subCategories.get(i);
-            if(s.getSubCategoryName().equals(subCategory.getSubCategoryName())) {
+            if (s.getSubCategoryName().equals(subCategory.getSubCategoryName())) {
                 return i;
             }
         }
