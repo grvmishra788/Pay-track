@@ -23,6 +23,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.ACCOUNTS_TABLE;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.ACCOUNTS_TABLE_COL_NICK_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.BULLET_SYMBOL;
+import static com.grvmishra788.pay_track.GlobalConstants.ITEM_TO_EDIT;
+import static com.grvmishra788.pay_track.GlobalConstants.POSITION_ITEM_TO_EDIT;
 
 public class AddAccountActivity extends AppCompatActivity {
     //constant Class TAG
@@ -35,16 +37,60 @@ public class AddAccountActivity extends AppCompatActivity {
     private Spinner accountType;
     private TextView tv_submit;
 
+    private CashAccount accountToEdit = null;
+    private int positionAccountToEdit = -1;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreate() starts...");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_account);
-        setTitle(R.string.title_add_account);
 
         initViews();
         initSpinner();
         initSubmitBtn();
+
+        Intent activityStartingIntent = getIntent();
+        if(activityStartingIntent.hasExtra(ITEM_TO_EDIT)){
+
+            setTitle(R.string.title_edit_account);
+            accountToEdit = (CashAccount) activityStartingIntent.getSerializableExtra(ITEM_TO_EDIT);
+            positionAccountToEdit = activityStartingIntent.getIntExtra(POSITION_ITEM_TO_EDIT, -1);
+
+            if(accountToEdit instanceof BankAccount){
+
+                enableBankAccountInput();
+                et_nickName.setText(accountToEdit.getNickName());
+                et_bankName.setText(((BankAccount) accountToEdit).getBankName());
+                et_accountNumber.setText(((BankAccount) accountToEdit).getAccountNumber());
+                et_email.setText(((BankAccount) accountToEdit).getEmail());
+                et_mobile.setText(((BankAccount) accountToEdit).getMobileNumber());
+                et_balance.setText(String.valueOf(accountToEdit.getAccountBalance()));
+                accountType.setSelection(0);
+
+            }  else if (accountToEdit instanceof  DigitalAccount) {
+
+                enableDigitalAccountInput();
+                et_nickName.setText(accountToEdit.getNickName());
+                et_serviceName.setText(((DigitalAccount) accountToEdit).getServiceName());
+                et_email.setText(((DigitalAccount) accountToEdit).getEmail());
+                et_mobile.setText(((DigitalAccount) accountToEdit).getMobileNumber());
+                et_balance.setText(String.valueOf(accountToEdit.getAccountBalance()));
+                accountType.setSelection(1);
+
+            } else {
+
+                enableCashAccountInput();
+                et_nickName.setText(accountToEdit.getNickName());
+                et_balance.setText(String.valueOf(accountToEdit.getAccountBalance()));
+                accountType.setSelection(2);
+
+            }
+
+        } else {
+            setTitle(R.string.title_add_account);
+        }
+
         Log.i(TAG, "onCreate() ends!");
     }
 
@@ -55,38 +101,82 @@ public class AddAccountActivity extends AppCompatActivity {
             public void onClick(View view) {
                 CashAccount account = null;
                 if (parseInput()) {
-                    if (Utilities.entryPresentInDB(AddAccountActivity.this, ACCOUNTS_TABLE, ACCOUNTS_TABLE_COL_NICK_NAME, nickName)) {
-                        //show alert
-                        String error = "\n" + BULLET_SYMBOL + " " + getString(R.string.nick_name) + " : " + nickName;
-                        Utilities.showDuplicateFieldErrorDialog(AddAccountActivity.this, error);
-                        Log.d(TAG, "Entry with  name - " + nickName + " already present in category table");
-                    } else {
-                        //set default balance as zero
-                        Long balanceAcc = Long.valueOf(0);
-                        if (!TextUtils.isEmpty(accountBalance)) {
-                            balanceAcc = Long.parseLong(accountBalance);
-                        }
-                        switch (accountType.getSelectedItemPosition()) {
-                            case 0:
-                                Log.d(TAG, "Successfully added bank account");
-                                account = new BankAccount(nickName, balanceAcc, accountNumber, bankName, email, mobileNumber);
-                                break;
-                            case 1:
-                                Log.d(TAG, "Successfully added digital account");
-                                account = new DigitalAccount(nickName, balanceAcc, serviceName, email, mobileNumber);
-                                break;
-                            case 2:
-                                Log.d(TAG, "Successfully added cash account");
-                                account = new CashAccount(nickName, balanceAcc);
-                                break;
-                            default:
-                                break;
+
+                    if(accountToEdit == null) { //Add activity
+
+                        if (Utilities.entryPresentInDB(AddAccountActivity.this, ACCOUNTS_TABLE, ACCOUNTS_TABLE_COL_NICK_NAME, nickName)) {
+                            //show alert
+                            String error = "\n" + BULLET_SYMBOL + " " + getString(R.string.nick_name) + " : " + nickName;
+                            Utilities.showDuplicateFieldErrorDialog(AddAccountActivity.this, error);
+                            Log.d(TAG, "Entry with  name - " + nickName + " already present in account table");
+                        } else {
+                            //set default balance as zero
+                            Long balanceAcc = Long.valueOf(0);
+                            if (!TextUtils.isEmpty(accountBalance)) {
+                                balanceAcc = Long.parseLong(accountBalance);
+                            }
+                            switch (accountType.getSelectedItemPosition()) {
+                                case 0:
+                                    Log.d(TAG, "Successfully added bank account");
+                                    account = new BankAccount(nickName, balanceAcc, accountNumber, bankName, email, mobileNumber);
+                                    break;
+                                case 1:
+                                    Log.d(TAG, "Successfully added digital account");
+                                    account = new DigitalAccount(nickName, balanceAcc, serviceName, email, mobileNumber);
+                                    break;
+                                case 2:
+                                    Log.d(TAG, "Successfully added cash account");
+                                    account = new CashAccount(nickName, balanceAcc);
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra(GlobalConstants.ACCOUNT_OBJECT, account);
+                            setResult(RESULT_OK, resultIntent);
+                            finish();
                         }
 
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra(GlobalConstants.ACCOUNT_OBJECT, account);
-                        setResult(RESULT_OK, resultIntent);
-                        finish();
+                    } else {  //Edit activity
+
+                        if (!nickName.equals(accountToEdit.getNickName()) && Utilities.entryPresentInDB(AddAccountActivity.this, ACCOUNTS_TABLE, ACCOUNTS_TABLE_COL_NICK_NAME, nickName)) {
+                            //show alert
+                            String error = "\n" + BULLET_SYMBOL + " " + getString(R.string.nick_name) + " : " + nickName;
+                            Utilities.showDuplicateFieldErrorDialog(AddAccountActivity.this, error);
+                            Log.d(TAG, "Entry with  name - " + nickName + " already present in account table");
+                        } else {
+
+                            //set default balance as zero
+                            Long balanceAcc = Long.valueOf(0);
+                            if (!TextUtils.isEmpty(accountBalance)) {
+                                balanceAcc = Long.parseLong(accountBalance);
+                            }
+                            switch (accountType.getSelectedItemPosition()) {
+                                case 0:
+                                    Log.d(TAG, "Successfully edited account to bank account");
+                                    accountToEdit = new BankAccount(nickName, balanceAcc, accountNumber, bankName, email, mobileNumber);
+                                    break;
+                                case 1:
+                                    Log.d(TAG, "Successfully edited account to digital account");
+                                    accountToEdit = new DigitalAccount(nickName, balanceAcc, serviceName, email, mobileNumber);
+                                    break;
+                                case 2:
+                                    Log.d(TAG, "Successfully edited account to cash account");
+                                    accountToEdit = new CashAccount(nickName, balanceAcc);
+                                    break;
+                                default:
+                                    break;
+                            }
+
+
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra(POSITION_ITEM_TO_EDIT, positionAccountToEdit);
+                            resultIntent.putExtra(GlobalConstants.ACCOUNT_OBJECT, accountToEdit);
+                            setResult(RESULT_OK, resultIntent);
+                            finish();
+
+                        }
                     }
                 }
             }

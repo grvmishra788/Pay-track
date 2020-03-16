@@ -31,7 +31,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import static android.app.Activity.RESULT_OK;
 import static com.grvmishra788.pay_track.GlobalConstants.BULLET_SYMBOL;
+import static com.grvmishra788.pay_track.GlobalConstants.ITEM_TO_EDIT;
+import static com.grvmishra788.pay_track.GlobalConstants.POSITION_ITEM_TO_EDIT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ADD_ACCOUNT;
+import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_EDIT_ACCOUNT;
 
 public class AccountsFragment extends Fragment {
     //constant Class TAG
@@ -83,14 +86,15 @@ public class AccountsFragment extends Fragment {
 
             @Override
             public void onItemClick(int position) {
+                Log.d(TAG, "onItemClick called at position - " + position);
                 if (isMultiSelect) {
                     //if multiple selection is enabled then select item on single click
                     selectMultiple(position);
                 } else {
-//                    Intent editActivityIntent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
-//                    editActivityIntent.putExtra(ITEM_TO_EDIT, mCategories.get(position));
-//                    editActivityIntent.putExtra(POSITION_ITEM_TO_EDIT, position);
-//                    startActivityForResult(editActivityIntent, REQ_CODE_EDIT_CATEGORY);
+                    Intent editActivityIntent = new Intent(getActivity(), AddAccountActivity.class);
+                    editActivityIntent.putExtra(ITEM_TO_EDIT, mAccounts.get(position));
+                    editActivityIntent.putExtra(POSITION_ITEM_TO_EDIT, position);
+                    startActivityForResult(editActivityIntent, REQ_CODE_EDIT_ACCOUNT);
                 }
             }
 
@@ -130,8 +134,8 @@ public class AccountsFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i(TAG, "onActivityResult() starts...");
         if(resultCode==RESULT_OK){
-            if(requestCode==REQ_CODE_ADD_ACCOUNT){
-                Log.i(TAG, "Processing...");
+            if(requestCode==REQ_CODE_ADD_ACCOUNT){      //Add account activity result
+                Log.i(TAG, "Processing add account...");
                 CashAccount account =  (CashAccount) data.getSerializableExtra(GlobalConstants.ACCOUNT_OBJECT);
                 if(account!=null){
                     if(mAccounts==null){
@@ -141,6 +145,23 @@ public class AccountsFragment extends Fragment {
                     addAccount(account);
                     Log.i(TAG, "Added account - " + account.toString());
                 }
+            } else if (requestCode == REQ_CODE_EDIT_ACCOUNT) {       //edit account activity result
+
+                Log.i(TAG, "Processing edit account...");
+                int position = data.getIntExtra(POSITION_ITEM_TO_EDIT, -1);
+                CashAccount oldAccount = mAccounts.get(position);
+                CashAccount newAccount =  (CashAccount) data.getSerializableExtra(GlobalConstants.ACCOUNT_OBJECT);
+                if(newAccount!=null){
+                    if (payTrackDBHelper.updateDataInAccountsTable(oldAccount, newAccount)) {
+                        Log.d(TAG, "Account updated in db - FROM : " + oldAccount.toString() + " TO : " + newAccount.toString());
+                    } else {
+                        Log.e(TAG, "Couldn't update category to db - " + oldAccount.toString());
+                    }
+                    mAccounts.set(position, newAccount);
+                    accountsRecyclerViewAdapter.notifyDataSetChanged();
+                    Log.i(TAG, "Edited account - " + oldAccount.toString() + " to "+ newAccount.toString());
+                }
+
             } else {
                 Log.i(TAG, "Wrong request code");
             }

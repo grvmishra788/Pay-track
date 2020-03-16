@@ -18,6 +18,7 @@ public abstract class GlobalConstants {
     public static final int REQ_CODE_ADD_TRANSACTION = 1003;
     public static final int REQ_CODE_ADD_DEBT = 1004;
 
+    public static final int REQ_CODE_EDIT_ACCOUNT = 1101;
     public static final int REQ_CODE_EDIT_CATEGORY = 1102;
 
     public static final int REQ_CODE_SELECT_ACCOUNT = 10001;

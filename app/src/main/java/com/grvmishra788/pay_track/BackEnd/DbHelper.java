@@ -463,6 +463,53 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean updateDataInAccountsTable(CashAccount oldAccount, CashAccount newAccount) {
+
+        Log.i(TAG, "updateDataInAccountsTable()");
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        if (newAccount instanceof BankAccount) {
+
+            contentValues.put(ACCOUNTS_TABLE_COL_NICK_NAME, newAccount.getNickName());
+            contentValues.put(ACCOUNTS_TABLE_COL_TYPE, BANK_ACCOUNT);
+            contentValues.put(ACCOUNTS_TABLE_COL_BANK_NAME, ((BankAccount) newAccount).getBankName());
+            contentValues.put(ACCOUNTS_TABLE_COL_ACCOUNT_NO, ((BankAccount) newAccount).getAccountNumber());
+            contentValues.put(ACCOUNTS_TABLE_COL_EMAIL, ((BankAccount) newAccount).getEmail());
+            contentValues.put(ACCOUNTS_TABLE_COL_MOBILE, ((BankAccount) newAccount).getMobileNumber());
+            contentValues.put(ACCOUNTS_TABLE_COL_BALANCE, newAccount.getAccountBalance());
+
+        } else if (newAccount instanceof DigitalAccount) {
+
+            contentValues.put(ACCOUNTS_TABLE_COL_NICK_NAME, newAccount.getNickName());
+            contentValues.put(ACCOUNTS_TABLE_COL_TYPE, DIGITAL_ACCOUNT);
+            contentValues.put(ACCOUNTS_TABLE_COL_SERVICE_NAME, ((DigitalAccount) newAccount).getServiceName());
+            contentValues.put(ACCOUNTS_TABLE_COL_EMAIL, ((DigitalAccount) newAccount).getEmail());
+            contentValues.put(ACCOUNTS_TABLE_COL_MOBILE, ((DigitalAccount) newAccount).getMobileNumber());
+            contentValues.put(ACCOUNTS_TABLE_COL_BALANCE, newAccount.getAccountBalance());
+
+        } else {
+
+            contentValues.put(ACCOUNTS_TABLE_COL_NICK_NAME, newAccount.getNickName());
+            contentValues.put(ACCOUNTS_TABLE_COL_TYPE, CASH_ACCOUNT);
+            contentValues.put(ACCOUNTS_TABLE_COL_BALANCE, newAccount.getAccountBalance());
+
+        }
+
+        long success = -1;
+        try {
+            success = database.update(ACCOUNTS_TABLE, contentValues, ACCOUNTS_TABLE_COL_NICK_NAME + ("='" + oldAccount.getNickName() + "'"), null);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute update query - error : " + e.getMessage());
+        }
+
+        if (success == -1) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
     public boolean deleteDataFromAccountsTable(CashAccount account) {
         Log.i(TAG, "deleteDataFromAccountsTable()");
 
