@@ -50,8 +50,8 @@ public class Utilities {
         return false;
     }
 
-    private static void showErrorFromKey(Context mContext, String key) {
-        String msg = "";
+    public static void showErrorFromKey(Context mContext, String key) {
+        String msg = "Wrong input in " + key;
         if(key.equals(mContext.getString(R.string.account_number))){
             msg = mContext.getString(R.string.error_field_account_no);
         } else if (key.equals(mContext.getString(R.string.balance))){
@@ -60,6 +60,10 @@ public class Utilities {
             msg = mContext.getString(R.string.error_field_email);
         } else if (key.equals(mContext.getString(R.string.mobile))){
             msg = mContext.getString(R.string.error_field_mobile);
+        } else if (key.equals(mContext.getString(R.string.amount))){
+            msg = mContext.getString(R.string.error_field_amount);
+        } else if (key.equals(mContext.getString(R.string.category_name))){
+            msg = mContext.getString(R.string.error_field_category_name);
         }
         showSimpleErrorDialog(mContext, msg);
     }

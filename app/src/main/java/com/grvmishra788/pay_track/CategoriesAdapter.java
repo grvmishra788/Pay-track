@@ -73,7 +73,7 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
     public void onBindViewHolder(@NonNull CategoriesViewHolder categoriesViewHolder, int position) {
         Category category = mCategories.get(position);
         ArrayList<SubCategory> subCategories = category.getSubCategories();
-        if (subCategories == null || categoryActivityType == SELECT_PARENT_CATEGORY) {
+        if (subCategories == null || subCategories.size()==0 || categoryActivityType == SELECT_PARENT_CATEGORY) {
             categoriesViewHolder.horizontal_bar.setVisibility(View.GONE);
         } else {
             categoriesViewHolder.horizontal_bar.setVisibility(View.VISIBLE);
@@ -195,7 +195,6 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
 
         public void setSubCategories(ArrayList<SubCategory> subCategories) {
             this.mSubCategories = subCategories;
-            subCategoryRecyclerViewAdapter.notifyDataSetChanged();
         }
 
         public ArrayList<SubCategory> getSubCategories() {

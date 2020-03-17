@@ -136,8 +136,7 @@
             android:layout_marginTop="@dimen/size_16_dp"
             android:text="@string/description"
             android:textAppearance="@style/Toolbar.TitleText" />
-
-
+        
         <EditText
             android:id="@+id/et_description"
             android:layout_width="match_parent"
@@ -172,6 +171,7 @@
                 android:layout_gravity="center_horizontal|center_vertical" />
 
         </RelativeLayout>
+        
     </LinearLayout>
 
 </ScrollView>

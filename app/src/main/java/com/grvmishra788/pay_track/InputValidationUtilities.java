@@ -9,8 +9,18 @@ public class InputValidationUtilities {
         return !TextUtils.isEmpty(target);
     }
 
+    public static boolean isValidCategory(String target) {
+        return (!TextUtils.isEmpty(target) && !(target.contains("/")));
+    }
+
     public static boolean isValidNumber(String target) {
+        //function to return valid number - can be zero
         return (TextUtils.isEmpty(target)) || (!TextUtils.isEmpty(target) && target.matches("[0-9]+"));
+    }
+
+    public static boolean isValidAmount(String target) {
+        //function to return valid number - can't be zero
+        return (!TextUtils.isEmpty(target) && target.matches("[0-9]+"));
     }
 
     public static boolean isValidEmail(String target) {

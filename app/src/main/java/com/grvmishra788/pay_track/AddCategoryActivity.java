@@ -302,12 +302,15 @@ public class AddCategoryActivity extends AppCompatActivity {
             Utilities.showEmptyFieldsErrorDialog(this, emptyFields);
             return false;
         } else {
-            if(InputValidationUtilities.isCategoryDiffFromParent(categoryName, parent))
-                return true;
-            else {
+            if(!InputValidationUtilities.isValidCategory(categoryName)){
+                Utilities.showErrorFromKey(AddCategoryActivity.this, getString(R.string.category_name));
+                return false;
+            } else if(!InputValidationUtilities.isCategoryDiffFromParent(categoryName, parent)) {
                 String msg = getString(R.string.category_name) + " can not be same as " + getString(R.string.parent);
                 Utilities.showSimpleErrorDialog(AddCategoryActivity.this, msg);
                 return false;
+            } else {
+                return true;
             }
         }
     }

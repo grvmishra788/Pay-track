@@ -34,6 +34,7 @@ public class DatabaseConstants {
     public static final String TRANSACTIONS_TABLE_COL_AMOUNT = "Amount";
     public static final String TRANSACTIONS_TABLE_COL_DESCRIPTION = "Description";
     public static final String TRANSACTIONS_TABLE_COL_CATEGORY = "Category";
+    public static final String TRANSACTIONS_TABLE_COL_SUB_CATEGORY = "SubCategory";
     public static final String TRANSACTIONS_TABLE_COL_TYPE = "Type";
     public static final String TRANSACTIONS_TABLE_COL_DATE = "Date";
     public static final String TRANSACTIONS_TABLE_COL_ACCOUNT = "Account";

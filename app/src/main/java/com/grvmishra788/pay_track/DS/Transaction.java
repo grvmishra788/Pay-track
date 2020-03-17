@@ -4,24 +4,39 @@ import com.grvmishra788.pay_track.GlobalConstants;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import androidx.annotation.NonNull;
 
-public class Transaction implements Serializable {
+public class Transaction implements Serializable, Comparable<Transaction> {
+
+    private UUID id;
     private long amount;
     private String category;
+    private String subCategory;
     private Date date;
     private String description;
     private GlobalConstants.TransactionType type;
     private String account;
 
-    public Transaction(long amount, String category, Date date, String description, GlobalConstants.TransactionType type, String account) {
+    public Transaction(UUID id, long amount, String category, String subCategory, Date date, String description, GlobalConstants.TransactionType type, String account) {
+        this.id = id;
         this.amount = amount;
         this.category = category;
+        this.subCategory = subCategory;
         this.date = date;
         this.description = description;
         this.type = type;
         this.account = account;
+    }
+
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public long getAmount() {
@@ -38,6 +53,14 @@ public class Transaction implements Serializable {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getSubCategory() {
+        return subCategory;
+    }
+
+    public void setSubCategory(String subCategory) {
+        this.subCategory = subCategory;
     }
 
     public Date getDate() {
@@ -78,9 +101,16 @@ public class Transaction implements Serializable {
         return "Transaction -" +
                 " amount : " + amount +
                 " category : " + category +
+                ((subCategory!=null) ? (" sub-category : " + subCategory ) : "") +
                 " date : " + date.toString() +
                 " description : " + description +
                 " type : " + ((type== GlobalConstants.TransactionType.CREDIT)?1:0) +
                 " account : " + account ;
     }
+
+    @Override
+    public int compareTo(Transaction transaction) {
+        return this.id.compareTo(transaction.getId());
+    }
+
 }

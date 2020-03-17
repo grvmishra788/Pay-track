@@ -53,6 +53,7 @@
 
     <!--Default Options-->
     <string name="default_parent">None</string>
+    <string name="default_category">None</string>
     <string name="default_account">None</string>
 
 
@@ -82,10 +83,12 @@
     <string name="error_cast_category_to_sub_category"> Can not cast this category to sub-category as it contains its own child sub-categories :( </string>
 
     <!--Fields Error-->
-    <string name="error_field_account_no">An Account No. must contain only digits and should be at least 8 digits long!</string>
-    <string name="error_field_balance">Balance should be either empty OR it should contain only digits!</string>
-    <string name="error_field_email">E-Mail input is not in proper format!</string>
+    <string name="error_field_account_no">An Account No. must contain only digits and should be at least 8 digits long !</string>
+    <string name="error_field_balance">Balance should be either empty OR it should contain only digits !</string>
+    <string name="error_field_email">E-Mail input is not in proper format !</string>
     <string name="error_field_mobile">Mobile No. must be exactly 10 digits</string>
+    <string name="error_field_amount">Amount should not be empty and it should contain only digits !</string>
+    <string name = "error_field_category_name">Category name cannot have \'/\' character !</string>
     
     <!--Button titles-->
     <string name="button_ok"><b>OK</b></string>

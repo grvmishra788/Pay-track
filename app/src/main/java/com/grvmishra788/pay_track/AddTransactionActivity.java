@@ -20,17 +20,19 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.UUID;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
+import static com.grvmishra788.pay_track.GlobalConstants.DATE_FORMAT_DAY_AND_DATE;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_ACCOUNT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_ACCOUNT_NAME;
+import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_ACCOUNT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_NAME;
+import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_SUB_CATEGORY_ACCOUNT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_SUB_CATEGORY_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_SUB_CATEGORY_PARENT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECT_CATEGORY;
@@ -43,11 +45,11 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
     private EditText et_amount, et_date, et_category, et_account, et_description;
     private Spinner transactionType;
 
-    private String amount, category, description, account;
+    private String amount, category, subCategory, description, account;
     private Date date;
     private GlobalConstants.TransactionType type;
 
-    private ImageButton ib_date, ib_category, ib_account;
+    private ImageButton ib_date, ib_category, ib_account, ib_cancelParent, ib_cancelAccount;
 
     private View.OnClickListener dateClickListener = new View.OnClickListener() {
         @Override
@@ -79,6 +81,21 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         ib_date = findViewById(R.id.ib_date);
         ib_date.setOnClickListener(dateClickListener);
         et_date.setOnClickListener(dateClickListener);
+
+        // set Today as default date
+        //create date object
+        Calendar calendar = Calendar.getInstance();
+        //set time part of date as 0
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR, 0);
+        date = calendar.getTime();
+
+        //convert date to string & display in text view
+        SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
+        String currentDateString = sdf.format(date);
+        et_date.setText(currentDateString);
     }
 
     private void initViews() {
@@ -93,7 +110,10 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         et_description.setOnFocusChangeListener(onFocusChangeListener);
 
         ib_category = findViewById(R.id.ib_select_category);
+        ib_cancelParent = findViewById(R.id.ib_cancel_parent);
+
         ib_account = findViewById(R.id.ib_select_account);
+        ib_cancelAccount = findViewById(R.id.ib_cancel_account);
 
         //set onclick listener for account
         et_account.setOnClickListener(selectAccountListener);
@@ -102,6 +122,26 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         //set onclick listener for category
         et_category.setOnClickListener(selectCategoryListener);
         ib_category.setOnClickListener(selectCategoryListener);
+
+        //set cancel listeners
+        ib_cancelParent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                et_category.setText("");
+                et_category.setHint(getString(R.string.default_parent));
+                ib_cancelParent.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        ib_cancelAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //clear account field as well
+                et_account.setText("");
+                et_account.setHint(getString(R.string.default_account));
+                ib_cancelAccount.setVisibility(View.INVISIBLE);
+            }
+        });
 
     }
 
@@ -129,16 +169,29 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         if(resultCode==RESULT_OK){
             if(requestCode==REQ_CODE_SELECT_CATEGORY){
                 if(data.hasExtra(SELECTED_CATEGORY_NAME)){
-                    String category = (String) data.getStringExtra(SELECTED_CATEGORY_NAME);
+                    String category = data.getStringExtra(SELECTED_CATEGORY_NAME);
+                    String account = data.getStringExtra(SELECTED_CATEGORY_ACCOUNT_NAME);
                     et_category.setText(category);
+                    ib_cancelParent.setVisibility(View.VISIBLE);
+                    if(!InputValidationUtilities.isValidString(String.valueOf(et_account.getText()).trim())){
+                        et_account.setText(account);
+                        ib_cancelAccount.setVisibility(View.VISIBLE);
+                    }
                 } else if(data.hasExtra(SELECTED_SUB_CATEGORY_NAME)){
-                    String category = (String) data.getStringExtra(SELECTED_SUB_CATEGORY_NAME);
-                    String parent = (String) data.getStringExtra(SELECTED_SUB_CATEGORY_PARENT_NAME);
+                    String category = data.getStringExtra(SELECTED_SUB_CATEGORY_NAME);
+                    String parent = data.getStringExtra(SELECTED_SUB_CATEGORY_PARENT_NAME);
+                    String account = data.getStringExtra(SELECTED_SUB_CATEGORY_ACCOUNT_NAME);
                     et_category.setText(parent+"/"+category);
+                    ib_cancelParent.setVisibility(View.VISIBLE);
+                    if(!InputValidationUtilities.isValidString(String.valueOf(et_account.getText()).trim())){
+                        et_account.setText(account);
+                        ib_cancelAccount.setVisibility(View.VISIBLE);
+                    }
                 }
             } else if (requestCode == REQ_CODE_SELECT_ACCOUNT){
                 String accountNickName = (String) data.getStringExtra(SELECTED_ACCOUNT_NAME);
                 et_account.setText(accountNickName);
+                ib_cancelAccount.setVisibility(View.VISIBLE);
             } else {
                 Log.e(TAG, "Wrong request code - " + requestCode);
             }
@@ -162,9 +215,12 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
                         transactionAmt = Long.parseLong(amount);
                     }
 
+                    //generate UUID for transaction
+                    UUID id = UUID.randomUUID();
+
                     //create transaction & set result
                     Intent resultIntent = new Intent();
-                    Transaction transaction = new Transaction(transactionAmt, category, date, description, type, account);
+                    Transaction transaction = new Transaction(id, transactionAmt, category, subCategory, date, description, type, account);
                     resultIntent.putExtra(GlobalConstants.TRANSACTION_OBJECT, transaction);
                     setResult(RESULT_OK, resultIntent);
 
@@ -183,34 +239,42 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
 
     private boolean parseInput() {
         Log.i(TAG,"parseInput()");
+        //set amount
         amount = String.valueOf(et_amount.getText()).trim();
-        category = String.valueOf(et_category.getText()).trim();
+        //set category and sub-caegory
+        String str = String.valueOf(et_category.getText()).trim();
+        String[] strings = str.split("/");
+        category = strings[0];
+        if(strings.length==2){
+            subCategory = strings[1];
+        } else {
+            subCategory = null;
+        }
+        //set account & description
         account = String.valueOf(et_account.getText()).trim();
         description = String.valueOf(et_description.getText()).trim();
 
         HashMap<String, Boolean> validInputs = new HashMap<>();
 
-        validInputs.put(getString(R.string.amount), InputValidationUtilities.isValidNumber(amount));
+        validInputs.put(getString(R.string.amount), InputValidationUtilities.isValidString(amount));
         validInputs.put(getString(R.string.date), (date==null)?false:true);
         validInputs.put(getString(R.string.type), (type==null)?false:true);
         validInputs.put(getString(R.string.category), InputValidationUtilities.isValidString(category));
         validInputs.put(getString(R.string.account), InputValidationUtilities.isValidString(account));
 
-        boolean isValid = true;
-        if(validInputs==null){
-            isValid = false;
+        String emptyFields = Utilities.checkHashMapForFalseValues(validInputs);
+
+        if (InputValidationUtilities.isValidString(emptyFields)) {
+            Utilities.showEmptyFieldsErrorDialog(this, emptyFields);
+            return false;
         } else {
-            Log.d(TAG, validInputs.toString());
-            Iterator it = validInputs.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry)it.next();
-                if(pair.getValue().equals(false)){
-                    Log.d(TAG, "Error in "+ pair.getKey());
-                    isValid = false;
-                }
+            if(!InputValidationUtilities.isValidAmount(amount)){
+                Utilities.showErrorFromKey(AddTransactionActivity.this, getString(R.string.amount));
+                return false;
+            } else {
+                return true;
             }
         }
-        return isValid;
     }
 
     private void initSpinner() {
@@ -258,11 +322,17 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, day);
 
+        //set time part of date as 0
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR, 0);
+
         //create date object
         date = calendar.getTime();
 
         //convert date to string & display in text view
-        SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_DAY_AND_DATE);
+        SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
         String currentDateTimeString = sdf.format(date);
         et_date.setText(currentDateTimeString);
 
