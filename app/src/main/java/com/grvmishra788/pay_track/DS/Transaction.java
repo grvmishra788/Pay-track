@@ -30,6 +30,17 @@ public class Transaction implements Serializable, Comparable<Transaction> {
         this.account = account;
     }
 
+    public Transaction(Transaction transaction) {
+        this.id = transaction.getId();
+        this.amount = transaction.getAmount();
+        this.category = transaction.getCategory();
+        this.subCategory = transaction.getSubCategory();
+        this.date = transaction.getDate();
+        this.description = transaction.getDescription();
+        this.type = transaction.getType();
+        this.account = transaction.getAccount();
+    }
+
 
     public UUID getId() {
         return id;
@@ -106,6 +117,10 @@ public class Transaction implements Serializable, Comparable<Transaction> {
                 " description : " + description +
                 " type : " + ((type== GlobalConstants.TransactionType.CREDIT)?1:0) +
                 " account : " + account ;
+    }
+
+    public Transaction copy() {
+        return new Transaction(this);
     }
 
     @Override

@@ -33,6 +33,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import static android.app.Activity.RESULT_OK;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ADD_TRANSACTION;
+import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_EDIT_TRANSACTION;
+import static com.grvmishra788.pay_track.GlobalConstants.SUB_ITEM_TO_EDIT;
 
 public class TransactionsFragment extends Fragment {
     //constant Class TAG
@@ -96,14 +98,10 @@ public class TransactionsFragment extends Fragment {
 
             @Override
             public void onItemClick(int position) {
+                //Response to click on grouped item only if multi-select is on
                 if (isMultiSelect) {
                     //if multiple selection is enabled then select item on single click
                     selectMultiple(position);
-                } else {
-//                    Intent editActivityIntent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
-//                    editActivityIntent.putExtra(ITEM_TO_EDIT, datedTransactionHashMap.get(position));
-//                    editActivityIntent.putExtra(POSITION_ITEM_TO_EDIT, position);
-//                    startActivityForResult(editActivityIntent, REQ_CODE_EDIT_CATEGORY);
                 }
             }
 
@@ -128,9 +126,9 @@ public class TransactionsFragment extends Fragment {
             @Override
             public void onItemClick(int position, Transaction transaction) {
                 if (!isMultiSelect) {
-//                    Intent editActivityIntent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
-//                    editActivityIntent.putExtra(SUB_ITEM_TO_EDIT, subCategory);
-//                    startActivityForResult(editActivityIntent, REQ_CODE_EDIT_CATEGORY);
+                    Intent editActivityIntent = new Intent(getActivity(), AddTransactionActivity.class);
+                    editActivityIntent.putExtra(SUB_ITEM_TO_EDIT, transaction);
+                    startActivityForResult(editActivityIntent, REQ_CODE_EDIT_TRANSACTION);
                 } else {
                     selectMultiple(transaction);
                 }
@@ -189,6 +187,23 @@ public class TransactionsFragment extends Fragment {
                     transactionsRecyclerViewAdapter.notifyDataSetChanged();
                 }
                 Log.i(TAG, "Added transaction - " + transaction.toString());
+            } else if(requestCode==REQ_CODE_EDIT_TRANSACTION){
+
+                Transaction oldTransaction = (Transaction) data.getSerializableExtra(GlobalConstants.OLD_TRANSACTION_OBJECT);
+                Transaction newTransaction = (Transaction) data.getSerializableExtra(GlobalConstants.NEW_TRANSACTION_OBJECT);
+                if (payTrackDBHelper.updateDataInTransactionsTable(oldTransaction, newTransaction)) {
+                    Log.d(TAG, "Transaction updated in db - FROM : " + oldTransaction.toString() + " TO : " + newTransaction.toString());
+                } else {
+                    Log.e(TAG, "Couldn't update Transaction to db - " + oldTransaction.toString());
+                }
+                mTransactions.remove(oldTransaction);
+                mTransactions.add(newTransaction);
+
+                removeTransactionFromHashMap(oldTransaction);
+                transactionsRecyclerViewAdapter.notifyDataSetChanged();
+                addTransactionToHashMap(newTransaction);
+                transactionsRecyclerViewAdapter.notifyDataSetChanged();
+
             } else {
                 Log.i(TAG, "Wrong request code");
             }
@@ -224,10 +239,15 @@ public class TransactionsFragment extends Fragment {
             ArrayList<Transaction> curDateTransactions = null;
             if(datedTransactionHashMap.containsKey(dateOfTransaction)){
                 curDateTransactions = datedTransactionHashMap.get(dateOfTransaction);
-                curDateTransactions.remove(transaction);
-            }
-            if(curDateTransactions==null || curDateTransactions.size()==0){
-                datedTransactionHashMap.remove(dateOfTransaction);
+                for(int i=0; i<curDateTransactions.size();i++){
+                    if(curDateTransactions.get(i).getId().equals(transaction.getId())){
+                        curDateTransactions.remove(i);
+                        break;
+                    }
+                }
+                if(curDateTransactions==null || curDateTransactions.size()==0){
+                    datedTransactionHashMap.remove(dateOfTransaction);
+                }
             }
         } else {
             Log.e(TAG,"Date of " + transaction.toString() + " is null!");

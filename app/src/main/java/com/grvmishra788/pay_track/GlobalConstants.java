@@ -20,6 +20,7 @@ public abstract class GlobalConstants {
 
     public static final int REQ_CODE_EDIT_ACCOUNT = 1101;
     public static final int REQ_CODE_EDIT_CATEGORY = 1102;
+    public static final int REQ_CODE_EDIT_TRANSACTION = 1103;
 
     public static final int REQ_CODE_SELECT_ACCOUNT = 10001;
     public static final int REQ_CODE_SELECT_PARENT_CATEGORY = 10002;
@@ -44,6 +45,9 @@ public abstract class GlobalConstants {
     public static final String OLD_SUB_CATEGORY_OBJECT = "com.grvmishra788.pay_track.object_old_sub_category";
     public static final String NEW_SUB_CATEGORY_OBJECT = "com.grvmishra788.pay_track.object_new_sub_category";
     public static final String TRANSACTION_OBJECT = "com.grvmishra788.pay_track.object_transaction";
+    public static final String OLD_TRANSACTION_OBJECT = "com.grvmishra788.pay_track.object_old_transaction";
+    public static final String NEW_TRANSACTION_OBJECT = "com.grvmishra788.pay_track.object_new_transaction";
+
     public static final String DEBT_OBJECT = "com.grvmishra788.pay_track.object_debt";
 
     public static final String ITEM_TO_EDIT = "com.grvmishra788.pay_track.item_to_edit";

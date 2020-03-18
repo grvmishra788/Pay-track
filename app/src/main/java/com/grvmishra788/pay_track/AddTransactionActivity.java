@@ -36,6 +36,7 @@ import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_SUB_CATEGORY_A
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_SUB_CATEGORY_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_SUB_CATEGORY_PARENT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECT_CATEGORY;
+import static com.grvmishra788.pay_track.GlobalConstants.SUB_ITEM_TO_EDIT;
 
 public class AddTransactionActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     //constant Class TAG
@@ -50,6 +51,8 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
     private GlobalConstants.TransactionType type;
 
     private ImageButton ib_date, ib_category, ib_account, ib_cancelParent, ib_cancelAccount;
+
+    private Transaction transactionToEdit = null;
 
     private View.OnClickListener dateClickListener = new View.OnClickListener() {
         @Override
@@ -66,11 +69,49 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         Log.i(TAG, "onCreate() starts...");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_transaction);
-        setTitle(R.string.title_add_transaction);
+
         initViews();
         initDatePicker();
         initSpinner();
         initSubmitBtn();
+
+        Intent activityStartingIntent = getIntent();
+        if(activityStartingIntent.hasExtra(SUB_ITEM_TO_EDIT)){
+            setTitle(R.string.title_edit_category);
+            transactionToEdit = (Transaction) activityStartingIntent.getSerializableExtra(SUB_ITEM_TO_EDIT);
+
+            et_amount.setText(String.valueOf(transactionToEdit.getAmount()));
+            et_account.setText(transactionToEdit.getAccount());
+
+            //convert date to string & display in text view
+            Date date = transactionToEdit.getDate();
+            SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
+            String dateString = sdf.format(date);
+            et_date.setText(dateString);
+
+            //set type
+            if(transactionToEdit.getType().equals(GlobalConstants.TransactionType.CREDIT)){
+                transactionType.setSelection(1);
+            } else {
+                transactionType.setSelection(0);
+            }
+
+            //set category
+            String subCategory = transactionToEdit.getSubCategory();
+            String fullCategoryStr = transactionToEdit.getCategory();
+            if(InputValidationUtilities.isValidString(subCategory)){
+                fullCategoryStr += ("/" + subCategory);
+            }
+            et_category.setText(fullCategoryStr);
+
+            et_description.setText(transactionToEdit.getDescription());
+
+            ib_cancelParent.setVisibility(View.VISIBLE);
+            ib_cancelAccount.setVisibility(View.VISIBLE);
+        }
+        else {
+            setTitle(R.string.title_add_transaction);
+        }
 
         Log.i(TAG, "onCreate() ends!");
     }
@@ -209,26 +250,52 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
             public void onClick(View view) {
                 Log.d(TAG,"SUBMIT btn :: onClick()");
                 if(parseInput()) {
-                    //set default balance as zero
-                    Long transactionAmt = Long.valueOf(0);
-                    if(!TextUtils.isEmpty(amount)){
-                        transactionAmt = Long.parseLong(amount);
+
+                    if(transactionToEdit == null) {     //Add transaction activity
+
+                        //set default balance as zero
+                        Long transactionAmt = Long.valueOf(0);
+                        if(!TextUtils.isEmpty(amount)){
+                            transactionAmt = Long.parseLong(amount);
+                        }
+
+                        //generate UUID for transaction
+                        UUID id = UUID.randomUUID();
+
+                        //create transaction & set result
+                        Intent resultIntent = new Intent();
+                        Transaction transaction = new Transaction(id, transactionAmt, category, subCategory, date, description, type, account);
+                        resultIntent.putExtra(GlobalConstants.TRANSACTION_OBJECT, transaction);
+                        setResult(RESULT_OK, resultIntent);
+
+                        Log.d(TAG, "Successfully added transaction - " + transaction.toString());
+
+                        //finish activity
+                        finish();
+
+                    } else {        //Edit transaction activity
+
+                        //set default balance as zero
+                        Long transactionAmt = Long.valueOf(0);
+                        if(!TextUtils.isEmpty(amount)){
+                            transactionAmt = Long.parseLong(amount);
+                        }
+                        Intent resultIntent = new Intent();
+                        Transaction newTransaction =  transactionToEdit.copy();
+                        newTransaction.setAmount(transactionAmt);
+                        newTransaction.setCategory(category);
+                        newTransaction.setSubCategory(subCategory);
+                        newTransaction.setDate(date);
+                        newTransaction.setDescription(description);
+                        newTransaction.setType(type);
+                        newTransaction.setAccount(account);
+
+                        resultIntent.putExtra(GlobalConstants.OLD_TRANSACTION_OBJECT, transactionToEdit);
+                        resultIntent.putExtra(GlobalConstants.NEW_TRANSACTION_OBJECT, newTransaction);
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
+
                     }
-
-                    //generate UUID for transaction
-                    UUID id = UUID.randomUUID();
-
-                    //create transaction & set result
-                    Intent resultIntent = new Intent();
-                    Transaction transaction = new Transaction(id, transactionAmt, category, subCategory, date, description, type, account);
-                    resultIntent.putExtra(GlobalConstants.TRANSACTION_OBJECT, transaction);
-                    setResult(RESULT_OK, resultIntent);
-
-                    Log.d(TAG, "Successfully added transaction - " + transaction.toString());
-
-                    //finish activity
-                    finish();
-
                 } else {
                     Log.d(TAG,"Input not parsed properly - Some field entry is wrong");
                 }

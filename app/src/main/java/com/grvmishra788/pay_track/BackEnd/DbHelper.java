@@ -436,6 +436,34 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean updateDataInTransactionsTable(Transaction oldTransaction, Transaction newTransaction) {
+        Log.i(TAG, "updateDataInSubCategoriesTable()");
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TRANSACTIONS_TABLE_COL_ID, newTransaction.getId().toString());
+        contentValues.put(TRANSACTIONS_TABLE_COL_AMOUNT, newTransaction.getAmount());
+        contentValues.put(TRANSACTIONS_TABLE_COL_DESCRIPTION, newTransaction.getDescription());
+        contentValues.put(TRANSACTIONS_TABLE_COL_CATEGORY, newTransaction.getCategory());
+        contentValues.put(TRANSACTIONS_TABLE_COL_SUB_CATEGORY, newTransaction.getSubCategory());
+        contentValues.put(TRANSACTIONS_TABLE_COL_TYPE, (newTransaction.getType() == GlobalConstants.TransactionType.CREDIT) ? 1 : 0);
+        contentValues.put(TRANSACTIONS_TABLE_COL_DATE, newTransaction.getDate().getTime());
+        contentValues.put(TRANSACTIONS_TABLE_COL_ACCOUNT, newTransaction.getAccount());
+
+        long success = -1;
+        try {
+            success = database.update(TRANSACTIONS_TABLE, contentValues, TRANSACTIONS_TABLE_COL_ID + ("='" + oldTransaction.getId() + "'"), null);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute update query - error code : " + e.getMessage());
+        }
+
+        if (success == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
     /*
         DELETE FROM TABLE APIs here . . .
      */
