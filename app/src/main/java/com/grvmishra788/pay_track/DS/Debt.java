@@ -27,6 +27,15 @@ public class Debt implements Serializable {
         this.person = person;
     }
 
+    public Debt( Debt debt) {
+        this.id = debt.getId();
+        this.amount = debt.getAmount();
+        this.date = debt.getDate();
+        this.description = debt.getDescription();
+        this.type = debt.getType();
+        this.account = debt.getAccount();
+        this.person = debt.getPerson();
+    }
 
     public long getAmount() {
         return amount;
@@ -94,5 +103,9 @@ public class Debt implements Serializable {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public Debt copy() {
+        return new Debt(this);
     }
 }

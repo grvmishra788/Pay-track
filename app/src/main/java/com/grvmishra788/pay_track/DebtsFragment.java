@@ -96,10 +96,10 @@ public class DebtsFragment extends Fragment {
                     //if multiple selection is enabled then select item on single click
                     selectMultiple(position);
                 } else {
-//                    Intent editActivityIntent = new Intent(getActivity(), AddDebtActivity.class);
-//                    editActivityIntent.putExtra(ITEM_TO_EDIT, mDebts.get(position));
-//                    editActivityIntent.putExtra(POSITION_ITEM_TO_EDIT, position);
-//                    startActivityForResult(editActivityIntent, REQ_CODE_EDIT_DEBT);
+                    Intent editActivityIntent = new Intent(getActivity(), AddDebtActivity.class);
+                    editActivityIntent.putExtra(ITEM_TO_EDIT, mDebts.get(position));
+                    editActivityIntent.putExtra(POSITION_ITEM_TO_EDIT, position);
+                    startActivityForResult(editActivityIntent, REQ_CODE_EDIT_DEBT);
                 }
             }
 
@@ -155,6 +155,25 @@ public class DebtsFragment extends Fragment {
                     debtsRecyclerViewAdapter.notifyDataSetChanged();
                 }
                 Log.i(TAG, "Added debt - " + debt.toString());
+            } else if (requestCode == REQ_CODE_EDIT_DEBT) {       //edit debt activity result
+                Log.i(TAG, "Processing edit debt...");
+
+                int position = -1;
+                if(data.hasExtra(POSITION_ITEM_TO_EDIT))
+                    position = data.getIntExtra(POSITION_ITEM_TO_EDIT, -1);
+
+                Debt oldDebt = mDebts.get(position);
+                Debt newDebt =  (Debt) data.getSerializableExtra(GlobalConstants.DEBT_OBJECT);
+                if(newDebt!=null){
+                    if (payTrackDBHelper.updateDataInDebtsTable(oldDebt, newDebt)) {
+                        Log.d(TAG, "Debt updated in db - FROM : " + oldDebt.toString() + " TO : " + newDebt.toString());
+                    } else {
+                        Log.e(TAG, "Couldn't update debt to db - " + oldDebt.toString());
+                    }
+                    mDebts.set(position, newDebt);
+                    debtsRecyclerViewAdapter.notifyDataSetChanged();
+                    Log.i(TAG, "Edited debt - " + oldDebt.toString() + " to "+ newDebt.toString());
+                }
             } else {
                 Log.i(TAG, "Wrong request code");
             }

@@ -15,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.grvmishra788.pay_track.DS.Debt;
+import com.grvmishra788.pay_track.DS.Transaction;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,10 +30,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import static com.grvmishra788.pay_track.GlobalConstants.DATE_FORMAT_DAY_AND_DATE;
+import static com.grvmishra788.pay_track.GlobalConstants.ITEM_TO_EDIT;
+import static com.grvmishra788.pay_track.GlobalConstants.POSITION_ITEM_TO_EDIT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_ACCOUNT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_PARENT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_ACCOUNT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_NAME;
+import static com.grvmishra788.pay_track.GlobalConstants.SUB_ITEM_TO_EDIT;
 
 public class AddDebtActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
 
@@ -49,15 +53,52 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
 
     private ImageButton ib_date, ib_account, ib_cancelAccount;
 
+    private Debt debtToEdit = null;
+    private int positionDebtToEdit = -1;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_debt);
-        setTitle(R.string.title_add_debt);
+
         initViews();
         initDatePicker();
         initSpinner();
         initSubmitBtn();
+
+        Intent activityStartingIntent = getIntent();
+        if(activityStartingIntent.hasExtra(ITEM_TO_EDIT)) {
+            setTitle(R.string.title_edit_debt);
+            debtToEdit = (Debt) activityStartingIntent.getSerializableExtra(ITEM_TO_EDIT);
+            positionDebtToEdit = activityStartingIntent.getIntExtra(POSITION_ITEM_TO_EDIT, -1);
+
+            et_amount.setText(String.valueOf(debtToEdit.getAmount()));
+            et_account.setText(debtToEdit.getAccount());
+
+            //convert date to string & display in text view
+            Date date = debtToEdit.getDate();
+            SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
+            String dateString = sdf.format(date);
+            et_date.setText(dateString);
+
+            //set type
+            if(debtToEdit.getType().equals(GlobalConstants.DebtType.RECEIVE)){
+                debtType.setSelection(1);
+                tv_person.setText(getString(R.string.borrower));
+            } else {
+                tv_person.setText(getString(R.string.lender));
+                debtType.setSelection(0);
+            }
+
+            //set borrower/lender name & description
+            et_person.setText(debtToEdit.getPerson());
+            et_description.setText(debtToEdit.getDescription());
+
+            ib_cancelAccount.setVisibility(View.VISIBLE);
+        } else {
+            setTitle(R.string.title_add_debt);
+        }
+
     }
 
     private void initViews() {
@@ -222,26 +263,48 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
             public void onClick(View view) {
                 Log.d(TAG,"SUBMIT btn :: onClick()");
                 if(parseInput()) {
-                    //set default balance as zero
-                    Long debtAmt = Long.valueOf(0);
-                    if(!TextUtils.isEmpty(amount)){
-                        debtAmt = Long.parseLong(amount);
+                    if(debtToEdit==null){
+                        //set default balance as zero
+                        Long debtAmt = Long.valueOf(0);
+                        if(!TextUtils.isEmpty(amount)){
+                            debtAmt = Long.parseLong(amount);
+                        }
+
+                        //generate UUID for transaction
+                        UUID id = UUID.randomUUID();
+
+                        //create debt & set result
+                        Intent resultIntent = new Intent();
+                        Debt debt = new Debt(id, debtAmt, date, description, type, account, person);
+                        resultIntent.putExtra(GlobalConstants.DEBT_OBJECT, debt);
+                        setResult(RESULT_OK, resultIntent);
+
+                        Log.d(TAG, "Successfully added debt - " + debt.toString());
+
+                        //finish activity
+                        finish();
+
+                    } else {
+
+                        //set default balance as zero
+                        Long debtAmt = Long.valueOf(0);
+                        if(!TextUtils.isEmpty(amount)){
+                            debtAmt = Long.parseLong(amount);
+                        }
+                        Intent resultIntent = new Intent();
+                        Debt newDebt =  debtToEdit.copy();
+                        newDebt.setAmount(debtAmt);
+                        newDebt.setPerson(person);
+                        newDebt.setDate(date);
+                        newDebt.setDescription(description);
+                        newDebt.setType(type);
+                        newDebt.setAccount(account);
+
+                        resultIntent.putExtra(POSITION_ITEM_TO_EDIT, positionDebtToEdit);
+                        resultIntent.putExtra(GlobalConstants.DEBT_OBJECT, newDebt);
+                        setResult(RESULT_OK, resultIntent);
+                        finish();
                     }
-
-                    //generate UUID for transaction
-                    UUID id = UUID.randomUUID();
-
-                    //create debt & set result
-                    Intent resultIntent = new Intent();
-                    Debt debt = new Debt(id, debtAmt, date, description, type, account, person);
-                    resultIntent.putExtra(GlobalConstants.DEBT_OBJECT, debt);
-                    setResult(RESULT_OK, resultIntent);
-
-                    Log.d(TAG, "Successfully added debt - " + debt.toString());
-
-                    //finish activity
-                    finish();
-
                 } else {
                     Log.d(TAG,"Input not parsed properly - Some field entry is wrong");
                 }

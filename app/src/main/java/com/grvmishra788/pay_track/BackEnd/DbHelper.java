@@ -392,6 +392,32 @@ public class DbHelper extends SQLiteOpenHelper {
 
     }
 
+    public boolean updateDataInDebtsTable(Debt oldDebt, Debt newDebt) {
+        Log.i(TAG, "updateDataInSubCategoriesTable()");
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DEBTS_TABLE_COL_ID, newDebt.getId().toString());
+        contentValues.put(DEBTS_TABLE_COL_AMOUNT, newDebt.getAmount());
+        contentValues.put(DEBTS_TABLE_COL_DESCRIPTION, newDebt.getDescription());
+        contentValues.put(DEBTS_TABLE_COL_PERSON, newDebt.getPerson());
+        contentValues.put(DEBTS_TABLE_COL_TYPE, (newDebt.getType() == GlobalConstants.DebtType.RECEIVE) ? 1 : 0);
+        contentValues.put(DEBTS_TABLE_COL_DATE, newDebt.getDate().getTime());
+        contentValues.put(DEBTS_TABLE_COL_ACCOUNT, newDebt.getAccount());
+
+        long success = -1;
+        try {
+            success = database.update(DEBTS_TABLE, contentValues, TRANSACTIONS_TABLE_COL_ID + ("='" + oldDebt.getId() + "'"), null);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute update query - error code : " + e.getMessage());
+        }
+
+        if (success == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public boolean updateDataInCategoriesTable(Category oldCategory, Category newCategory) {
         Log.i(TAG, "updateDataInCategoriesTable()");
         SQLiteDatabase database = this.getWritableDatabase();

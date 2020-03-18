@@ -77,7 +77,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
 
         Intent activityStartingIntent = getIntent();
         if(activityStartingIntent.hasExtra(SUB_ITEM_TO_EDIT)){
-            setTitle(R.string.title_edit_category);
+            setTitle(R.string.title_edit_transaction);
             transactionToEdit = (Transaction) activityStartingIntent.getSerializableExtra(SUB_ITEM_TO_EDIT);
 
             et_amount.setText(String.valueOf(transactionToEdit.getAmount()));
