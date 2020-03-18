@@ -22,11 +22,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
+import static com.grvmishra788.pay_track.GlobalConstants.DATE_FORMAT_DAY_AND_DATE;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_ACCOUNT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_PARENT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_ACCOUNT_NAME;
@@ -45,7 +47,7 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
     private Date date;
     private GlobalConstants.DebtType type;
 
-    private ImageButton ib_date, ib_account;
+    private ImageButton ib_date, ib_account, ib_cancelAccount;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,11 +73,22 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
         et_person.setOnFocusChangeListener(onFocusChangeListener);
 
         tv_person = findViewById(R.id.tv_person);
+
         ib_account = findViewById(R.id.ib_select_account);
+        ib_cancelAccount = findViewById(R.id.ib_cancel_account);
 
         //set onclick listener for account
         et_account.setOnClickListener(selectAccountListener);
         ib_account.setOnClickListener(selectAccountListener);
+        ib_cancelAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //clear account field as well
+                et_account.setText("");
+                et_account.setHint(getString(R.string.default_account));
+                ib_cancelAccount.setVisibility(View.INVISIBLE);
+            }
+        });
 
     }
 
@@ -93,6 +106,21 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
         ib_date = findViewById(R.id.ib_date);
         ib_date.setOnClickListener(dateClickListener);
         et_date.setOnClickListener(dateClickListener);
+
+        // set Today as default date
+        //create date object
+        Calendar calendar = Calendar.getInstance();
+        //set time part of date as 0
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR, 0);
+        date = calendar.getTime();
+
+        //convert date to string & display in text view
+        SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
+        String currentDateString = sdf.format(date);
+        et_date.setText(currentDateString);
     }
 
     private View.OnClickListener dateClickListener = new View.OnClickListener() {
@@ -115,6 +143,12 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
         calendar.set(Calendar.MONTH, month);
         calendar.set(Calendar.DAY_OF_MONTH, day);
 
+        //set time part of date as 0
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR, 0);
+
         //create date object
         date = calendar.getTime();
 
@@ -132,8 +166,9 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
         Log.i(TAG, "onActivityResult() starts...");
         if(resultCode==RESULT_OK){
             if (requestCode == REQ_CODE_SELECT_ACCOUNT){
-                String accountNickName = (String) data.getStringExtra(SELECTED_ACCOUNT_NAME);
+                String accountNickName = data.getStringExtra(SELECTED_ACCOUNT_NAME);
                 et_account.setText(accountNickName);
+                ib_cancelAccount.setVisibility(View.VISIBLE);
             } else {
                 Log.e(TAG, "Wrong request code - " + requestCode);
             }
@@ -193,9 +228,12 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
                         debtAmt = Long.parseLong(amount);
                     }
 
+                    //generate UUID for transaction
+                    UUID id = UUID.randomUUID();
+
                     //create debt & set result
                     Intent resultIntent = new Intent();
-                    Debt debt = new Debt(debtAmt, date, description, type, account, person);
+                    Debt debt = new Debt(id, debtAmt, date, description, type, account, person);
                     resultIntent.putExtra(GlobalConstants.DEBT_OBJECT, debt);
                     setResult(RESULT_OK, resultIntent);
 
@@ -221,27 +259,25 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
 
         HashMap<String, Boolean> validInputs = new HashMap<>();
 
-        validInputs.put(getString(R.string.amount), InputValidationUtilities.isValidNumber(amount));
+        validInputs.put(getString(R.string.amount), InputValidationUtilities.isValidString(amount));
         validInputs.put(getString(R.string.date), (date==null)?false:true);
         validInputs.put(getString(R.string.type), (type==null)?false:true);
         validInputs.put(getString(R.string.person), InputValidationUtilities.isValidString(person));
         validInputs.put(getString(R.string.account), InputValidationUtilities.isValidString(account));
 
-        boolean isValid = true;
-        if(validInputs==null){
-            isValid = false;
+        String emptyFields = Utilities.checkHashMapForFalseValues(validInputs);
+
+        if (InputValidationUtilities.isValidString(emptyFields)) {
+            Utilities.showEmptyFieldsErrorDialog(this, emptyFields);
+            return false;
         } else {
-            Log.d(TAG, validInputs.toString());
-            Iterator it = validInputs.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry)it.next();
-                if(pair.getValue().equals(false)){
-                    Log.d(TAG, "Error in "+ pair.getKey());
-                    isValid = false;
-                }
+            if(!InputValidationUtilities.isValidAmount(amount)){
+                Utilities.showErrorFromKey(AddDebtActivity.this, getString(R.string.amount));
+                return false;
+            } else {
+                return true;
             }
         }
-        return isValid;
     }
 
 

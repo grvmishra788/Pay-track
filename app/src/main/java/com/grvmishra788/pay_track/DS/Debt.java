@@ -4,10 +4,12 @@ import com.grvmishra788.pay_track.GlobalConstants;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import androidx.annotation.NonNull;
 
 public class Debt implements Serializable {
+    private UUID id;
     private long amount;
     private Date date;
     private String description;
@@ -15,7 +17,8 @@ public class Debt implements Serializable {
     private String account;
     private String person;
 
-    public Debt(long amount, Date date, String description, GlobalConstants.DebtType type, String account, String person) {
+    public Debt(UUID id, long amount, Date date, String description, GlobalConstants.DebtType type, String account, String person) {
+        this.id = id;
         this.amount = amount;
         this.date = date;
         this.description = description;
@@ -83,5 +86,13 @@ public class Debt implements Serializable {
                 " type : " + ((type== GlobalConstants.DebtType.RECEIVE)?1:0) +
                 " account : " + account +
                 " person : " + person;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }

@@ -251,6 +251,7 @@ public class DbHelper extends SQLiteOpenHelper {
         Log.i(TAG, "insertDataToDebtsTable()");
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put(DEBTS_TABLE_COL_ID, debt.getId().toString());
         contentValues.put(DEBTS_TABLE_COL_AMOUNT, debt.getAmount());
         contentValues.put(DEBTS_TABLE_COL_DESCRIPTION, debt.getDescription());
         contentValues.put(DEBTS_TABLE_COL_PERSON, debt.getPerson());
@@ -487,6 +488,25 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean deleteDataFromDebtsTable(Debt debt) {
+        Log.i(TAG, "deleteDataFromDebtsTable()");
+
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        long success = -1;
+        try {
+            success = database.delete(DEBTS_TABLE, DEBTS_TABLE_COL_ID + ("='" + debt.getId().toString() + "'"), null);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+        }
+
+        if (success == -1) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
     public boolean deleteDataInCategoriesTable(Category category) {
         Log.i(TAG, "deleteDataInCategoriesTable()");
         SQLiteDatabase database = this.getWritableDatabase();
@@ -671,8 +691,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 GlobalConstants.DebtType type = ((typeVal == 1) ? GlobalConstants.DebtType.RECEIVE : GlobalConstants.DebtType.PAY);
 
                 String account = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_ACCOUNT));
-
-                debts.add(new Debt(amount, date, description, type, account, person));
+                UUID id = UUID.fromString(cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_ID)));
+                debts.add(new Debt(id, amount, date, description, type, account, person));
             }
             return debts;
         }

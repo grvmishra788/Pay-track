@@ -140,6 +140,15 @@
                 android:textAppearance="@style/EditText.Text"
                 android:textColor="@color/colorPrimary"
                 android:textColorHint="@color/colorPrimary" />
+    
+            <ImageButton
+                android:id="@+id/ib_cancel_account"
+                android:src="@drawable/ic_cancel_black_24dp"
+                android:backgroundTint="@color/textColorPrimary"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="@dimen/size_48_dp"
+                android:visibility="invisible"/>
 
             <ImageButton
                 android:id="@+id/ib_select_account"

@@ -1,6 +1,8 @@
 package com.grvmishra788.pay_track;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +16,11 @@ import com.grvmishra788.pay_track.DS.Debt;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import static android.graphics.Color.GREEN;
@@ -30,6 +35,12 @@ public class DebtsAdapter extends RecyclerView.Adapter<DebtsAdapter.DebtsViewHol
 
     //Variable for accessing Debts List in DebtsAdapter
     private ArrayList<Debt> mDebts;
+
+    //Variable for onItemclickListener
+    private OnItemClickListener onItemClickListener;
+
+    //Variable to store selectedItem positions when launching Contextual action mode
+    private TreeSet<Integer> selectedItems = new TreeSet<>();
 
     public DebtsAdapter(Context context, ArrayList<Debt> mDebts) {
         Log.d(TAG, TAG + ": Constructor starts");
@@ -48,6 +59,7 @@ public class DebtsAdapter extends RecyclerView.Adapter<DebtsAdapter.DebtsViewHol
         return debtsViewHolder;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onBindViewHolder(@NonNull DebtsViewHolder holder, int position) {
         String amountValue = "", desc = "";
@@ -83,6 +95,14 @@ public class DebtsAdapter extends RecyclerView.Adapter<DebtsAdapter.DebtsViewHol
         }
 
         holder.account.setText(debt.getAccount());
+
+        if (selectedItems.contains(position)) {
+            //if item is selected then,set foreground color of root view.
+            holder.itemView.setForeground(new ColorDrawable(ContextCompat.getColor(mContext, R.color.colorAccentTransparent)));
+        } else {
+            //else remove selected item color.
+            holder.itemView.setForeground(new ColorDrawable(ContextCompat.getColor(mContext, android.R.color.transparent)));
+        }
     }
 
     @Override
@@ -91,6 +111,23 @@ public class DebtsAdapter extends RecyclerView.Adapter<DebtsAdapter.DebtsViewHol
             return 0;
         else
             return mDebts.size();
+    }
+
+    public OnItemClickListener getOnItemClickListener() {
+        return onItemClickListener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public TreeSet<Integer> getSelectedItems() {
+        return selectedItems;
+    }
+
+    public void setSelectedItems(TreeSet<Integer> selectedItems) {
+        this.selectedItems = selectedItems;
+        notifyDataSetChanged();
     }
 
     public class DebtsViewHolder extends RecyclerView.ViewHolder {
@@ -103,6 +140,28 @@ public class DebtsAdapter extends RecyclerView.Adapter<DebtsAdapter.DebtsViewHol
 
         public DebtsViewHolder(@NonNull View itemView) {
             super(itemView);
+            //perform necessary ops if current item is clicked
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    if (onItemClickListener != null && position != RecyclerView.NO_POSITION) {
+                        onItemClickListener.onItemClick(position);
+                    }
+                }
+            });
+            //perform necessary ops if current item is long clicked
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    int position = getAdapterPosition();
+                    if (onItemClickListener != null && position != RecyclerView.NO_POSITION) {
+                        onItemClickListener.onItemLongClick(position);
+                    }
+                    return true;
+                }
+            });
+
             Log.i(S_TAG, S_TAG + ": Constructor starts");
             amount = itemView.findViewById(R.id.tv_show_amount);
             person = itemView.findViewById(R.id.tv_show_person);
