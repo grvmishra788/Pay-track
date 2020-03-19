@@ -15,6 +15,7 @@ import com.grvmishra788.pay_track.DS.Debt;
 import com.grvmishra788.pay_track.DS.DigitalAccount;
 import com.grvmishra788.pay_track.DS.SubCategory;
 import com.grvmishra788.pay_track.DS.Transaction;
+import com.grvmishra788.pay_track.DS.TransactionMessage;
 import com.grvmishra788.pay_track.GlobalConstants;
 
 import java.util.ArrayList;
@@ -48,6 +49,11 @@ import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DEBTS_TABLE_C
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DEBTS_TABLE_COL_PERSON;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DEBTS_TABLE_COL_TYPE;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DIGITAL_ACCOUNT;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTION_MESSAGES_TABLE;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTION_MESSAGES_TABLE_COL_BODY;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTION_MESSAGES_TABLE_COL_DATE;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTION_MESSAGES_TABLE_COL_ID;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTION_MESSAGES_TABLE_COL_SRC;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME;
@@ -82,10 +88,11 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         createAccountsTable(sqLiteDatabase);
+        createDebtsTable(sqLiteDatabase);
         createCategoriesTable(sqLiteDatabase);
         createSubCategoriesTable(sqLiteDatabase);
+        createTransactionMessagesTable(sqLiteDatabase);
         createTransactionsTable(sqLiteDatabase);
-        createDebtsTable(sqLiteDatabase);
     }
 
     @Override
@@ -174,6 +181,23 @@ public class DbHelper extends SQLiteOpenHelper {
         try {
             sqLiteDatabase.execSQL(createSubCategoriesTableSQLQuery);
             Log.i(TAG, "Successfully executed query - " + createSubCategoriesTableSQLQuery);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute query -  error : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void createTransactionMessagesTable(SQLiteDatabase sqLiteDatabase) {
+        String createMessagesTableSQLQuery = "create table IF NOT EXISTS " + TRANSACTION_MESSAGES_TABLE + " (" +
+                TRANSACTION_MESSAGES_TABLE_COL_ID + " TEXT COLLATE NOCASE NOT NULL PRIMARY KEY, " +
+                TRANSACTION_MESSAGES_TABLE_COL_SRC + " TEXT, " +
+                TRANSACTION_MESSAGES_TABLE_COL_BODY + " TEXT, " +
+                TRANSACTION_MESSAGES_TABLE_COL_DATE + " DATE " +
+                ")";
+
+        try {
+            sqLiteDatabase.execSQL(createMessagesTableSQLQuery);
+            Log.i(TAG, "Successfully executed query - " + createMessagesTableSQLQuery);
         } catch (SQLException e) {
             Log.e(TAG, "Unable to execute query -  error : " + e.getMessage());
             e.printStackTrace();
@@ -312,6 +336,30 @@ public class DbHelper extends SQLiteOpenHelper {
 
     }
 
+    public boolean insertDataToTransactionMessagesTable(TransactionMessage transactionMessage) {
+        Log.i(TAG, "insertDataToTransactionMessagesTable()");
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TRANSACTION_MESSAGES_TABLE_COL_ID, transactionMessage.getId().toString());
+        contentValues.put(TRANSACTION_MESSAGES_TABLE_COL_SRC, transactionMessage.getSrc());
+        contentValues.put(TRANSACTION_MESSAGES_TABLE_COL_BODY, transactionMessage.getBody());
+        contentValues.put(TRANSACTION_MESSAGES_TABLE_COL_DATE, transactionMessage.getDate().getTime());
+
+        long success = -1;
+        try {
+            success = database.insert(TRANSACTION_MESSAGES_TABLE, null, contentValues);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute insert query - error code : " + e.getMessage());
+        }
+
+        if (success == -1) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
     public boolean insertDataToTransactionsTable(Transaction transaction) {
         Log.i(TAG, "insertDataToTransactionsTable()");
         SQLiteDatabase database = this.getWritableDatabase();
@@ -329,7 +377,7 @@ public class DbHelper extends SQLiteOpenHelper {
         try {
             success = database.insert(TRANSACTIONS_TABLE, null, contentValues);
         } catch (SQLException e) {
-            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+            Log.e(TAG, "Unable to execute insert query - error code : " + e.getMessage());
         }
 
         if (success == -1) {
@@ -759,6 +807,27 @@ public class DbHelper extends SQLiteOpenHelper {
                 categories.add(new Category(categoryName, accountNickName, description, subCategories));
             }
             return categories;
+        }
+    }
+
+    public ArrayList<TransactionMessage> getAllTransactionMessages() {
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery("Select * FROM " + TRANSACTION_MESSAGES_TABLE, null);
+        if (cursor.getCount() == 0) {
+            Log.d(TAG, "No transaction Messages in db!");
+            return null;
+        } else {
+            ArrayList<TransactionMessage> transactionMessages = new ArrayList<>();
+            while (cursor.moveToNext()) {
+
+                UUID id = UUID.fromString(cursor.getString(cursor.getColumnIndex(TRANSACTION_MESSAGES_TABLE_COL_ID)));
+                String src = cursor.getString(cursor.getColumnIndex(TRANSACTION_MESSAGES_TABLE_COL_SRC));
+                String body = cursor.getString(cursor.getColumnIndex(TRANSACTION_MESSAGES_TABLE_COL_BODY));
+                Date date = new Date(cursor.getLong(cursor.getColumnIndex(TRANSACTION_MESSAGES_TABLE_COL_DATE)));
+
+                transactionMessages.add(new TransactionMessage(id, src, body, date));
+            }
+            return transactionMessages;
         }
     }
 

@@ -11,6 +11,8 @@ public class DatabaseConstants {
     public static final String SUB_CATEGORIES_TABLE = "sub_categories_table";
     public static final String TRANSACTIONS_TABLE = "transactions_table";
     public static final String DEBTS_TABLE = "debts_table";
+    public static final String TRANSACTION_MESSAGES_TABLE = "messages_table";
+
     //coloumn names
     public static final String ACCOUNTS_TABLE_COL_NICK_NAME = "Nick_Name";
     public static final String ACCOUNTS_TABLE_COL_TYPE = "Type";
@@ -46,6 +48,11 @@ public class DatabaseConstants {
     public static final String DEBTS_TABLE_COL_TYPE = "Type";
     public static final String DEBTS_TABLE_COL_DATE = "Date";
     public static final String DEBTS_TABLE_COL_ACCOUNT = "Account";
+
+    public static final String TRANSACTION_MESSAGES_TABLE_COL_ID = "ID";
+    public static final String TRANSACTION_MESSAGES_TABLE_COL_SRC = "Src";
+    public static final String TRANSACTION_MESSAGES_TABLE_COL_BODY = "Body";
+    public static final String TRANSACTION_MESSAGES_TABLE_COL_DATE = "Date";
 
     //account types
     public static final int BANK_ACCOUNT = 101;

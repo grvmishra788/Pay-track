@@ -17,8 +17,8 @@
             android:title="Categories"
             app:actionViewClass="android.widget.TextView" />
         <item
-            android:id="@+id/nav_pending_transactions"
-            android:title="Pending Transactions"
+            android:id="@+id/nav_pending_messages"
+            android:title="Pending Messages"
             app:actionViewClass="android.widget.TextView" />
         <item
             android:id="@+id/nav_analyze"

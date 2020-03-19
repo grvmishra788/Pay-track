@@ -5,23 +5,24 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
-import android.annotation.SuppressLint;
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+
+import static com.grvmishra788.pay_track.GlobalConstants.MY_PERMISSIONS_REQUEST_READ_SMS;
 
 public class MainActivity extends AppCompatActivity {
     //constant Class TAG
@@ -41,6 +42,14 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate() starts...");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_SMS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.READ_SMS, android.Manifest.permission.RECEIVE_SMS},
+                        MY_PERMISSIONS_REQUEST_READ_SMS);
+            }
+        }
 
         //init tabLayout and viewPager
         mTabLayout = findViewById(R.id.layoutBottomTabs);
@@ -100,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
                 } else if (id == R.id.nav_categories){
                     Intent intent = new Intent(getBaseContext(), CategoryActivity.class);
                     startActivity(intent);
+                } else if (id == R.id.nav_pending_messages){
+                    Intent intent = new Intent(getBaseContext(), TransactionMessagesActivity.class);
+                    startActivity(intent);
                 } else if (id == R.id.nav_all){
                     //just close drawers
                 } else {
@@ -119,5 +131,22 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult(): resultCode - " + resultCode + " requestCode - "+ requestCode);
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_SMS: {
+                if (!(grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    Toast.makeText(this, "App can't run without the permissions requested", Toast.LENGTH_SHORT ).show();
+                    finish();
+                }
+                break;
+            }
+            default:
+                break;
+        }
+        return;
     }
 }

@@ -7,6 +7,10 @@ public abstract class GlobalConstants {
 
     public static final String BULLET_SYMBOL = "\u2022";  // •
 
+    //SMS related constants
+    public static final int MY_PERMISSIONS_REQUEST_READ_SMS = 501;
+    public static final String SMS_AMOUNT_REGEX = "(?i)(?:(?:RS|INR|MRP)\\.?\\s?)(\\d+(:?\\,\\d+)?(\\,\\d+)?(\\.\\d{1,2})?)";
+
     //Category Activity Types
     public static final int SHOW_CATEGORY= 101;
     public static final int SELECT_CATEGORY = 102;

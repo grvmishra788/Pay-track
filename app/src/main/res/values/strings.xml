@@ -25,6 +25,7 @@
     <string name="title_select_parent_categories">Select Parent Category</string>
     <string name="title_select_categories">Select Category</string>
     <string name="title_categories">Categories</string>
+    <string name="title_transaction_message">Pending Messages</string>
 
     <!--Account Fields-->
     <string name="nick_name">Nick Name</string>
@@ -40,6 +41,10 @@
     <!--Category Fields-->
     <string name="category_name">Name</string>
     <string name="parent">Parent Category</string>
+    
+    <!--Transaction Message Fields-->
+    <string name="sender">Sender</string>
+    <string name="msg">Message</string>
 
     <!--Transaction Fields-->
     <string name="amount">Amount</string>
