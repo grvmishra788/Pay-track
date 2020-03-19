@@ -21,6 +21,8 @@ public abstract class GlobalConstants {
     public static final int REQ_CODE_ADD_CATEGORY = 1002;
     public static final int REQ_CODE_ADD_TRANSACTION = 1003;
     public static final int REQ_CODE_ADD_DEBT = 1004;
+    public static final int REQ_CODE_ADD_TRANSACTION_VIA_MESSAGE = 1005;
+    public static final int REQ_CODE_SHOW_PENDING_MESSAGES = 1006;
 
     public static final int REQ_CODE_EDIT_ACCOUNT = 1101;
     public static final int REQ_CODE_EDIT_CATEGORY = 1102;
@@ -52,11 +54,13 @@ public abstract class GlobalConstants {
     public static final String TRANSACTION_OBJECT = "com.grvmishra788.pay_track.object_transaction";
     public static final String OLD_TRANSACTION_OBJECT = "com.grvmishra788.pay_track.object_old_transaction";
     public static final String NEW_TRANSACTION_OBJECT = "com.grvmishra788.pay_track.object_new_transaction";
+    public static final String TRANSACTION_MESSAGE_OBJECT = "com.grvmishra788.pay_track.object_transaction_message";
 
     public static final String DEBT_OBJECT = "com.grvmishra788.pay_track.object_debt";
 
     public static final String ITEM_TO_EDIT = "com.grvmishra788.pay_track.item_to_edit";
     public static final String POSITION_ITEM_TO_EDIT = "com.grvmishra788.pay_track.position_item_to_edit";
+    public static final String POSITION_TRANSACTION_MESSAGE = "com.grvmishra788.pay_track.position_transaction_message";
 
     public static final String SUB_ITEM_TO_EDIT = "com.grvmishra788.pay_track.sub_item_to_edit";
 

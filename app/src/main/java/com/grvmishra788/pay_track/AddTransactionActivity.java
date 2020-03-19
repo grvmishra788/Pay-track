@@ -15,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.grvmishra788.pay_track.DS.Transaction;
+import com.grvmishra788.pay_track.DS.TransactionMessage;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -27,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import static com.grvmishra788.pay_track.GlobalConstants.DATE_FORMAT_DAY_AND_DATE;
+import static com.grvmishra788.pay_track.GlobalConstants.POSITION_TRANSACTION_MESSAGE;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_ACCOUNT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_ACCOUNT_NAME;
@@ -37,6 +39,7 @@ import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_SUB_CATEGORY_N
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_SUB_CATEGORY_PARENT_NAME;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SUB_ITEM_TO_EDIT;
+import static com.grvmishra788.pay_track.GlobalConstants.TRANSACTION_MESSAGE_OBJECT;
 
 public class AddTransactionActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     //constant Class TAG
@@ -53,6 +56,8 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
     private ImageButton ib_date, ib_category, ib_account, ib_cancelParent, ib_cancelAccount;
 
     private Transaction transactionToEdit = null;
+
+    private int positionMsg = -1;
 
     private View.OnClickListener dateClickListener = new View.OnClickListener() {
         @Override
@@ -108,8 +113,14 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
 
             ib_cancelParent.setVisibility(View.VISIBLE);
             ib_cancelAccount.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else if(activityStartingIntent.hasExtra(TRANSACTION_MESSAGE_OBJECT)){
+            TransactionMessage transactionMessage = (TransactionMessage) activityStartingIntent.getSerializableExtra(TRANSACTION_MESSAGE_OBJECT);
+            positionMsg = activityStartingIntent.getIntExtra(POSITION_TRANSACTION_MESSAGE, -1);
+            transactionType.setSelection(0);
+            et_description.setText(transactionMessage.toString());
+            setTitle(R.string.title_add_transaction);
+
+        } else {
             setTitle(R.string.title_add_transaction);
         }
 
@@ -266,6 +277,9 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
                         Intent resultIntent = new Intent();
                         Transaction transaction = new Transaction(id, transactionAmt, category, subCategory, date, description, type, account);
                         resultIntent.putExtra(GlobalConstants.TRANSACTION_OBJECT, transaction);
+                        if(positionMsg!=-1){
+                            resultIntent.putExtra(POSITION_TRANSACTION_MESSAGE, positionMsg);
+                        }
                         setResult(RESULT_OK, resultIntent);
 
                         Log.d(TAG, "Successfully added transaction - " + transaction.toString());

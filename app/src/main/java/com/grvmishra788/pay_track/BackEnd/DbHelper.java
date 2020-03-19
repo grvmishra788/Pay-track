@@ -581,6 +581,7 @@ public class DbHelper extends SQLiteOpenHelper {
         }
 
     }
+    
     public boolean deleteDataInCategoriesTable(Category category) {
         Log.i(TAG, "deleteDataInCategoriesTable()");
         SQLiteDatabase database = this.getWritableDatabase();
@@ -604,6 +605,23 @@ public class DbHelper extends SQLiteOpenHelper {
         long success = -1;
         try {
             success = database.delete(SUB_CATEGORIES_TABLE, SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME + ("='" + oldSubCategory.getSubCategoryName() + "'"), null);
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+        }
+
+        if (success == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean deleteDataInTransactionMessagesTable(TransactionMessage transactionMessage) {
+        Log.i(TAG, "deleteDataInTransactionMessagesTable()");
+        SQLiteDatabase database = this.getWritableDatabase();
+        long success = -1;
+        try {
+            success = database.delete(TRANSACTION_MESSAGES_TABLE, TRANSACTION_MESSAGES_TABLE_COL_ID + ("='" + transactionMessage.getId().toString() + "'"), null);
         } catch (SQLException e) {
             Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
         }

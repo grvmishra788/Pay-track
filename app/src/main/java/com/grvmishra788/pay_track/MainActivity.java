@@ -21,8 +21,13 @@ import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.grvmishra788.pay_track.DS.Transaction;
+
+import java.util.ArrayList;
 
 import static com.grvmishra788.pay_track.GlobalConstants.MY_PERMISSIONS_REQUEST_READ_SMS;
+import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SHOW_PENDING_MESSAGES;
+import static com.grvmishra788.pay_track.GlobalConstants.TRANSACTION_OBJECT;
 
 public class MainActivity extends AppCompatActivity {
     //constant Class TAG
@@ -111,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 } else if (id == R.id.nav_pending_messages){
                     Intent intent = new Intent(getBaseContext(), TransactionMessagesActivity.class);
-                    startActivity(intent);
+                    startActivityForResult(intent, REQ_CODE_SHOW_PENDING_MESSAGES);
                 } else if (id == R.id.nav_all){
                     //just close drawers
                 } else {
@@ -131,6 +136,14 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult(): resultCode - " + resultCode + " requestCode - "+ requestCode);
         super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK && requestCode==REQ_CODE_SHOW_PENDING_MESSAGES){
+            ArrayList<Transaction> transactions = (ArrayList<Transaction>) data.getSerializableExtra(TRANSACTION_OBJECT);
+            if(transactions!=null){
+                for(Transaction transaction: transactions){
+                    ((TransactionsFragment) mViewPagerAdapter.getItem(1)).addTransaction(transaction);
+                }
+            }
+        }
     }
 
     @Override

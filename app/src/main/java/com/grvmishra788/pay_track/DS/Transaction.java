@@ -3,6 +3,7 @@ package com.grvmishra788.pay_track.DS;
 import com.grvmishra788.pay_track.GlobalConstants;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -109,11 +110,14 @@ public class Transaction implements Serializable, Comparable<Transaction> {
     @NonNull
     @Override
     public String toString() {
+        SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_DAY_AND_DATE);
+        String dateString = sdf.format(date);
+
         return "Transaction -" +
                 " amount : " + amount +
                 " category : " + category +
                 ((subCategory!=null) ? (" sub-category : " + subCategory ) : "") +
-                " date : " + date.toString() +
+                " date : " + dateString +
                 " description : " + description +
                 " type : " + ((type== GlobalConstants.TransactionType.CREDIT)?1:0) +
                 " account : " + account ;

@@ -173,20 +173,7 @@ public class TransactionsFragment extends Fragment {
             if(requestCode==REQ_CODE_ADD_TRANSACTION){
                 Log.i(TAG, "Processing add transaction...");
                 Transaction transaction =  (Transaction) data.getSerializableExtra(GlobalConstants.TRANSACTION_OBJECT);
-                if(transaction!=null){
-                    if(mTransactions==null){
-                        mTransactions = new ArrayList<>();
-                    }
-                    mTransactions.add(transaction);
-                    addTransactionToHashMap(transaction);
-                    if(payTrackDBHelper.insertDataToTransactionsTable(transaction)){
-                        Log.d(TAG,"Transaction inserted to db - " + transaction.toString());
-                    } else {
-                        Log.e(TAG,"Couldn't insert transaction to db - " + transaction.toString());
-                    }
-                    transactionsRecyclerViewAdapter.notifyDataSetChanged();
-                }
-                Log.i(TAG, "Added transaction - " + transaction.toString());
+                addTransaction(transaction);
             } else if(requestCode==REQ_CODE_EDIT_TRANSACTION){
 
                 Transaction oldTransaction = (Transaction) data.getSerializableExtra(GlobalConstants.OLD_TRANSACTION_OBJECT);
@@ -212,7 +199,7 @@ public class TransactionsFragment extends Fragment {
         }
     }
 
-    private void addTransactionToHashMap(Transaction transaction) {
+        private void addTransactionToHashMap(Transaction transaction) {
         Date dateOfTransaction = transaction.getDate();
         if(datedTransactionHashMap==null){
             datedTransactionHashMap = new HashMap<>();
@@ -331,6 +318,23 @@ public class TransactionsFragment extends Fragment {
             actionMode = null;
         }
     };
+
+    public void addTransaction(Transaction transaction){
+        if(transaction!=null){
+            if(mTransactions==null){
+                mTransactions = new ArrayList<>();
+            }
+            mTransactions.add(transaction);
+            addTransactionToHashMap(transaction);
+            if(payTrackDBHelper.insertDataToTransactionsTable(transaction)){
+                Log.d(TAG,"Transaction inserted to db - " + transaction.toString());
+            } else {
+                Log.e(TAG,"Couldn't insert transaction to db - " + transaction.toString());
+            }
+            transactionsRecyclerViewAdapter.notifyDataSetChanged();
+        }
+        Log.i(TAG, "Added transaction - " + transaction.toString());
+    }
 
     //func to delete a single transaction
     //make sure to call notifyDataSetChanged() after execution of this method

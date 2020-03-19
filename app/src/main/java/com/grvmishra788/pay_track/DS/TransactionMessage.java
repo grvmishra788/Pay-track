@@ -1,11 +1,15 @@
 package com.grvmishra788.pay_track.DS;
 
+import com.grvmishra788.pay_track.GlobalConstants;
+
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
 
-public class TransactionMessage {
+public class TransactionMessage implements Serializable, Comparable<TransactionMessage>{
     private UUID id;
     private String src;
     private String body;
@@ -54,9 +58,17 @@ public class TransactionMessage {
     @NonNull
     @Override
     public String toString() {
-        return "Transaction Message -" +
-                " date : " + date.toString() +
-                " src : " + src +
-                " body : " + body;
+        SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_DAY_AND_DATE);
+        String dateString = sdf.format(date);
+
+        return "Transaction Message - " +
+                "\nDATE : " + dateString +
+                "\nSENDER : " + src +
+                "\nBODY : " + body;
+    }
+
+    @Override
+    public int compareTo(TransactionMessage transactionMessage) {
+        return this.id.compareTo(transactionMessage.getId());
     }
 }
