@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.grvmishra788.pay_track.BackEnd.DbHelper;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,6 +19,34 @@ import static com.grvmishra788.pay_track.GlobalConstants.BULLET_SYMBOL;
 public class Utilities {
     //constant Class TAG
     private static final String TAG = Utilities.class.getName();
+
+    public static Date getTodayDateWithDefaultTime() {
+        // set Today as default date
+        //create date object
+        Calendar calendar = Calendar.getInstance();
+        //set time part of date as 0
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        return calendar.getTime();
+    }
+
+    public static Date getDateWithDefaultTime(int year, int month, int day){
+        //set year, month and day of calendar instance
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        //set time part of date as 0
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        return calendar.getTime();
+    }
 
     public static boolean entryPresentInDB(Context mContext, String tableName, String colName, String value) {
         DbHelper dbHelper = new DbHelper(mContext);

@@ -148,16 +148,7 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
         ib_date.setOnClickListener(dateClickListener);
         et_date.setOnClickListener(dateClickListener);
 
-        // set Today as default date
-        //create date object
-        Calendar calendar = Calendar.getInstance();
-        //set time part of date as 0
-        calendar.set(Calendar.MILLISECOND, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.HOUR, 0);
-        date = calendar.getTime();
-
+        date = Utilities.getTodayDateWithDefaultTime();
         //convert date to string & display in text view
         SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
         String currentDateString = sdf.format(date);
@@ -177,22 +168,9 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
         Log.i(TAG, "OnDateSetListener() called");
-
-        //get year, month and day from calendar instance && hours, minutes from earlier existing mDate
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month);
-        calendar.set(Calendar.DAY_OF_MONTH, day);
-
-        //set time part of date as 0
-        calendar.set(Calendar.MILLISECOND, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.HOUR, 0);
-
+        
         //create date object
-        date = calendar.getTime();
-
+        date = Utilities.getDateWithDefaultTime(year,month,day);
         //convert date to string & display in text view
         SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_DAY_AND_DATE);
         String currentDateTimeString = sdf.format(date);

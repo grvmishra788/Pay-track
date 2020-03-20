@@ -43,19 +43,9 @@ public class SmsManager extends BroadcastReceiver {
 
                 if(TransactionMessageParser.hasAmount(strMsgBody)){
                     // set Today as default date
-                    //create date object
-                    Calendar calendar = Calendar.getInstance();
-                    //set time part of date as 0
-                    calendar.set(Calendar.MILLISECOND, 0);
-                    calendar.set(Calendar.SECOND, 0);
-                    calendar.set(Calendar.MINUTE, 0);
-                    calendar.set(Calendar.HOUR, 0);
-                    Date date = calendar.getTime();
-
+                    Date date = Utilities.getTodayDateWithDefaultTime();
                     UUID id = UUID.randomUUID();
-
                     TransactionMessage transactionMessage = new TransactionMessage(id, strMsgSrc, strMsgBody, date);
-
                     if(payTrackDBHelper.insertDataToTransactionMessagesTable(transactionMessage)){
                         Toast.makeText(context, "Added Transaction Message to db", Toast.LENGTH_SHORT).show();;
                     } else {
