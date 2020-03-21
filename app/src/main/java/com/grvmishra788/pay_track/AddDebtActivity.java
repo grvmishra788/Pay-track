@@ -243,9 +243,9 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
                 if(parseInput()) {
                     if(debtToEdit==null){
                         //set default balance as zero
-                        Long debtAmt = Long.valueOf(0);
+                        Double debtAmt = Double.valueOf(0);
                         if(!TextUtils.isEmpty(amount)){
-                            debtAmt = Long.parseLong(amount);
+                            debtAmt = Double.parseDouble(amount);
                         }
 
                         //generate UUID for transaction
@@ -265,9 +265,9 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
                     } else {
 
                         //set default balance as zero
-                        Long debtAmt = Long.valueOf(0);
+                        Double debtAmt = Double.valueOf(0);
                         if(!TextUtils.isEmpty(amount)){
-                            debtAmt = Long.parseLong(amount);
+                            debtAmt = Double.parseDouble(amount);
                         }
                         Intent resultIntent = new Intent();
                         Debt newDebt =  debtToEdit.copy();

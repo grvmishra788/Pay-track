@@ -91,10 +91,10 @@
 
     <!--Fields Error-->
     <string name="error_field_account_no">An Account No. must contain only digits and should be at least 8 digits long !</string>
-    <string name="error_field_balance">Balance should be either empty OR it should contain only digits !</string>
+    <string name="error_field_balance">Balance should either be empty or a real number !</string>
     <string name="error_field_email">E-Mail input is not in proper format !</string>
     <string name="error_field_mobile">Mobile No. must be exactly 10 digits</string>
-    <string name="error_field_amount">Amount should not be empty and it should contain only digits !</string>
+    <string name="error_field_amount">Amount must be a real number !</string>
     <string name = "error_field_category_name">Category name cannot have \'/\' character !</string>
     
     <!--Button titles-->

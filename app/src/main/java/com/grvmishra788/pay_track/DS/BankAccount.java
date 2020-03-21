@@ -9,7 +9,7 @@ public class BankAccount extends CashAccount {
     private String email;
     private String mobileNumber;
 
-    public BankAccount(String nickName, long accountBalance, String accountNumber, String bankName, String email, String mobileNumber) {
+    public BankAccount(String nickName, Double accountBalance, String accountNumber, String bankName, String email, String mobileNumber) {
         super(nickName, accountBalance);
         this.accountNumber = accountNumber;
         this.bankName = bankName;

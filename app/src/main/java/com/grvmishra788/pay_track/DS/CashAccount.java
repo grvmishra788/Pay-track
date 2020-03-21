@@ -6,9 +6,9 @@ import androidx.annotation.NonNull;
 
 public class CashAccount implements Serializable {
     private String nickName;
-    private long accountBalance;
+    private Double accountBalance;
 
-    public CashAccount(String nickName, long accountBalance){
+    public CashAccount(String nickName, Double accountBalance){
         this.nickName = nickName;
         this.accountBalance = accountBalance;
     }
@@ -21,11 +21,11 @@ public class CashAccount implements Serializable {
         this.nickName = nickName;
     }
 
-    public long getAccountBalance() {
+    public Double getAccountBalance() {
         return accountBalance;
     }
 
-    public void setAccountBalance(long accountBalance) {
+    public void setAccountBalance(Double accountBalance) {
         this.accountBalance = accountBalance;
     }
 

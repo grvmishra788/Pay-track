@@ -10,14 +10,14 @@ import androidx.annotation.NonNull;
 
 public class Debt implements Serializable {
     private UUID id;
-    private long amount;
+    private Double amount;
     private Date date;
     private String description;
     private GlobalConstants.DebtType type;
     private String account;
     private String person;
 
-    public Debt(UUID id, long amount, Date date, String description, GlobalConstants.DebtType type, String account, String person) {
+    public Debt(UUID id, Double amount, Date date, String description, GlobalConstants.DebtType type, String account, String person) {
         this.id = id;
         this.amount = amount;
         this.date = date;
@@ -37,11 +37,11 @@ public class Debt implements Serializable {
         this.person = debt.getPerson();
     }
 
-    public long getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(long amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 

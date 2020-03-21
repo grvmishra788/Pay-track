@@ -8,7 +8,7 @@ public class DigitalAccount extends CashAccount {
     private String email;
     private String mobileNumber;
 
-    public DigitalAccount(String nickName, long accountBalance, String serviceName, String email, String mobileNumber) {
+    public DigitalAccount(String nickName, Double accountBalance, String serviceName, String email, String mobileNumber) {
         super(nickName, accountBalance);
         this.serviceName = serviceName;
         this.email = email;

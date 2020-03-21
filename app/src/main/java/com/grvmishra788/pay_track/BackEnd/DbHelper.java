@@ -118,7 +118,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 ACCOUNTS_TABLE_COL_ACCOUNT_NO + " TEXT, " +
                 ACCOUNTS_TABLE_COL_EMAIL + " TEXT, " +
                 ACCOUNTS_TABLE_COL_MOBILE + " TEXT, " +
-                ACCOUNTS_TABLE_COL_BALANCE + " INTEGER" +
+                ACCOUNTS_TABLE_COL_BALANCE + " REAL" +
                 ")";
 
         try {
@@ -133,7 +133,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private void createDebtsTable(SQLiteDatabase sqLiteDatabase) {
         String createDebtsTableSQLQuery = "create table IF NOT EXISTS " + DEBTS_TABLE + " (" +
                 DEBTS_TABLE_COL_ID + " TEXT COLLATE NOCASE NOT NULL PRIMARY KEY, " +
-                DEBTS_TABLE_COL_AMOUNT + " INTEGER, " +
+                DEBTS_TABLE_COL_AMOUNT + " REAL, " +
                 DEBTS_TABLE_COL_DESCRIPTION + " TEXT, " +
                 DEBTS_TABLE_COL_PERSON + " TEXT, " +
                 DEBTS_TABLE_COL_TYPE + " INTEGER, " +
@@ -207,7 +207,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private void createTransactionsTable(SQLiteDatabase sqLiteDatabase) {
         String createTransactionsTableSQLQuery = "create table IF NOT EXISTS " + TRANSACTIONS_TABLE + " (" +
                 TRANSACTIONS_TABLE_COL_ID + " TEXT COLLATE NOCASE NOT NULL PRIMARY KEY, " +
-                TRANSACTIONS_TABLE_COL_AMOUNT + " INTEGER, " +
+                TRANSACTIONS_TABLE_COL_AMOUNT + " REAL, " +
                 TRANSACTIONS_TABLE_COL_DESCRIPTION + " TEXT, " +
                 TRANSACTIONS_TABLE_COL_CATEGORY + " TEXT, " +
                 TRANSACTIONS_TABLE_COL_SUB_CATEGORY + " TEXT, " +
@@ -740,7 +740,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     String account_no = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_ACCOUNT_NO));
                     String email = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_EMAIL));
                     String mobile = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_MOBILE));
-                    Long balance = Long.parseLong(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BALANCE)));
+                    Double balance = Double.parseDouble(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BALANCE)));
 
                     accounts.add(new BankAccount(nick_name, balance, account_no, bank_name, email, mobile));
 
@@ -750,13 +750,13 @@ public class DbHelper extends SQLiteOpenHelper {
                     String service_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_SERVICE_NAME));
                     String email = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_EMAIL));
                     String mobile = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_MOBILE));
-                    Long balance = Long.parseLong(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BALANCE)));
+                    Double balance = Double.parseDouble(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BALANCE)));
 
                     accounts.add(new DigitalAccount(nick_name, balance, service_name, email, mobile));
                 } else {
 
                     String nick_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_NICK_NAME));
-                    Long balance = Long.parseLong(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BALANCE)));
+                    Double balance = Double.parseDouble(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BALANCE)));
 
                     accounts.add(new CashAccount(nick_name, balance));
                 }
@@ -774,7 +774,7 @@ public class DbHelper extends SQLiteOpenHelper {
         } else {
             ArrayList<Debt> debts = new ArrayList<>();
             while (cursor.moveToNext()) {
-                Long amount = cursor.getLong(cursor.getColumnIndex(DEBTS_TABLE_COL_AMOUNT));
+                Double amount = cursor.getDouble(cursor.getColumnIndex(DEBTS_TABLE_COL_AMOUNT));
                 String person = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_PERSON));
                 Date date = new Date(cursor.getLong(cursor.getColumnIndex(DEBTS_TABLE_COL_DATE)));
                 String description = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_DESCRIPTION));
@@ -858,7 +858,7 @@ public class DbHelper extends SQLiteOpenHelper {
         } else {
             ArrayList<Transaction> transactions = new ArrayList<>();
             while (cursor.moveToNext()) {
-                Long amount = cursor.getLong(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_AMOUNT));
+                Double amount = cursor.getDouble(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_AMOUNT));
                 String category = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_CATEGORY));
                 String subCategory = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_SUB_CATEGORY));
                 Date date = new Date(cursor.getLong(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_DATE)));

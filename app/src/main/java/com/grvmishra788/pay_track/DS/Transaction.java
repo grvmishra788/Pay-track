@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 public class Transaction implements Serializable, Comparable<Transaction> {
 
     private UUID id;
-    private long amount;
+    private Double amount;
     private String category;
     private String subCategory;
     private Date date;
@@ -20,7 +20,7 @@ public class Transaction implements Serializable, Comparable<Transaction> {
     private GlobalConstants.TransactionType type;
     private String account;
 
-    public Transaction(UUID id, long amount, String category, String subCategory, Date date, String description, GlobalConstants.TransactionType type, String account) {
+    public Transaction(UUID id, Double amount, String category, String subCategory, Date date, String description, GlobalConstants.TransactionType type, String account) {
         this.id = id;
         this.amount = amount;
         this.category = category;
@@ -51,11 +51,11 @@ public class Transaction implements Serializable, Comparable<Transaction> {
         this.id = id;
     }
 
-    public long getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(long amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 

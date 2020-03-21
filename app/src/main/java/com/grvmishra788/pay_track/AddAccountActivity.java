@@ -111,9 +111,9 @@ public class AddAccountActivity extends AppCompatActivity {
                             Log.d(TAG, "Entry with  name - " + nickName + " already present in account table");
                         } else {
                             //set default balance as zero
-                            Long balanceAcc = Long.valueOf(0);
+                            Double balanceAcc = Double.valueOf(0);
                             if (!TextUtils.isEmpty(accountBalance)) {
-                                balanceAcc = Long.parseLong(accountBalance);
+                                balanceAcc = Double.parseDouble(accountBalance);
                             }
                             switch (accountType.getSelectedItemPosition()) {
                                 case 0:
@@ -148,9 +148,9 @@ public class AddAccountActivity extends AppCompatActivity {
                         } else {
 
                             //set default balance as zero
-                            Long balanceAcc = Long.valueOf(0);
+                            Double balanceAcc = Double.valueOf(0);
                             if (!TextUtils.isEmpty(accountBalance)) {
-                                balanceAcc = Long.parseLong(accountBalance);
+                                balanceAcc = Double.parseDouble(accountBalance);
                             }
                             switch (accountType.getSelectedItemPosition()) {
                                 case 0:
@@ -227,17 +227,17 @@ public class AddAccountActivity extends AppCompatActivity {
             switch (accountTypeID) {
                 case 0:
                     validInputs.put(getString(R.string.account_number), InputValidationUtilities.isValidAccountNumber(accountNumber));
-                    validInputs.put(getString(R.string.balance), InputValidationUtilities.isValidNumber(accountBalance));
+                    validInputs.put(getString(R.string.balance), InputValidationUtilities.isValidBalance(accountBalance));
                     validInputs.put(getString(R.string.email), InputValidationUtilities.isValidEmail(email));
                     validInputs.put(getString(R.string.mobile), InputValidationUtilities.isValidMobileNumber(mobileNumber));
                     break;
                 case 1:
-                    validInputs.put(getString(R.string.balance), InputValidationUtilities.isValidNumber(accountBalance));
+                    validInputs.put(getString(R.string.balance), InputValidationUtilities.isValidBalance(accountBalance));
                     validInputs.put(getString(R.string.email), InputValidationUtilities.isValidEmail(email));
                     validInputs.put(getString(R.string.mobile), InputValidationUtilities.isValidMobileNumber(mobileNumber));
                     break;
                 case 2:
-                    validInputs.put(getString(R.string.balance), InputValidationUtilities.isValidNumber(accountBalance));
+                    validInputs.put(getString(R.string.balance), InputValidationUtilities.isValidBalance(accountBalance));
                     break;
                 default:
                     validInputs = null;

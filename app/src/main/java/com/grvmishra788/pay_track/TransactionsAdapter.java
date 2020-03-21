@@ -100,8 +100,8 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
 
                 //set total ampunt for curDateTransaction
                 String amountValue = "";
-                Long groupTransactionAmount = getGroupedTransactionAmount(curDateTransactions);
-                if(groupTransactionAmount>=new Long(0)){
+                Double groupTransactionAmount = getGroupedTransactionAmount(curDateTransactions);
+                if(groupTransactionAmount>=new Double(0)){
                     amountValue = " + " + String.valueOf(groupTransactionAmount);
                     holder.tv_group_amt.setTextColor(GREEN);
                 } else {
@@ -128,11 +128,11 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
         }
     }
 
-    private Long getGroupedTransactionAmount(ArrayList<Transaction> curDateTransactions) {
-        Long groupTransactionAmt = new Long(0);
+    private Double getGroupedTransactionAmount(ArrayList<Transaction> curDateTransactions) {
+        Double groupTransactionAmt = new Double(0);
 
         for (Transaction transaction:curDateTransactions){
-            Long transactionAmt = transaction.getAmount();
+            Double transactionAmt = transaction.getAmount();
             if(transaction.getType()== GlobalConstants.TransactionType.CREDIT){
                 groupTransactionAmt += transactionAmt;
             } else {

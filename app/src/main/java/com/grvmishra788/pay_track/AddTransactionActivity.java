@@ -256,9 +256,9 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
                     if(transactionToEdit == null) {     //Add transaction activity
 
                         //set default balance as zero
-                        Long transactionAmt = Long.valueOf(0);
+                        Double transactionAmt = Double.valueOf(0);
                         if(!TextUtils.isEmpty(amount)){
-                            transactionAmt = Long.parseLong(amount);
+                            transactionAmt = Double.parseDouble(amount);
                         }
 
                         //generate UUID for transaction
@@ -281,9 +281,9 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
                     } else {        //Edit transaction activity
 
                         //set default balance as zero
-                        Long transactionAmt = Long.valueOf(0);
+                        Double transactionAmt = Double.valueOf(0);
                         if(!TextUtils.isEmpty(amount)){
-                            transactionAmt = Long.parseLong(amount);
+                            transactionAmt = Double.parseDouble(amount);
                         }
                         Intent resultIntent = new Intent();
                         Transaction newTransaction =  transactionToEdit.copy();

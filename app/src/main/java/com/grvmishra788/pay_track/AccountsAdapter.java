@@ -66,7 +66,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
     public void onBindViewHolder(@NonNull AccountsViewHolder accountsViewHolder, int position) {
         Log.d(TAG, "onBindViewHolder() :: " + position + "-th account.");
         CashAccount account = mAccounts.get(position);
-        Long balance = account.getAccountBalance();
+        Double balance = account.getAccountBalance();
         if(account instanceof BankAccount){
             //hide unwanted views
             accountsViewHolder.ll_serviceName.setVisibility(View.GONE);
