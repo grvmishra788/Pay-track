@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android = "http://schemas.android.com/apk/res/android"
+	xmlns:app1 = "http://schemas.android.com/apk/res-auto">
+	<item
+		android:title = "Export to Spreadsheet">
+		<menu>
+			<item
+				android:id = "@+id/action_export_account"
+				android:title = "Accounts"/>
+			<item
+				android:id = "@+id/action_export_debts"
+				android:title = "Debts"/>
+			<item
+				android:id = "@+id/action_export_categories"
+				android:title = "Categories"/>
+			<item
+				android:id = "@+id/action_export_transactions"
+				android:title = "Transactions"/>
+		</menu>
+	</item>
+</menu>

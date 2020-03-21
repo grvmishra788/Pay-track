@@ -8,7 +8,7 @@ public abstract class GlobalConstants {
     public static final String BULLET_SYMBOL = "\u2022";  // •
 
     //SMS related constants
-    public static final int MY_PERMISSIONS_REQUEST_READ_SMS = 501;
+    public static final int MY_PERMISSIONS_REQUEST = 501;
     public static final String SMS_AMOUNT_REGEX = "(?i)(?:(?:RS|INR|MRP)\\.?\\s?)(\\d+(:?\\,\\d+)?(\\,\\d+)?(\\.\\d{1,2})?)";
 
     //Category Activity Types
@@ -66,6 +66,7 @@ public abstract class GlobalConstants {
 
     //Date format string to show Day and Date
     public static final String DATE_FORMAT_DAY_AND_DATE = "EEE - MMM dd, yyyy";
+    public static final String DATE_FORMAT_SIMPLE_UNDERSCORE = "dd_MMM_yyyy";
 
     //enums
     public static enum TransactionType{

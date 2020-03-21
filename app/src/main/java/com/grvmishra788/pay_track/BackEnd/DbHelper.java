@@ -944,4 +944,29 @@ public class DbHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    public Cursor rawTable(String tableName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = null;
+        switch (tableName) {
+            case ACCOUNTS_TABLE:
+                res = db.rawQuery("SELECT * FROM " + ACCOUNTS_TABLE , new String[]{});
+                break;
+            case DEBTS_TABLE:
+                res = db.rawQuery("SELECT * FROM " + DEBTS_TABLE , new String[]{});
+                break;
+            case CATEGORIES_TABLE:
+                res = db.rawQuery("SELECT * FROM " + CATEGORIES_TABLE , new String[]{});
+                break;
+            case SUB_CATEGORIES_TABLE:
+                res = db.rawQuery("SELECT * FROM " + SUB_CATEGORIES_TABLE , new String[]{});
+                break;
+            case TRANSACTIONS_TABLE:
+                res = db.rawQuery("SELECT * FROM " + TRANSACTIONS_TABLE , new String[]{});
+                break;
+            default:
+                break;
+        }
+        return res;
+    }
+
 }

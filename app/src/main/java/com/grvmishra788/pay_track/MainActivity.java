@@ -10,22 +10,35 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.grvmishra788.pay_track.BackEnd.DatabaseConstants;
+import com.grvmishra788.pay_track.BackEnd.DbHelper;
 import com.grvmishra788.pay_track.DS.Transaction;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
-import static com.grvmishra788.pay_track.GlobalConstants.MY_PERMISSIONS_REQUEST_READ_SMS;
+import static com.grvmishra788.pay_track.GlobalConstants.DATE_FORMAT_SIMPLE_UNDERSCORE;
+import static com.grvmishra788.pay_track.GlobalConstants.MY_PERMISSIONS_REQUEST;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SHOW_PENDING_MESSAGES;
 import static com.grvmishra788.pay_track.GlobalConstants.TRANSACTION_OBJECT;
 
@@ -50,9 +63,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_SMS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{android.Manifest.permission.READ_SMS, android.Manifest.permission.RECEIVE_SMS},
-                        MY_PERMISSIONS_REQUEST_READ_SMS);
+                    != PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED ) {
+                requestPermissions(new String[]{android.Manifest.permission.READ_SMS, android.Manifest.permission.RECEIVE_SMS,
+                                Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                        MY_PERMISSIONS_REQUEST);
+
             }
         }
 
@@ -146,11 +163,62 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //method to create menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d(TAG, "onCreateOptionsMenu()");
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.action_export_account:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    new ExportDatabaseCSVTask(DatabaseConstants.ACCOUNTS_TABLE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } else {
+                    new ExportDatabaseCSVTask(DatabaseConstants.ACCOUNTS_TABLE).execute();
+                }
+                break;
+            case R.id.action_export_debts:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    new ExportDatabaseCSVTask(DatabaseConstants.DEBTS_TABLE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } else {
+                    new ExportDatabaseCSVTask(DatabaseConstants.DEBTS_TABLE).execute();
+                }
+                break;
+            case R.id.action_export_categories:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    new ExportDatabaseCSVTask(DatabaseConstants.CATEGORIES_TABLE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } else {
+                    new ExportDatabaseCSVTask(DatabaseConstants.CATEGORIES_TABLE).execute();
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    new ExportDatabaseCSVTask(DatabaseConstants.SUB_CATEGORIES_TABLE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } else {
+                    new ExportDatabaseCSVTask(DatabaseConstants.SUB_CATEGORIES_TABLE).execute();
+                }
+
+                break;
+            case R.id.action_export_transactions:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    new ExportDatabaseCSVTask(DatabaseConstants.TRANSACTIONS_TABLE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } else {
+                    new ExportDatabaseCSVTask(DatabaseConstants.TRANSACTIONS_TABLE).execute();
+                }
+                break;
+        }
+        return true;
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_SMS: {
+            case MY_PERMISSIONS_REQUEST: {
                 if (!(grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     Toast.makeText(this, "App can't run without the permissions requested", Toast.LENGTH_SHORT ).show();
                     finish();
@@ -161,5 +229,71 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return;
+    }
+
+    public class ExportDatabaseCSVTask extends AsyncTask<String, Void, Boolean> {
+
+        private String exportTableName;
+        private final ProgressDialog dialog = new ProgressDialog(MainActivity.this);
+        DbHelper dbhelper;
+        private File exportDir = null;
+
+        public ExportDatabaseCSVTask(String tableName){
+            this.exportTableName = tableName;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            this.dialog.setMessage("Exporting table...");
+            this.dialog.show();
+            dbhelper = new DbHelper(MainActivity.this);
+        }
+
+        protected Boolean doInBackground(final String... args) {
+            if (exportTableName == DatabaseConstants.CATEGORIES_TABLE || exportTableName == DatabaseConstants.SUB_CATEGORIES_TABLE){
+                exportDir = new File(Environment.getExternalStorageDirectory(), "/" + getString(R.string.app_name) + "/Categories/");
+            }else {
+                exportDir = new File(Environment.getExternalStorageDirectory(), "/" + getString(R.string.app_name) + "/");
+            }
+            if (!exportDir.exists()) { exportDir.mkdirs(); }
+
+            Date date = Utilities.getTodayDateWithDefaultTime();
+            SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_SIMPLE_UNDERSCORE);
+            String dateString = sdf.format(date);
+
+            exportDir = new File(this.exportDir, exportTableName + "_" + dateString+".csv");
+            try {
+                exportDir.createNewFile();
+                CSVWriter csvWrite = new CSVWriter(new FileWriter(exportDir));
+                Cursor curCSV = dbhelper.rawTable(exportTableName);
+                if(curCSV!=null){
+                    csvWrite.writeNext(curCSV.getColumnNames());
+                    while(curCSV.moveToNext()) {
+                        String arrStr[]=null;
+                        String[] mySecondStringArray = new String[curCSV.getColumnNames().length];
+                        for(int i=0;i<curCSV.getColumnNames().length;i++)
+                        {
+                            mySecondStringArray[i] =curCSV.getString(i);
+                        }
+                        csvWrite.writeNext(mySecondStringArray);
+                    }
+                    csvWrite.close();
+                    curCSV.close();
+                    return true;
+                }
+                return false;
+            } catch (IOException e) {
+                return false;
+            }
+        }
+
+        protected void onPostExecute(final Boolean success) {
+            if (this.dialog.isShowing()) { this.dialog.dismiss(); }
+            if (success) {
+                Toast.makeText(MainActivity.this, "Exported to - " + exportDir, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "Export failed", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
