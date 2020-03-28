@@ -23,6 +23,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SortedList;
 
 import static android.graphics.Color.GREEN;
 import static android.graphics.Color.RED;
@@ -36,7 +37,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
     private Context mContext;
 
     private HashMap<Date, ArrayList<Transaction>> datedTransactionHashMap;
-    private List<Date> dates;
+    private SortedList<Date> dates;
 
     //Variable for onItemClickListener
     private OnItemClickListener onItemClickListener;
@@ -67,7 +68,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
         return transactionsViewHolder;
     }
 
-    public List<Date> getDates() {
+    public SortedList<Date> getDates() {
         return dates;
     }
 
@@ -76,8 +77,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
     public void onBindViewHolder(@NonNull TransactionsAdapter.TransactionsViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder() :: " + position );
         if(position==0){
-            dates = new ArrayList<Date>(datedTransactionHashMap.keySet()); // <== Set to List
-            Log.d(TAG,"All dates - " + dates);
+            createSortedDatesList();
         }
 
         Date date = dates.get(position);
@@ -126,6 +126,48 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
         } else {
             Log.e(TAG,"Date for position - " + position + " is null !");
         }
+    }
+
+    private void createSortedDatesList() {
+        List<Date> datesList = new ArrayList<Date>(datedTransactionHashMap.keySet()); // <== Set to List
+        dates = new SortedList<Date>(Date.class, new SortedList.Callback<Date>() {
+            @Override
+            public int compare(Date o1, Date o2) {
+                return o2.compareTo(o1); // o2 compares to o1 for descending order
+            }
+
+            @Override
+            public void onChanged(int position, int count) {
+            }
+
+            @Override
+            public boolean areContentsTheSame(Date oldItem, Date newItem) {
+                return oldItem.equals(newItem);
+            }
+
+            @Override
+            public boolean areItemsTheSame(Date item1, Date item2) {
+                return item1.equals(item2);
+            }
+
+            @Override
+            public void onInserted(int position, int count) {
+            }
+
+            @Override
+            public void onRemoved(int position, int count) {
+            }
+
+            @Override
+            public void onMoved(int fromPosition, int toPosition) {
+            }
+        });
+        dates.beginBatchedUpdates();
+        for (int i = 0; i < datesList.size(); i++) {
+            dates.add(datesList.get(i));
+        }
+        dates.endBatchedUpdates();
+        Log.d(TAG,"All dates - " + dates);
     }
 
     private Double getGroupedTransactionAmount(ArrayList<Transaction> curDateTransactions) {
