@@ -18,4 +18,21 @@
 				android:title = "Transactions"/>
 		</menu>
 	</item>
+	<item
+		android:title = "Import from Spreadsheets">
+		<menu>
+			<item
+				android:id = "@+id/action_import_account"
+				android:title = "Accounts"/>
+			<item
+				android:id = "@+id/action_import_debts"
+				android:title = "Debts"/>
+			<item
+				android:id = "@+id/action_import_categories"
+				android:title = "Categories"/>
+			<item
+				android:id = "@+id/action_import_transactions"
+				android:title = "Transactions"/>
+		</menu>
+	</item>
 </menu>

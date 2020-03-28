@@ -59,4 +59,11 @@ public class DatabaseConstants {
     public static final int DIGITAL_ACCOUNT = 102;
     public static final int CASH_ACCOUNT = 103;
 
+    //string arrays for column names
+    public static final String[] ACCOUNTS_COLUMN_NAMES = {
+            ACCOUNTS_TABLE_COL_NICK_NAME, ACCOUNTS_TABLE_COL_TYPE, ACCOUNTS_TABLE_COL_BANK_NAME,
+            ACCOUNTS_TABLE_COL_SERVICE_NAME, ACCOUNTS_TABLE_COL_ACCOUNT_NO, ACCOUNTS_TABLE_COL_EMAIL,
+            ACCOUNTS_TABLE_COL_MOBILE, ACCOUNTS_TABLE_COL_BALANCE
+    };
+
 }

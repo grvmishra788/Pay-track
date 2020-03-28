@@ -142,8 +142,9 @@ public class AccountsFragment extends Fragment {
                         mAccounts = new ArrayList<>();
                         accountsRecyclerViewAdapter = new AccountsAdapter(getContext(), mAccounts);
                     }
-                    addAccount(account);
-                    Log.i(TAG, "Added account - " + account.toString());
+                    if(addAccount(account)){
+                        Log.i(TAG, "Added account - " + account.toString());
+                    }
                 }
             } else if (requestCode == REQ_CODE_EDIT_ACCOUNT) {       //edit account activity result
 
@@ -247,14 +248,16 @@ public class AccountsFragment extends Fragment {
         }
     };
 
-    private void addAccount(CashAccount account) {
-        mAccounts.add(account);
+    public boolean addAccount(CashAccount account) {
         if(payTrackDBHelper.insertDataToAccountsTable(account)){
             Log.d(TAG,"Account inserted to db - " + account.toString());
-        } else {
-            Log.e(TAG,"Couldn't insert account to db - " + account.toString());
+            mAccounts.add(account);
+            accountsRecyclerViewAdapter.notifyDataSetChanged();
+            return true;
         }
-        accountsRecyclerViewAdapter.notifyDataSetChanged();
+
+        Log.e(TAG,"Couldn't insert account to db - " + account.toString());
+        return false;
     }
 
     private void deleteAccount(int position) {

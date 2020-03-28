@@ -28,9 +28,11 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.grvmishra788.pay_track.BackEnd.DatabaseConstants;
 import com.grvmishra788.pay_track.BackEnd.DbHelper;
+import com.grvmishra788.pay_track.DS.CashAccount;
 import com.grvmishra788.pay_track.DS.Transaction;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -209,6 +211,52 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     new ExportDatabaseCSVTask(DatabaseConstants.TRANSACTIONS_TABLE).execute();
                 }
+                break;
+
+            case R.id.action_import_account:
+//                Utilities.showDialogToImportTable(this, DatabaseConstants.ACCOUNTS_TABLE);
+                final String[] tableLocation = {""};
+                ImportTableDialog importTableDialog = new ImportTableDialog(this,  DatabaseConstants.ACCOUNTS_TABLE);
+                importTableDialog.setListener(new DialogListener() {
+                    @Override
+                    public void OnSelectedFile(String fileName) {
+
+                        CSVParser csvParser = null;
+                        try {
+                            csvParser= new CSVParser(fileName, DatabaseConstants.ACCOUNTS_TABLE);
+                        } catch (FileNotFoundException e) {
+                            Toast.makeText(getBaseContext(), "Couldn't find the file in the location", Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                        }
+
+                        if(csvParser!=null){
+                            if(!csvParser.isValidTable()){
+                                Toast.makeText(getBaseContext(), "Not A Valid Accounts Table", Toast.LENGTH_SHORT).show();
+                            } else {
+                                ArrayList<CashAccount> accounts= csvParser.getAllAccounts();
+                                if(accounts!=null){
+                                    int count = 0;
+                                    for(CashAccount account: accounts){
+                                        if(((AccountsFragment) mViewPagerAdapter.getItem(0)).addAccount(account)) {
+                                            count++;
+                                        }
+                                    }
+                                    Toast.makeText(getBaseContext(), "Successfully added " + count + " out of " + String.valueOf(accounts.size()) + " valid accounts in spreadsheet.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } else {
+                            Toast.makeText(getBaseContext(), "Error parsing the file", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+                importTableDialog.show();
+                break;
+            case R.id.action_import_debts:
+                break;
+            case R.id.action_import_categories:
+                break;
+            case R.id.action_import_transactions:
                 break;
         }
         return true;

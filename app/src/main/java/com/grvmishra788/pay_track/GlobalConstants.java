@@ -68,6 +68,9 @@ public abstract class GlobalConstants {
     public static final String DATE_FORMAT_DAY_AND_DATE = "EEE - MMM dd, yyyy";
     public static final String DATE_FORMAT_SIMPLE_UNDERSCORE = "dd_MMM_yyyy";
 
+    //file extensions
+    public static final String FILE_EXTENSION_CSV = ".csv";
+
     //enums
     public static enum TransactionType{
         DEBIT, CREDIT
