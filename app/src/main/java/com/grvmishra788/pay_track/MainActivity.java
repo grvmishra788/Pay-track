@@ -53,7 +53,9 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private ViewPagerAdapter mViewPagerAdapter;
 
-    //
+    //db helper variable
+    private DbHelper payTrackDBHelper;
+
     private DrawerLayout drawer;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -75,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        //init db
+        payTrackDBHelper = new DbHelper(this);
+
         //init tabLayout and viewPager
         mTabLayout = findViewById(R.id.layoutBottomTabs);
         mViewPager = findViewById(R.id.viewPager);
@@ -91,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
         //setup action bar and navigation drawer
         setUpToolBarAndNavDrawer();
         Log.i(TAG, "onCreate() ends!");
+    }
+
+    //function to get db helper object
+    public DbHelper getPayTrackDBHelper() {
+        return payTrackDBHelper;
     }
 
     //function to setup action bar and navigation drawer

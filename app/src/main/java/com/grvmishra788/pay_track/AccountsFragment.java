@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.grvmishra788.pay_track.BackEnd.DbHelper;
 import com.grvmishra788.pay_track.DS.CashAccount;
 
 import java.util.ArrayList;
@@ -50,8 +49,6 @@ public class AccountsFragment extends Fragment {
     private AccountsAdapter accountsRecyclerViewAdapter;
     private RecyclerView.LayoutManager accountsRecyclerViewLayoutManager;
 
-    private DbHelper payTrackDBHelper;
-
     // fields to help keep track of app’s state for Contextual Action Mode
     private boolean isMultiSelect = false;
     private TreeSet<Integer> selectedItems = new TreeSet<>();
@@ -63,11 +60,8 @@ public class AccountsFragment extends Fragment {
         Log.i(TAG, "onCreateView() starts...");
         View view = inflater.inflate(R.layout.layout_accounts_fragment, container, false);
 
-        //init db
-        payTrackDBHelper = new DbHelper(getContext());
-
         //init accounts list
-        mAccounts = payTrackDBHelper.getAllAccounts();
+        mAccounts = ((MainActivity) getActivity()).getPayTrackDBHelper().getAllAccounts();
         if(mAccounts == null){
             mAccounts = new ArrayList<>();
         }
@@ -153,7 +147,7 @@ public class AccountsFragment extends Fragment {
                 CashAccount oldAccount = mAccounts.get(position);
                 CashAccount newAccount =  (CashAccount) data.getSerializableExtra(GlobalConstants.ACCOUNT_OBJECT);
                 if(newAccount!=null){
-                    if (payTrackDBHelper.updateDataInAccountsTable(oldAccount, newAccount)) {
+                    if (((MainActivity) getActivity()).getPayTrackDBHelper().updateDataInAccountsTable(oldAccount, newAccount)) {
                         Log.d(TAG, "Account updated in db - FROM : " + oldAccount.toString() + " TO : " + newAccount.toString());
                     } else {
                         Log.e(TAG, "Couldn't update category to db - " + oldAccount.toString());
@@ -249,7 +243,7 @@ public class AccountsFragment extends Fragment {
     };
 
     public boolean addAccount(CashAccount account) {
-        if(payTrackDBHelper.insertDataToAccountsTable(account)){
+        if(((MainActivity) getActivity()).getPayTrackDBHelper().insertDataToAccountsTable(account)){
             Log.d(TAG,"Account inserted to db - " + account.toString());
             mAccounts.add(account);
             accountsRecyclerViewAdapter.notifyDataSetChanged();
@@ -264,10 +258,10 @@ public class AccountsFragment extends Fragment {
         //remove category
         CashAccount account = mAccounts.get(position);
 
-        int numLinksToCategoriesTable = payTrackDBHelper.getNumberOfLinksToCategoriesTable(account);
-        int numLinksToSubCategoriesTable = payTrackDBHelper.getNumberOfLinksToSubCategoriesTable(account);
-        int numLinksToTransactionsTable = payTrackDBHelper.getNumberOfLinksToTransactionsTable(account);
-        int numLinksToDebtsTable = payTrackDBHelper.getNumberOfLinksToDebtsTable(account);
+        int numLinksToCategoriesTable = ((MainActivity) getActivity()).getPayTrackDBHelper().getNumberOfLinksToCategoriesTable(account);
+        int numLinksToSubCategoriesTable = ((MainActivity) getActivity()).getPayTrackDBHelper().getNumberOfLinksToSubCategoriesTable(account);
+        int numLinksToTransactionsTable = ((MainActivity) getActivity()).getPayTrackDBHelper().getNumberOfLinksToTransactionsTable(account);
+        int numLinksToDebtsTable = ((MainActivity) getActivity()).getPayTrackDBHelper().getNumberOfLinksToDebtsTable(account);
 
         if(numLinksToCategoriesTable!=0 || numLinksToSubCategoriesTable!=0 || numLinksToTransactionsTable!=0 || numLinksToDebtsTable!=0){
             String msg = account.getNickName() + " account has -\n" +
@@ -278,7 +272,7 @@ public class AccountsFragment extends Fragment {
                     "\nDo you still want to delete this account? ";
                     forceDeleteDialog(msg, position);
         } else {
-            if (payTrackDBHelper.deleteDataFromAccountsTable(account)) {
+            if (((MainActivity) getActivity()).getPayTrackDBHelper().deleteDataFromAccountsTable(account)) {
                 Log.d(TAG, "Account deleted from db : " + account.toString());
             } else {
                 Log.e(TAG, "Couldn't delete Account from db : " + account.toString());
@@ -298,7 +292,7 @@ public class AccountsFragment extends Fragment {
             public void onClick(DialogInterface dialogInterface, int i) {
                 Log.d(TAG, "Positive button clicked on Force Delete alert dialog!!");
                 CashAccount account = mAccounts.get(position);
-                if (payTrackDBHelper.deleteDataFromAccountsTable(account)) {
+                if (((MainActivity) getActivity()).getPayTrackDBHelper().deleteDataFromAccountsTable(account)) {
                     Log.d(TAG, "Account deleted from db : " + account.toString());
                 } else {
                     Log.e(TAG, "Couldn't delete Account from db : " + account.toString());

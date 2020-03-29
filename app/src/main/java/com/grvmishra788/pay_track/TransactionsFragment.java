@@ -52,8 +52,6 @@ public class TransactionsFragment extends Fragment {
     private TransactionsAdapter transactionsRecyclerViewAdapter;
     private RecyclerView.LayoutManager transactionsRecyclerViewLayoutManager;
 
-    private DbHelper payTrackDBHelper;
-
     // fields to help keep track of app’s state for Contextual Action Mode
     private boolean isMultiSelect = false;
     private TreeSet<Integer> selectedItems = new TreeSet<>();
@@ -69,11 +67,8 @@ public class TransactionsFragment extends Fragment {
         Log.i(TAG, "onCreateView() starts...");
         View view = inflater.inflate(R.layout.layout_transactions_fragment, container, false);
 
-        //init db
-        payTrackDBHelper = new DbHelper(getContext());
-
         //init transasctions list
-        mTransactions = payTrackDBHelper.getAllTransactions();
+        mTransactions = ((MainActivity) getActivity()).getPayTrackDBHelper().getAllTransactions();
 
         //init datedTransactionHashMap
         datedTransactionHashMap = new HashMap<>();
@@ -178,7 +173,7 @@ public class TransactionsFragment extends Fragment {
 
                 Transaction oldTransaction = (Transaction) data.getSerializableExtra(GlobalConstants.OLD_TRANSACTION_OBJECT);
                 Transaction newTransaction = (Transaction) data.getSerializableExtra(GlobalConstants.NEW_TRANSACTION_OBJECT);
-                if (payTrackDBHelper.updateDataInTransactionsTable(oldTransaction, newTransaction)) {
+                if (((MainActivity) getActivity()).getPayTrackDBHelper().updateDataInTransactionsTable(oldTransaction, newTransaction)) {
                     Log.d(TAG, "Transaction updated in db - FROM : " + oldTransaction.toString() + " TO : " + newTransaction.toString());
                 } else {
                     Log.e(TAG, "Couldn't update Transaction to db - " + oldTransaction.toString());
@@ -326,7 +321,7 @@ public class TransactionsFragment extends Fragment {
             }
             mTransactions.add(transaction);
             addTransactionToHashMap(transaction);
-            if(payTrackDBHelper.insertDataToTransactionsTable(transaction)){
+            if(((MainActivity) getActivity()).getPayTrackDBHelper().insertDataToTransactionsTable(transaction)){
                 Log.d(TAG,"Transaction inserted to db - " + transaction.toString());
             } else {
                 Log.e(TAG,"Couldn't insert transaction to db - " + transaction.toString());
@@ -339,7 +334,7 @@ public class TransactionsFragment extends Fragment {
     //func to delete a single transaction
     //make sure to call notifyDataSetChanged() after execution of this method
     private void deleteTransaction(Transaction transaction) {
-        if (payTrackDBHelper.deleteDataInTransactionsTable(transaction)) {
+        if (((MainActivity) getActivity()).getPayTrackDBHelper().deleteDataInTransactionsTable(transaction)) {
             Log.d(TAG, "Transaction deleted from db : " + transaction.toString());
         } else {
             Log.e(TAG, "Couldn't delete transaction from db : " + transaction.toString());

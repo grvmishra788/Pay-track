@@ -54,8 +54,6 @@ public class DebtsFragment extends Fragment {
     private DebtsAdapter debtsRecyclerViewAdapter;
     private RecyclerView.LayoutManager debtsRecyclerViewLayoutManager;
 
-    private DbHelper payTrackDBHelper;
-
     // fields to help keep track of app’s state for Contextual Action Mode
     private boolean isMultiSelect = false;
     private TreeSet<Integer> selectedItems = new TreeSet<>();
@@ -66,18 +64,13 @@ public class DebtsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.layout_debts_fragment, container, false);
 
-        //init db
-        payTrackDBHelper = new DbHelper(getContext());
-
         //init debts list
-        mDebts = payTrackDBHelper.getAllDebts();
+        mDebts = ((MainActivity) getActivity()).getPayTrackDBHelper().getAllDebts();
 
         if(mDebts == null){
             Log.d(TAG, "mDebts is null");
             mDebts = new ArrayList<>();
         }
-
-
 
         //init RecyclerView
         debtsRecyclerView = (RecyclerView) view.findViewById(R.id.show_debt_recycler_view);
@@ -147,7 +140,7 @@ public class DebtsFragment extends Fragment {
                     }
                     mDebts.add(debt);
 
-                    if(payTrackDBHelper.insertDataToDebtsTable(debt)){
+                    if(((MainActivity) getActivity()).getPayTrackDBHelper().insertDataToDebtsTable(debt)){
                         Log.d(TAG,"Debt inserted to db - " + debt.toString());
                     } else {
                         Log.e(TAG,"Couldn't insert debt to db - " + debt.toString());
@@ -165,7 +158,7 @@ public class DebtsFragment extends Fragment {
                 Debt oldDebt = mDebts.get(position);
                 Debt newDebt =  (Debt) data.getSerializableExtra(GlobalConstants.DEBT_OBJECT);
                 if(newDebt!=null){
-                    if (payTrackDBHelper.updateDataInDebtsTable(oldDebt, newDebt)) {
+                    if (((MainActivity) getActivity()).getPayTrackDBHelper().updateDataInDebtsTable(oldDebt, newDebt)) {
                         Log.d(TAG, "Debt updated in db - FROM : " + oldDebt.toString() + " TO : " + newDebt.toString());
                     } else {
                         Log.e(TAG, "Couldn't update debt to db - " + oldDebt.toString());
@@ -261,7 +254,7 @@ public class DebtsFragment extends Fragment {
 
     private void deleteDebt(int position) {
         Debt debt = mDebts.get(position);
-        if (payTrackDBHelper.deleteDataFromDebtsTable(debt)) {
+        if (((MainActivity) getActivity()).getPayTrackDBHelper().deleteDataFromDebtsTable(debt)) {
             Log.d(TAG, "Account deleted from db : " + debt.toString());
         } else {
             Log.e(TAG, "Couldn't delete Account from db : " + debt.toString());
