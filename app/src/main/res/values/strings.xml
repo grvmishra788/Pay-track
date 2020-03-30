@@ -89,6 +89,7 @@
     <string name = "hide_guidelines">Hide Guidelines</string>
     <string name = "import_rule_account_heading">The spreadsheet must be a .csv having following columns - </string>
     <string name = "import_rule_account_nickName">• <b>Nick_name</b> - <i>Having Not Null String</i> </string>
+    <string name = "import_rule_account_type">• <b>Type</b> - <i>Having Value : \n\t <b>> 101</b> - if it is a bank account;\n\t <b>> 102</b> - if it is a service account; and \n\t <b>> 103</b> - if it is a cash account</i> </string>
     <string name = "import_rule_account_bankName">• <b>Bank_Name</b> - <i>Having Not Null String representing bank name only IF it is a Bank A/C ELSE Empty </i></string>
     <string name = "import_rule_account_serviceName">• <b>Service_Name</b> - <i>Having Not Null String representing service name only IF it is a Service A/C ELSE Empty </i></string>
     <string name = "import_rule_account_accountNo">• <b>Account_No</b> - <i>Having 8 digits or more representing the bank account number only IF it is a bank account ELSE Empty </i></string>

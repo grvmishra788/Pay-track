@@ -45,6 +45,7 @@ public class ImportTableDialog extends AlertDialog.Builder {
                 tableString = "Accounts";
                 ll_guidelines.addView(getGuildLineMainTV(mContext, R.string.import_rule_account_heading));
                 ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_account_nickName));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_account_type));
                 ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_account_bankName));
                 ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_account_serviceName));
                 ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_account_accountNo));
