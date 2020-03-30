@@ -88,13 +88,24 @@
     <string name = "show_guidelines">Show Guidelines</string>
     <string name = "hide_guidelines">Hide Guidelines</string>
     <string name = "import_rule_account_heading">The spreadsheet must be a .csv having following columns - </string>
-    <string name = "import_rule_account_nickName">• <b>Nick_name</b> - <i>Having Not Null Strings</i> </string>
-    <string name = "import_rule_account_bankName">• <b>Bank_Name</b> - <i>Having Not Null Strings representing bank name only IF it is a Bank A/C ELSE Empty </i></string>
-    <string name = "import_rule_account_serviceName">• <b>Service_Name</b> - <i>Having Not Null Strings representing srvice name only IF it is a Service A/C ELSE Empty </i></string>
+    <string name = "import_rule_account_nickName">• <b>Nick_name</b> - <i>Having Not Null String</i> </string>
+    <string name = "import_rule_account_bankName">• <b>Bank_Name</b> - <i>Having Not Null String representing bank name only IF it is a Bank A/C ELSE Empty </i></string>
+    <string name = "import_rule_account_serviceName">• <b>Service_Name</b> - <i>Having Not Null String representing service name only IF it is a Service A/C ELSE Empty </i></string>
     <string name = "import_rule_account_accountNo">• <b>Account_No</b> - <i>Having 8 digits or more representing the bank account number only IF it is a bank account ELSE Empty </i></string>
-    <string name = "import_rule_account_email">• <b>Email</b> - <i>Having Not Null Email Strings only IF it is a service account or a bank account ELSE Empty </i></string>
-    <string name = "import_rule_account_mobile">• <b>Mobile</b> - <i>Having Not Null Strings only IF it is a service account or a bank account ELSE Empty </i></string>
+    <string name = "import_rule_account_email">• <b>Email</b> - <i>Having Not Null Email String only IF it is a service account or a bank account ELSE Empty </i></string>
+    <string name = "import_rule_account_mobile">• <b>Mobile</b> - <i>Having Not Null String only IF it is a service account or a bank account ELSE Empty </i></string>
     <string name = "import_rule_account_balance">• <b>Balance</b> - <i>Either empty Or Having Real Number representing the balance in the A/C </i></string>
+    
+    <string name = "import_rule_category_heading">The spreadsheet must be a .csv having following columns - </string>
+    <string name = "import_rule_category_categoryName">• <b>Category_Name</b> - <i>Having Not Null String</i> </string>
+    <string name = "import_rule_category_accountNickName">• <b>Account_Name</b> - <i>Having Not Null String representing the account name, corresponding category is associated by default. The corresponding entry must be present in accounts table. </i></string>
+    <string name = "import_rule_category_description">• <b>Description</b> - <i>Having String describing the category </i></string>
+    
+    <string name = "import_rule_sub_category_heading">The spreadsheet must be a .csv having following columns - </string>
+    <string name = "import_rule_sub_category_categoryName">• <b>Sub_Category_Name</b> - <i>Having Not Null String</i> </string>
+    <string name = "import_rule_sub_category_accountNickName">• <b>Account_Name</b> - <i>Having Not Null String representing the account name, the sub-category is associated by default. The corresponding entry must be present in Accounts list. </i></string>
+    <string name = "import_rule_sub_category_description">• <b>Description</b> - <i>Having String describing the sub-category </i></string>
+    <string name = "import_rule_sub_category_parent">• <b>Parent</b> - <i>Having Not Null String representing the parent category name, the sub-category is associated by default. The corresponding entry must be present in Categories list. </i></string>
     
     <!--Errors-->
     <string name="title_general_error">Uh Oh..</string>

@@ -7,6 +7,7 @@ import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -31,26 +32,49 @@ public class ImportTableDialog extends AlertDialog.Builder {
         super(mContext);
         Log.i(TAG,"ImportTableDialog() - " + tableName);
         this.tableName = tableName;
+
+        //init views
+        LayoutInflater inflater = ((AppCompatActivity)mContext).getLayoutInflater();
+        View alertLayout = inflater.inflate(R.layout.layout_import_table_dialog, null);
+        final LinearLayout ll_guidelines = alertLayout.findViewById(R.id.ll_guidelines);
+        final TextView tv_guideline = alertLayout.findViewById(R.id.tv_guideline);
+        final ImageButton ib_guideline = alertLayout.findViewById(R.id.ib_guideline);
+
         switch (tableName){
             case DatabaseConstants.ACCOUNTS_TABLE:
                 tableString = "Accounts";
+                ll_guidelines.addView(getGuildLineMainTV(mContext, R.string.import_rule_account_heading));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_account_nickName));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_account_bankName));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_account_serviceName));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_account_accountNo));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_account_email));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_account_mobile));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_account_balance));
                 break;
             case DatabaseConstants.DEBTS_TABLE:
                 tableString = "Debts";
                 break;
             case DatabaseConstants.CATEGORIES_TABLE:
                 tableString = "Categories";
+                ll_guidelines.addView(getGuildLineMainTV(mContext, R.string.import_rule_category_heading));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_category_categoryName));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_category_accountNickName));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_category_description));
+                break;
+            case DatabaseConstants.SUB_CATEGORIES_TABLE:
+                tableString = "Sub-Categories";
+                ll_guidelines.addView(getGuildLineMainTV(mContext, R.string.import_rule_sub_category_heading));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_sub_category_categoryName));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_sub_category_accountNickName));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_sub_category_description));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_sub_category_parent));
                 break;
             case DatabaseConstants.TRANSACTIONS_TABLE:
                 tableString = "Transactions";
                 break;
         }
-        LayoutInflater inflater = ((AppCompatActivity)mContext).getLayoutInflater();
-        View alertLayout = inflater.inflate(R.layout.layout_import_table_dialog, null);
 
-        final LinearLayout ll_guidelines = alertLayout.findViewById(R.id.ll_guidelines);
-        final TextView tv_guideline = alertLayout.findViewById(R.id.tv_guideline);
-        final ImageButton ib_guideline = alertLayout.findViewById(R.id.ib_guideline);
         ib_guideline.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
@@ -89,7 +113,7 @@ public class ImportTableDialog extends AlertDialog.Builder {
             }
         });
 
-        setTitle("Import " + tableString+ " : ")
+        setTitle("Import " + tableString + " : ")
                 .setView(alertLayout)
                 .setCancelable(false)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -115,5 +139,45 @@ public class ImportTableDialog extends AlertDialog.Builder {
 
     public void setListener(DialogListener listener) {
         this.listener = listener;
+    }
+
+    private TextView getGuildLineMainTV(Context context, int resID){
+        /*
+        <TextView
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_8_dp"
+			android:layout_marginTop = "@dimen/size_10_dp"
+			android:layout_marginRight = "@dimen/size_8_dp" />
+         */
+
+        TextView tv = new TextView(context);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        int marginSideInDp = Utilities.getPxFromDip(context, 8);
+        int marginTopInDp = Utilities.getPxFromDip(context, 10);
+        params.setMargins(marginSideInDp, marginTopInDp, marginSideInDp, 0);
+        tv.setLayoutParams(params);
+        tv.setText(context.getText(resID));
+        return tv;
+    }
+
+    private TextView getGuildLineSubTV(Context context, int resID){
+        /*
+        <TextView
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_10_dp"
+			android:layout_marginTop = "@dimen/size_4_dp"
+			android:layout_marginRight = "@dimen/size_10_dp" />
+         */
+
+        TextView tv = new TextView(context);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        int marginSideInDp = Utilities.getPxFromDip(context, 4);
+        int marginTopInDp = Utilities.getPxFromDip(context, 10);
+        params.setMargins(marginSideInDp, marginTopInDp, marginSideInDp, 0);
+        tv.setLayoutParams(params);
+        tv.setText(context.getText(resID));
+        return tv;
     }
 }

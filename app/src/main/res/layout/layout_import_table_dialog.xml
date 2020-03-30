@@ -37,73 +37,7 @@
 		android:layout_marginLeft = "@dimen/size_10_dp"
 		android:layout_marginRight = "@dimen/size_10_dp"
 		android:orientation = "vertical"
-		android:visibility = "gone">
-		
-		<TextView
-			android:layout_width = "match_parent"
-			android:layout_height = "wrap_content"
-			android:layout_marginLeft = "@dimen/size_8_dp"
-			android:layout_marginTop = "@dimen/size_10_dp"
-			android:layout_marginRight = "@dimen/size_8_dp"
-			android:text = "@string/import_rule_account_heading" />
-		
-		<TextView
-			android:layout_width = "match_parent"
-			android:layout_height = "wrap_content"
-			android:layout_marginLeft = "@dimen/size_10_dp"
-			android:layout_marginTop = "@dimen/size_4_dp"
-			android:layout_marginRight = "@dimen/size_10_dp"
-			android:text = "@string/import_rule_account_nickName" />
-		
-		<TextView
-			android:layout_width = "match_parent"
-			android:layout_height = "wrap_content"
-			android:layout_marginLeft = "@dimen/size_10_dp"
-			android:layout_marginTop = "@dimen/size_4_dp"
-			android:layout_marginRight = "@dimen/size_10_dp"
-			android:text = "@string/import_rule_account_bankName" />
-		
-		<TextView
-			android:layout_width = "match_parent"
-			android:layout_height = "wrap_content"
-			android:layout_marginLeft = "@dimen/size_10_dp"
-			android:layout_marginTop = "@dimen/size_4_dp"
-			android:layout_marginRight = "@dimen/size_10_dp"
-			android:text = "@string/import_rule_account_serviceName" />
-		
-		<TextView
-			android:layout_width = "match_parent"
-			android:layout_height = "wrap_content"
-			android:layout_marginLeft = "@dimen/size_10_dp"
-			android:layout_marginTop = "@dimen/size_4_dp"
-			android:layout_marginRight = "@dimen/size_10_dp"
-			android:text = "@string/import_rule_account_accountNo" />
-		
-		<TextView
-			android:layout_width = "match_parent"
-			android:layout_height = "wrap_content"
-			android:layout_marginLeft = "@dimen/size_10_dp"
-			android:layout_marginTop = "@dimen/size_4_dp"
-			android:layout_marginRight = "@dimen/size_10_dp"
-			android:text = "@string/import_rule_account_email" />
-		
-		<TextView
-			android:layout_width = "match_parent"
-			android:layout_height = "wrap_content"
-			android:layout_marginLeft = "@dimen/size_10_dp"
-			android:layout_marginTop = "@dimen/size_4_dp"
-			android:layout_marginRight = "@dimen/size_10_dp"
-			android:text = "@string/import_rule_account_mobile" />
-		
-		<TextView
-			android:layout_width = "match_parent"
-			android:layout_height = "wrap_content"
-			android:layout_marginLeft = "@dimen/size_10_dp"
-			android:layout_marginTop = "@dimen/size_4_dp"
-			android:layout_marginRight = "@dimen/size_10_dp"
-			android:text = "@string/import_rule_account_balance" />
-	
-	</LinearLayout>
+		android:visibility = "gone" />
 	
 	<TextView
 		android:id = "@+id/tv_location"

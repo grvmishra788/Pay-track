@@ -20,6 +20,12 @@ public class Utilities {
     //constant Class TAG
     private static final String TAG = Utilities.class.getName();
 
+    public static int getPxFromDip(Context context, int dpValue){
+        float d = context.getResources().getDisplayMetrics().density;
+        int px = (int)(dpValue * d); // margin in pixels
+        return px;
+    }
+
     public static Date getTodayDateWithDefaultTime() {
         // set Today as default date
         //create date object

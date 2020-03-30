@@ -6,7 +6,9 @@ import android.util.Log;
 import com.grvmishra788.pay_track.BackEnd.DatabaseConstants;
 import com.grvmishra788.pay_track.DS.BankAccount;
 import com.grvmishra788.pay_track.DS.CashAccount;
+import com.grvmishra788.pay_track.DS.Category;
 import com.grvmishra788.pay_track.DS.DigitalAccount;
+import com.grvmishra788.pay_track.DS.SubCategory;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -29,7 +31,14 @@ import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.ACCOUNTS_TABL
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.ACCOUNTS_TABLE_COL_TYPE;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.BANK_ACCOUNT;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CASH_ACCOUNT;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE_COL_ACCOUNT_NAME;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE_COL_CATEGORY_NAME;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE_COL_DESCRIPTION;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.DIGITAL_ACCOUNT;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_DESCRIPTION;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_PARENT;
 
 public class CSVParser {
     //constant Class TAG
@@ -46,6 +55,18 @@ public class CSVParser {
         switch (tableType) {
             case DatabaseConstants.ACCOUNTS_TABLE:
                 for(String columnName:DatabaseConstants.ACCOUNTS_COLUMN_NAMES){
+                    columnNamesHashMap.put(columnName, -1);
+                }
+                break;
+
+            case DatabaseConstants.CATEGORIES_TABLE:
+                for(String columnName:DatabaseConstants.CATEGORIES_COLUMN_NAMES){
+                    columnNamesHashMap.put(columnName, -1);
+                }
+                break;
+
+            case DatabaseConstants.SUB_CATEGORIES_TABLE:
+                for(String columnName:DatabaseConstants.SUB_CATEGORIES_COLUMN_NAMES){
                     columnNamesHashMap.put(columnName, -1);
                 }
                 break;
@@ -68,7 +89,7 @@ public class CSVParser {
             String csvLine = reader.readLine();
             if (csvLine!=null) {
                 //traverse columns
-                String[] row = csvLine.split(",");
+                String[] row = csvLine.split(",", -1);
                 for(int i=0; i<row.length; i++){
                     String s = row[i].replaceAll("[\"]","");
                     if(!columnNamesHashMap.containsKey(s)){
@@ -118,7 +139,7 @@ public class CSVParser {
         try {
             String csvLine = reader.readLine();
             while ((csvLine = reader.readLine()) != null) {
-                String[] row = csvLine.split(",");
+                String[] row = csvLine.split(",", -1);
                 for(int i=0; i<row.length; i++) {
                     row[i] = row[i].replaceAll("[\"]", "");
                 }
@@ -191,6 +212,112 @@ public class CSVParser {
 
                 if(account!=null)
                     resultList.add(account);
+            }
+        }
+        catch (IOException ex) {
+            throw new RuntimeException("Error in reading CSV file: " + ex);
+        }
+
+        finally {
+            try {
+                inputStream.close();
+            }
+            catch (IOException ex) {
+                throw new RuntimeException("Error while closing input stream: " + ex);
+            }
+        }
+        return resultList;
+    }
+
+    public ArrayList<Category> getAllCategories(){
+        Log.i(TAG,"getAllCategories()");
+        if(!isValidTable()) return null;
+
+        ArrayList<Category> resultList = new ArrayList<>();
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(filePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        try {
+            String csvLine = reader.readLine();
+            while ((csvLine = reader.readLine()) != null) {
+                String[] row = csvLine.split(",", -1);
+                for(int i=0; i<row.length; i++) {
+                    row[i] = row[i].replaceAll("[\"]", "");
+                }
+                String categoryName = row[columnNamesHashMap.get(CATEGORIES_TABLE_COL_CATEGORY_NAME)];
+                String accountNickName = row[columnNamesHashMap.get(CATEGORIES_TABLE_COL_ACCOUNT_NAME)];
+                String description = row[columnNamesHashMap.get(CATEGORIES_TABLE_COL_DESCRIPTION)];
+
+                HashMap<String, Boolean> validInputs = new HashMap<>();
+                validInputs.put(CATEGORIES_TABLE_COL_CATEGORY_NAME, InputValidationUtilities.isValidCategory(categoryName));
+                validInputs.put(CATEGORIES_TABLE_COL_ACCOUNT_NAME, InputValidationUtilities.isValidString(accountNickName));
+
+                Category category = null;
+
+                String emptyFields = Utilities.checkHashMapForFalseValues(validInputs);
+                if(!InputValidationUtilities.isValidString(emptyFields))
+                    category = new Category(categoryName, accountNickName, description);
+
+                if(category!=null)
+                    resultList.add(category);
+            }
+        }
+        catch (IOException ex) {
+            throw new RuntimeException("Error in reading CSV file: " + ex);
+        }
+
+        finally {
+            try {
+                inputStream.close();
+            }
+            catch (IOException ex) {
+                throw new RuntimeException("Error while closing input stream: " + ex);
+            }
+        }
+        return resultList;
+    }
+
+    public ArrayList<SubCategory> getAllSubCategories(){
+        Log.i(TAG,"getAllSubCategories()");
+        if(!isValidTable()) return null;
+
+        ArrayList<SubCategory> resultList = new ArrayList<>();
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(filePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        try {
+            String csvLine = reader.readLine();
+            while ((csvLine = reader.readLine()) != null) {
+                String[] row = csvLine.split(",", -1);
+                for(int i=0; i<row.length; i++) {
+                    row[i] = row[i].replaceAll("[\"]", "");
+                }
+                String categoryName = row[columnNamesHashMap.get(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME)];
+                String accountNickName = row[columnNamesHashMap.get(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME)];
+                String description = row[columnNamesHashMap.get(SUB_CATEGORIES_TABLE_COL_DESCRIPTION)];
+                String parent = row[columnNamesHashMap.get(SUB_CATEGORIES_TABLE_COL_PARENT)];
+
+                HashMap<String, Boolean> validInputs = new HashMap<>();
+                validInputs.put(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME, InputValidationUtilities.isValidCategory(categoryName));
+                validInputs.put(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME, InputValidationUtilities.isValidString(accountNickName));
+                validInputs.put(SUB_CATEGORIES_TABLE_COL_PARENT, InputValidationUtilities.isCategoryDiffFromParent(categoryName, parent));
+
+                SubCategory subCategory = null;
+
+                String emptyFields = Utilities.checkHashMapForFalseValues(validInputs);
+                if(!InputValidationUtilities.isValidString(emptyFields))
+                    subCategory = new SubCategory(categoryName, accountNickName, description, parent);
+
+                if(subCategory!=null)
+                    resultList.add(subCategory);
             }
         }
         catch (IOException ex) {
