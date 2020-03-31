@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.grvmishra788.pay_track.BackEnd.DatabaseConstants;
 
@@ -73,6 +74,14 @@ public class ImportTableDialog extends AlertDialog.Builder {
                 break;
             case DatabaseConstants.TRANSACTIONS_TABLE:
                 tableString = "Transactions";
+                ll_guidelines.addView(getGuildLineMainTV(mContext, R.string.import_rule_transaction_heading));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_transaction_amount));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_transaction_description));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_transaction_category));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_transaction_subCategory));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_transaction_type));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_transaction_date));
+                ll_guidelines.addView(getGuildLineSubTV(mContext, R.string.import_rule_transaction_account));
                 break;
         }
 
@@ -127,8 +136,12 @@ public class ImportTableDialog extends AlertDialog.Builder {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String fileName = String.valueOf(loc.getText());
-                        listener.OnSelectedFile(fileName);
-                        Log.i(TAG, "Finally selected: " + fileName);
+                        if(InputValidationUtilities.isValidString(fileName)){
+                            listener.OnSelectedFile(fileName);
+                            Log.i(TAG, "Finally selected: " + fileName);
+                        } else {
+                            Toast.makeText(mContext, "No " + tableString + " spreadsheet Selected!", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 

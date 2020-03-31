@@ -75,4 +75,13 @@ public class DatabaseConstants {
             SUB_CATEGORIES_TABLE_COL_PARENT
     };
 
+    public static final String[] TRANSACTIONS_COLUMN_NAMES = {
+            /*
+                TRANSACTIONS_TABLE_COL_ID -> should not be shown to user
+             */
+            TRANSACTIONS_TABLE_COL_AMOUNT, TRANSACTIONS_TABLE_COL_DESCRIPTION,
+            TRANSACTIONS_TABLE_COL_CATEGORY, TRANSACTIONS_TABLE_COL_SUB_CATEGORY, TRANSACTIONS_TABLE_COL_TYPE,
+            TRANSACTIONS_TABLE_COL_DATE, TRANSACTIONS_TABLE_COL_ACCOUNT
+    };
+
 }

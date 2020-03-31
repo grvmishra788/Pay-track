@@ -9,6 +9,7 @@ import com.grvmishra788.pay_track.DS.CashAccount;
 import com.grvmishra788.pay_track.DS.Category;
 import com.grvmishra788.pay_track.DS.DigitalAccount;
 import com.grvmishra788.pay_track.DS.SubCategory;
+import com.grvmishra788.pay_track.DS.Transaction;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -16,10 +17,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.ACCOUNTS_TABLE_COL_ACCOUNT_NO;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.ACCOUNTS_TABLE_COL_BALANCE;
@@ -39,6 +44,14 @@ import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIE
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_DESCRIPTION;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.SUB_CATEGORIES_TABLE_COL_PARENT;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_ACCOUNT;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_AMOUNT;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_CATEGORY;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_DATE;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_DESCRIPTION;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_SUB_CATEGORY;
+import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.TRANSACTIONS_TABLE_COL_TYPE;
+import static com.grvmishra788.pay_track.GlobalConstants.DATE_FORMAT_SIMPLE;
 
 public class CSVParser {
     //constant Class TAG
@@ -67,6 +80,12 @@ public class CSVParser {
 
             case DatabaseConstants.SUB_CATEGORIES_TABLE:
                 for(String columnName:DatabaseConstants.SUB_CATEGORIES_COLUMN_NAMES){
+                    columnNamesHashMap.put(columnName, -1);
+                }
+                break;
+
+            case DatabaseConstants.TRANSACTIONS_TABLE:
+                for(String columnName:DatabaseConstants.TRANSACTIONS_COLUMN_NAMES){
                     columnNamesHashMap.put(columnName, -1);
                 }
                 break;
@@ -154,6 +173,9 @@ public class CSVParser {
 
                 HashMap<String, Boolean> validInputs = new HashMap<>();
                 CashAccount account = null;
+                if(!InputValidationUtilities.isValidAccountType(type)){
+                    continue;
+                }
                 int accountType = Integer.parseInt(type);
                 String emptyFields = "";
                 switch (accountType){
@@ -318,6 +340,84 @@ public class CSVParser {
 
                 if(subCategory!=null)
                     resultList.add(subCategory);
+            }
+        }
+        catch (IOException ex) {
+            throw new RuntimeException("Error in reading CSV file: " + ex);
+        }
+
+        finally {
+            try {
+                inputStream.close();
+            }
+            catch (IOException ex) {
+                throw new RuntimeException("Error while closing input stream: " + ex);
+            }
+        }
+        return resultList;
+    }
+
+    public ArrayList<Transaction> getAllTransactions(){
+        Log.i(TAG,"getAllTransactions()");
+        if(!isValidTable()) return null;
+
+        ArrayList<Transaction> resultList = new ArrayList<>();
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(filePath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        try {
+            String csvLine = reader.readLine();
+            while ((csvLine = reader.readLine()) != null) {
+                String[] row = csvLine.split(",", -1);
+                for(int i=0; i<row.length; i++) {
+                    row[i] = row[i].replaceAll("[\"]", "");
+                }
+                String amount = row[columnNamesHashMap.get(TRANSACTIONS_TABLE_COL_AMOUNT)];
+                String description = row[columnNamesHashMap.get(TRANSACTIONS_TABLE_COL_DESCRIPTION)];
+                String category = row[columnNamesHashMap.get(TRANSACTIONS_TABLE_COL_CATEGORY)];
+                String subCategory = row[columnNamesHashMap.get(TRANSACTIONS_TABLE_COL_SUB_CATEGORY)];
+                String dateStr = row[columnNamesHashMap.get(TRANSACTIONS_TABLE_COL_DATE)];
+                String typeStr = row[columnNamesHashMap.get(TRANSACTIONS_TABLE_COL_TYPE)];
+                String account = row[columnNamesHashMap.get(TRANSACTIONS_TABLE_COL_ACCOUNT)];
+
+                HashMap<String, Boolean> validInputs = new HashMap<>();
+                Transaction transaction = null;
+                validInputs.put(TRANSACTIONS_TABLE_COL_AMOUNT, InputValidationUtilities.isValidAmount(amount));
+                validInputs.put(TRANSACTIONS_TABLE_COL_CATEGORY, InputValidationUtilities.isValidCategory(category));
+                validInputs.put(TRANSACTIONS_TABLE_COL_DATE, InputValidationUtilities.isValidDate(dateStr, DATE_FORMAT_SIMPLE));
+                validInputs.put(TRANSACTIONS_TABLE_COL_TYPE, InputValidationUtilities.isValidTransactionType(typeStr));
+                validInputs.put(TRANSACTIONS_TABLE_COL_ACCOUNT, InputValidationUtilities.isValidString(account));
+
+                String emptyFields = Utilities.checkHashMapForFalseValues(validInputs);
+                if (!InputValidationUtilities.isValidString(emptyFields)) {
+                    //get transaction type
+                    int typeVal = Integer.parseInt(typeStr);
+                    GlobalConstants.TransactionType type = ((typeVal == 1) ? GlobalConstants.TransactionType.CREDIT : GlobalConstants.TransactionType.DEBIT);
+                    //generate UUID for transaction
+                    UUID id = UUID.randomUUID();
+                    //set default amt as zero
+                    Double transactionAmt = Double.valueOf(0);
+                    if(!TextUtils.isEmpty(amount)){
+                        transactionAmt = Double.parseDouble(amount);
+                    }
+                    //set Date
+                    SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_SIMPLE);
+                    Date date = Utilities.getTodayDateWithDefaultTime();
+                    try {
+                        date = Utilities.getDateWithDefaultTime(sdf.parse(dateStr));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    //create transaction object
+                    transaction = new Transaction(id, transactionAmt, category, subCategory, date, description, type, account);
+                }
+
+                if(transaction!=null)
+                    resultList.add(transaction);
             }
         }
         catch (IOException ex) {

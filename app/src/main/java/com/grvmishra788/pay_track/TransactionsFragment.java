@@ -314,21 +314,18 @@ public class TransactionsFragment extends Fragment {
         }
     };
 
-    public void addTransaction(Transaction transaction){
-        if(transaction!=null){
-            if(mTransactions==null){
-                mTransactions = new ArrayList<>();
-            }
+    public boolean addTransaction(Transaction transaction){
+        if(((MainActivity) getActivity()).getPayTrackDBHelper().insertDataToTransactionsTable(transaction)){
+            Log.d(TAG,"Transaction inserted to db - " + transaction.toString());
             mTransactions.add(transaction);
             addTransactionToHashMap(transaction);
-            if(((MainActivity) getActivity()).getPayTrackDBHelper().insertDataToTransactionsTable(transaction)){
-                Log.d(TAG,"Transaction inserted to db - " + transaction.toString());
-            } else {
-                Log.e(TAG,"Couldn't insert transaction to db - " + transaction.toString());
-            }
             transactionsRecyclerViewAdapter.notifyDataSetChanged();
+            Log.i(TAG, "Added transaction - " + transaction.toString());
+            return true;
+        } else {
+            Log.e(TAG,"Couldn't insert transaction to db - " + transaction.toString());
+            return false;
         }
-        Log.i(TAG, "Added transaction - " + transaction.toString());
     }
 
     //func to delete a single transaction

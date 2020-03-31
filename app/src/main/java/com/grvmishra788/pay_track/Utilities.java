@@ -39,6 +39,19 @@ public class Utilities {
         return calendar.getTime();
     }
 
+    public static Date getDateWithDefaultTime(Date date){
+        //set date of calendar instance
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        //set time part of date as 0
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        return calendar.getTime();
+    }
+
     public static Date getDateWithDefaultTime(int year, int month, int day){
         //set year, month and day of calendar instance
         Calendar calendar = Calendar.getInstance();

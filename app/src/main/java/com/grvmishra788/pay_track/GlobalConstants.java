@@ -67,6 +67,7 @@ public abstract class GlobalConstants {
     //Date format string to show Day and Date
     public static final String DATE_FORMAT_DAY_AND_DATE = "EEE - MMM dd, yyyy";
     public static final String DATE_FORMAT_SIMPLE_UNDERSCORE = "dd_MMM_yyyy";
+    public static final String DATE_FORMAT_SIMPLE = "dd MM yyyy";
 
     //file extensions
     public static final String FILE_EXTENSION_CSV = ".csv";

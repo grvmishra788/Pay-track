@@ -17,6 +17,7 @@ import com.grvmishra788.pay_track.DS.SubCategory;
 import com.grvmishra788.pay_track.DS.Transaction;
 import com.grvmishra788.pay_track.DS.TransactionMessage;
 import com.grvmishra788.pay_track.GlobalConstants;
+import com.grvmishra788.pay_track.InputValidationUtilities;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -368,7 +369,11 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(TRANSACTIONS_TABLE_COL_AMOUNT, transaction.getAmount());
         contentValues.put(TRANSACTIONS_TABLE_COL_DESCRIPTION, transaction.getDescription());
         contentValues.put(TRANSACTIONS_TABLE_COL_CATEGORY, transaction.getCategory());
-        contentValues.put(TRANSACTIONS_TABLE_COL_SUB_CATEGORY, transaction.getSubCategory());
+        if(InputValidationUtilities.isValidString(transaction.getSubCategory())){
+            contentValues.put(TRANSACTIONS_TABLE_COL_SUB_CATEGORY, transaction.getSubCategory());
+        } else {
+            contentValues.putNull(TRANSACTIONS_TABLE_COL_SUB_CATEGORY);
+        }
         contentValues.put(TRANSACTIONS_TABLE_COL_TYPE, (transaction.getType() == GlobalConstants.TransactionType.CREDIT) ? 1 : 0);
         contentValues.put(TRANSACTIONS_TABLE_COL_DATE, transaction.getDate().getTime());
         contentValues.put(TRANSACTIONS_TABLE_COL_ACCOUNT, transaction.getAccount());
@@ -860,7 +865,9 @@ public class DbHelper extends SQLiteOpenHelper {
             while (cursor.moveToNext()) {
                 Double amount = cursor.getDouble(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_AMOUNT));
                 String category = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_CATEGORY));
-                String subCategory = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_SUB_CATEGORY));
+                String subCategory=null;
+                if(!cursor.isNull(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_SUB_CATEGORY)))
+                    subCategory = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_SUB_CATEGORY));
                 Date date = new Date(cursor.getLong(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_DATE)));
                 String description = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_DESCRIPTION));
 
@@ -969,4 +976,34 @@ public class DbHelper extends SQLiteOpenHelper {
         return res;
     }
 
+    public boolean transactionPresentInDb(Transaction transaction) {
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            
+            String query = "SELECT * FROM " + TRANSACTIONS_TABLE + " WHERE " +
+                    TRANSACTIONS_TABLE_COL_AMOUNT + "=\"" + transaction.getAmount() + "\" AND " +
+                    ((InputValidationUtilities.isValidString(transaction.getDescription())) ? (TRANSACTIONS_TABLE_COL_DESCRIPTION + "=\"" + transaction.getDescription() + "\" AND "):"") +
+                    TRANSACTIONS_TABLE_COL_CATEGORY + "=\"" + transaction.getCategory() + "\" AND " +
+                    ((InputValidationUtilities.isValidString(transaction.getSubCategory())) ? (TRANSACTIONS_TABLE_COL_SUB_CATEGORY + "=\"" + transaction.getSubCategory() + "\" AND "):"") +
+                    TRANSACTIONS_TABLE_COL_TYPE + "=" + ((transaction.getType()== GlobalConstants.TransactionType.CREDIT)?"\"1\"":"\"0\"") + " AND " +
+                    TRANSACTIONS_TABLE_COL_DATE + "=\"" + transaction.getDate().getTime() + "\" AND " +
+                    TRANSACTIONS_TABLE_COL_ACCOUNT + "=\"" + transaction.getAccount() + "\""
+                    ;
+
+            cursor = database.rawQuery(query, null);
+            Log.d(TAG, "Successfully executed query.");
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute query!");
+        }
+
+        if (cursor == null)
+            return false;
+
+        if (cursor.getCount() == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

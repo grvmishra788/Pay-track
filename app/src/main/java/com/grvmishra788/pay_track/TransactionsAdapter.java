@@ -182,7 +182,8 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
             }
         }
 
-        return groupTransactionAmt;
+        //return group amount after rounding 2 decimal places
+        return Math.round(groupTransactionAmt * 100.0) / 100.0;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {

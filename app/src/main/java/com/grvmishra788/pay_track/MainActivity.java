@@ -366,8 +366,62 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
             }
-            case R.id.action_import_transactions:
+            case R.id.action_import_transactions: {
+                ImportTableDialog importTableDialog = new ImportTableDialog(this, DatabaseConstants.TRANSACTIONS_TABLE);
+                importTableDialog.setListener(new DialogListener() {
+                    @Override
+                    public void OnSelectedFile(String fileName) {
+
+                        CSVParser csvParser = null;
+                        try {
+                            csvParser = new CSVParser(fileName, DatabaseConstants.TRANSACTIONS_TABLE);
+                        } catch (FileNotFoundException e) {
+                            Toast.makeText(getBaseContext(), "Couldn't find the file in the location", Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                        }
+
+                        if (csvParser != null) {
+                            if (!csvParser.isValidTable()) {
+                                Toast.makeText(getBaseContext(), "Not A Valid Transactions Table", Toast.LENGTH_SHORT).show();
+                            } else {
+                                ArrayList<Transaction> transactions = csvParser.getAllTransactions();
+                                if (transactions != null) {
+                                    int count = 0, inValidSubEntries=0, inValidInsertion=0;
+                                    for (Transaction transaction : transactions) {
+                                        boolean isAccountInDb = Utilities.entryPresentInDB(MainActivity.this, DatabaseConstants.ACCOUNTS_TABLE, DatabaseConstants.ACCOUNTS_TABLE_COL_NICK_NAME, transaction.getAccount());
+                                        boolean isCategoryInDb = Utilities.entryPresentInDB(MainActivity.this, DatabaseConstants.CATEGORIES_TABLE, DatabaseConstants.CATEGORIES_TABLE_COL_CATEGORY_NAME,transaction.getCategory());
+                                        boolean isSubCategoryInDb = (!InputValidationUtilities.isValidString(transaction.getSubCategory())) || Utilities.entryPresentInDB(MainActivity.this, DatabaseConstants.SUB_CATEGORIES_TABLE, DatabaseConstants.SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME,transaction.getSubCategory());
+                                        if(isAccountInDb && isCategoryInDb && isSubCategoryInDb) {
+                                            if (!payTrackDBHelper.transactionPresentInDb(transaction)) {
+                                                if(((TransactionsFragment) mViewPagerAdapter.getItem(1)).addTransaction(transaction)) {
+                                                    count++;
+                                                }
+                                            } else {
+                                                inValidInsertion++;
+                                            }
+                                        } else {
+                                            inValidSubEntries++;
+                                        }
+                                    }
+                                    String toastText = "Successfully added " + count + " out of " + String.valueOf(transactions.size()) + " valid transactions in spreadsheet.";
+                                    if(inValidInsertion>0){
+                                        toastText += inValidInsertion + ((inValidInsertion>1)?" transactions" : " transaction") + " couldn't be added as they are already present in db";
+                                    }
+                                    if(inValidSubEntries>0){
+                                        toastText += " Rest " + inValidSubEntries + ((inValidSubEntries>1)?" transactions" : " transaction") + " couldn't be added due to corresponding account, category or sub-category missing from db";
+                                    }
+                                    Toast.makeText(getBaseContext(), toastText, Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        } else {
+                            Toast.makeText(getBaseContext(), "Error parsing the file", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+                importTableDialog.show();
                 break;
+            }
         }
         return true;
     }

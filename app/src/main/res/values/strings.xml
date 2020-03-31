@@ -108,6 +108,15 @@
     <string name = "import_rule_sub_category_description">• <b>Description</b> - <i>Having String describing the sub-category </i></string>
     <string name = "import_rule_sub_category_parent">• <b>Parent</b> - <i>Having Not Null String representing the parent category name, the sub-category is associated by default. The corresponding entry must be present in Categories list. </i></string>
     
+    <string name = "import_rule_transaction_heading">The spreadsheet must be a .csv having following columns - </string>
+    <string name = "import_rule_transaction_amount">• <b>Amount</b> - <i>Having Non-Zero Decimal representing the amount of the transaction.</i> </string>
+    <string name = "import_rule_transaction_description">• <b>Description</b> - <i>Having String describing the transaction </i></string>
+    <string name = "import_rule_transaction_category">• <b>Category</b> - <i>Having Not Null String representing category to which transaction belongs. The corresponding entry must be present in Categories list. </i></string>
+    <string name = "import_rule_transaction_subCategory">• <b>SubCategory</b> - <i>Having String representing sub-category to which transaction belongs. The corresponding entry must be present in Sub-Categories list. </i></string>
+    <string name = "import_rule_transaction_type">• <b>Type</b> - <i>Having Value : \n\t <b>> 0</b> - if it is DEBIT transaction; else\n\t <b>> 1</b> - if it is a CREDIT transaction</i> </string>
+    <string name = "import_rule_transaction_date">• <b>Date</b> - <i>Having Not Null Date in the \'dd MM yyyy\' format, representing the date on which transaction was carried out. Ex - 19 03 2020 </i></string>
+    <string name = "import_rule_transaction_account">• <b>Account</b> - <i>Having Not Null String representing the account name, the transaction is carried out with. The corresponding entry must be present in Accounts list. </i></string>
+    
     <!--Errors-->
     <string name="title_general_error">Uh Oh..</string>
     <string name="error_duplicate_entry">You already have this entry in your database - </string>
