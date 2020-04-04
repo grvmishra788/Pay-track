@@ -25,9 +25,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
-import static android.graphics.Color.GREEN;
-import static android.graphics.Color.RED;
-
 public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapter.TransactionsViewHolder> {
 
     //constants
@@ -102,11 +99,9 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
                 String amountValue = "";
                 Double groupTransactionAmount = getGroupedTransactionAmount(curDateTransactions);
                 if(groupTransactionAmount>=new Double(0)){
-                    amountValue = " + " + String.valueOf(groupTransactionAmount);
-                    holder.tv_group_amt.setTextColor(GREEN);
+                    amountValue = " + " + Utilities.getAmountWithRupeeSymbol(groupTransactionAmount);
                 } else {
-                    amountValue = " - " + String.valueOf(-groupTransactionAmount);
-                    holder.tv_group_amt.setTextColor(RED);
+                    amountValue = " - " + Utilities.getAmountWithRupeeSymbol(-groupTransactionAmount);
                 }
                 holder.tv_group_amt.setText(amountValue);
 

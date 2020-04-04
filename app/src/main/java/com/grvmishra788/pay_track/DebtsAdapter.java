@@ -69,11 +69,11 @@ public class DebtsAdapter extends RecyclerView.Adapter<DebtsAdapter.DebtsViewHol
         //set amount
         if(debt.getType()== GlobalConstants.DebtType.PAY){
             holder.title_person.setText(mContext.getString(R.string.lender));
-            amountValue = " + " + String.valueOf(debt.getAmount());
+            amountValue = Utilities.getAmountWithRupeeSymbol(debt.getAmount());
             holder.amount.setTextColor(GREEN);
         } else {
             holder.title_person.setText(mContext.getString(R.string.borrower));
-            amountValue = " - " + String.valueOf(debt.getAmount());
+            amountValue = Utilities.getAmountWithRupeeSymbol(debt.getAmount());
             holder.amount.setTextColor(RED);
         }
         holder.amount.setText(amountValue);

@@ -15,6 +15,7 @@ import java.util.Map;
 import androidx.appcompat.app.AlertDialog;
 
 import static com.grvmishra788.pay_track.GlobalConstants.BULLET_SYMBOL;
+import static com.grvmishra788.pay_track.GlobalConstants.RUPEE_SYMBOL;
 
 public class Utilities {
     //constant Class TAG
@@ -24,6 +25,10 @@ public class Utilities {
         float d = context.getResources().getDisplayMetrics().density;
         int px = (int)(dpValue * d); // margin in pixels
         return px;
+    }
+
+    public static String getAmountWithRupeeSymbol(Double amount) {
+        return RUPEE_SYMBOL + " " + amount;
     }
 
     public static Date getTodayDateWithDefaultTime() {

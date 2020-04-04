@@ -128,10 +128,13 @@
     <string name="error_field_balance">Balance should either be empty or a real number !</string>
     <string name="error_field_email">E-Mail input is not in proper format !</string>
     <string name="error_field_mobile">Mobile No. must be exactly 10 digits</string>
-    <string name="error_field_amount">Amount must be a real number !</string>
+    <string name="error_field_amount">Amount must be a positive real number !</string>
     <string name = "error_field_category_name">Category name cannot have \'/\' character !</string>
     
     <!--Button titles-->
     <string name="button_ok"><b>OK</b></string>
-
+    
+    <!--Others-->
+    <string name="rupees_symbol"><b>\u20B9</b></string>
+    
 </resources>

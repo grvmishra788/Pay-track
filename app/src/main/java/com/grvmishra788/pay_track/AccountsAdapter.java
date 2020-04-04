@@ -76,7 +76,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
             accountsViewHolder.tv_accountNumber.setText(((BankAccount) account).getAccountNumber());
             accountsViewHolder.tv_email.setText(((BankAccount) account).getEmail());
             accountsViewHolder.tv_mobile.setText(((BankAccount) account).getMobileNumber());
-            accountsViewHolder.tv_balance.setText(balance.toString());
+            accountsViewHolder.tv_balance.setText(Utilities.getAmountWithRupeeSymbol(balance));
         } else if (account instanceof DigitalAccount){
             //hide unwanted views
             accountsViewHolder.ll_bankName.setVisibility(View.GONE);
@@ -86,7 +86,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
             accountsViewHolder.tv_serviceName.setText(((DigitalAccount) account).getServiceName());
             accountsViewHolder.tv_email.setText(((DigitalAccount) account).getEmail());
             accountsViewHolder.tv_mobile.setText(((DigitalAccount) account).getMobileNumber());
-            accountsViewHolder.tv_balance.setText(balance.toString());
+            accountsViewHolder.tv_balance.setText(Utilities.getAmountWithRupeeSymbol(balance));
         } else {
             //hide unwanted views
             accountsViewHolder.ll_accountNumber.setVisibility(View.GONE);
@@ -96,7 +96,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
             accountsViewHolder.ll_mobile.setVisibility(View.GONE);
             //set texts
             accountsViewHolder.tv_nickName.setText(account.getNickName());
-            accountsViewHolder.tv_balance.setText(balance.toString());
+            accountsViewHolder.tv_balance.setText(Utilities.getAmountWithRupeeSymbol(balance));
         }
 
         if (selectedItems.contains(position)) {

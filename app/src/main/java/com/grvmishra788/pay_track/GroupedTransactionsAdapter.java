@@ -61,10 +61,10 @@ class GroupedTransactionsAdapter extends RecyclerView.Adapter<GroupedTransaction
         Transaction transaction = mGroupedTransactions.get(position);
         Log.d(TAG, "onBindViewHolder() :: " + position + " :: " + transaction.toString());
         if(transaction.getType()== GlobalConstants.TransactionType.CREDIT){
-            amountValue = " + " + String.valueOf(transaction.getAmount());
+            amountValue = Utilities.getAmountWithRupeeSymbol(transaction.getAmount());
             holder.amount.setTextColor(GREEN);
         } else {
-            amountValue = " - " + String.valueOf(transaction.getAmount());
+            amountValue = Utilities.getAmountWithRupeeSymbol(transaction.getAmount());
             holder.amount.setTextColor(RED);
         }
         holder.amount.setText(amountValue);

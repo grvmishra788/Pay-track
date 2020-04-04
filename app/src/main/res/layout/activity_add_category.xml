@@ -140,10 +140,11 @@
         <EditText
             android:id="@+id/et_description"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/size_48_dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/size_12_dp"
             android:layout_marginRight="@dimen/size_12_dp"
-            android:paddingLeft="@dimen/size_10_dp"
+            android:padding="@dimen/size_10_dp"
+            android:minHeight="@dimen/size_48_dp"
             android:hint="@string/description"
             android:background="@color/textColorPrimary"
             android:textColor="@color/colorPrimary"

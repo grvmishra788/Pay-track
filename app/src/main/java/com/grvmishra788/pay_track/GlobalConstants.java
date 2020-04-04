@@ -6,6 +6,7 @@ public abstract class GlobalConstants {
     public static final int NUMBER_OF_TABS = 3;
 
     public static final String BULLET_SYMBOL = "\u2022";  // •
+    public static final String RUPEE_SYMBOL = "\u20B9";
 
     //SMS related constants
     public static final int MY_PERMISSIONS_REQUEST = 501;
@@ -61,7 +62,6 @@ public abstract class GlobalConstants {
 
     public static final String ITEM_TO_EDIT = "com.grvmishra788.pay_track.item_to_edit";
     public static final String POSITION_ITEM_TO_EDIT = "com.grvmishra788.pay_track.position_item_to_edit";
-    public static final String POSITION_TRANSACTION_MESSAGE = "com.grvmishra788.pay_track.position_transaction_message";
 
     public static final String SUB_ITEM_TO_EDIT = "com.grvmishra788.pay_track.sub_item_to_edit";
 

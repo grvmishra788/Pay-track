@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.grvmishra788.pay_track.BackEnd.DbHelper;
 import com.grvmishra788.pay_track.DS.Transaction;
@@ -25,7 +26,6 @@ import androidx.appcompat.view.ActionMode;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import static com.grvmishra788.pay_track.GlobalConstants.POSITION_TRANSACTION_MESSAGE;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ADD_TRANSACTION_VIA_MESSAGE;
 import static com.grvmishra788.pay_track.GlobalConstants.TRANSACTION_MESSAGE_OBJECT;
 import static com.grvmishra788.pay_track.GlobalConstants.TRANSACTION_OBJECT;
@@ -125,7 +125,6 @@ public class TransactionMessagesActivity extends AppCompatActivity {
             public void onItemClick(int position, TransactionMessage transactionMessage) {
                 if (!isMultiSelect) {
                     Intent editActivityIntent = new Intent(TransactionMessagesActivity.this, AddTransactionActivity.class);
-                    editActivityIntent.putExtra(POSITION_TRANSACTION_MESSAGE, position);
                     editActivityIntent.putExtra(TRANSACTION_MESSAGE_OBJECT, transactionMessage);
                     startActivityForResult(editActivityIntent, REQ_CODE_ADD_TRANSACTION_VIA_MESSAGE);
                 } else {
@@ -199,13 +198,15 @@ public class TransactionMessagesActivity extends AppCompatActivity {
                 Log.i(TAG, "Processing add transaction via message...");
                 Transaction transaction =  (Transaction) data.getSerializableExtra(GlobalConstants.TRANSACTION_OBJECT);
                 newTransactions.add(transaction);
-                int positionMessage = data.getIntExtra(POSITION_TRANSACTION_MESSAGE, -1);
-                if(positionMessage!=-1){
-                    TransactionMessage message = mTransactionMessages.get(positionMessage);
-                    deletedMessages.add(message);
-                    mTransactionMessages.remove(positionMessage);
-                    removeTransactionMessageFromHashMap(message);
-                    transactionMessagesRecyclerViewAdapter.notifyDataSetChanged();
+                TransactionMessage message = (TransactionMessage) data.getSerializableExtra(TRANSACTION_MESSAGE_OBJECT);
+                if(message!=null){
+                    if(deleteTransactionMessageByObject(message)){
+                        deletedMessages.add(message);
+                        removeTransactionMessageFromHashMap(message);
+                        transactionMessagesRecyclerViewAdapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(this, "Couldn't delete", Toast.LENGTH_LONG).show();
+                    }
                 }
 
                 Log.i(TAG, "Received transaction - " + transaction.toString());
@@ -263,6 +264,8 @@ public class TransactionMessagesActivity extends AppCompatActivity {
                 if(curDateTransactionMessages==null || curDateTransactionMessages.size()==0){
                     datedTransactionMessageHashMap.remove(dateOfTransactionMessage);
                 }
+            } else {
+                Log.e(TAG,"Date of " + transactionMessage.toString() + " is not present in hash map!");
             }
         } else {
             Log.e(TAG,"Date of " + transactionMessage.toString() + " is null!");
@@ -339,16 +342,32 @@ public class TransactionMessagesActivity extends AppCompatActivity {
 
     //func to delete a single transactionMessage
     //make sure to call notifyDataSetChanged() after execution of this method
-    private void deleteTransactionMessage(TransactionMessage transactionMessage) {
+    private boolean deleteTransactionMessage(TransactionMessage transactionMessage) {
         if (payTrackDBHelper.deleteDataInTransactionMessagesTable(transactionMessage)) {
             Log.d(TAG, "TransactionMessage deleted from db : " + transactionMessage.toString());
+            if(deleteTransactionMessageByObject(transactionMessage)){
+                removeTransactionMessageFromHashMap(transactionMessage);
+                transactionMessagesRecyclerViewAdapter.notifyDataSetChanged();
+            } else {
+                Log.i(TAG, "Message already deleted from transaction messages");
+            }
+            return true;
         } else {
             Log.e(TAG, "Couldn't delete transactionMessage from db : " + transactionMessage.toString());
+            return false;
         }
+    }
 
-        mTransactionMessages.remove(transactionMessage);
-        removeTransactionMessageFromHashMap(transactionMessage);
-        transactionMessagesRecyclerViewAdapter.notifyDataSetChanged();
+    public boolean deleteTransactionMessageByObject(TransactionMessage message){
+        for(int i=0; i<mTransactionMessages.size();i++){
+            TransactionMessage transactionMessage = mTransactionMessages.get(i);
+            if(transactionMessage.getId().equals(message.getId())){
+                    mTransactionMessages.remove(i);
+                    Log.d(TAG, "TransactionMessage deleted from Transaction message list : " + transactionMessage.toString());
+                    return true;
+            }
+        }
+        return false;
     }
 
     //func to delete multiple transactionMessages
