@@ -10,6 +10,7 @@ public abstract class GlobalConstants {
     //SMS related constants
     public static final int MY_PERMISSIONS_REQUEST = 501;
     public static final String SMS_AMOUNT_REGEX = "(?i)(?:(?:RS|INR|MRP)\\.?\\s?)(\\d+(:?\\,\\d+)?(\\,\\d+)?(\\.\\d{1,2})?)";
+    public static final String SMS_ACCOUNT_NO_REGEX = "[0-9]*[Xx\\*]*[0-9]*[Xx\\*]+[0-9]{3,}";
 
     //Category Activity Types
     public static final int SHOW_CATEGORY= 101;

@@ -18,7 +18,6 @@ import com.grvmishra788.pay_track.DS.Transaction;
 import com.grvmishra788.pay_track.DS.TransactionMessage;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
@@ -89,7 +88,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
             et_account.setText(transactionToEdit.getAccount());
 
             //convert date to string & display in text view
-            Date date = transactionToEdit.getDate();
+            date = transactionToEdit.getDate();
             SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
             String dateString = sdf.format(date);
             et_date.setText(dateString);
@@ -116,7 +115,28 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         } else if(activityStartingIntent.hasExtra(TRANSACTION_MESSAGE_OBJECT)){
             TransactionMessage transactionMessage = (TransactionMessage) activityStartingIntent.getSerializableExtra(TRANSACTION_MESSAGE_OBJECT);
             positionMsg = activityStartingIntent.getIntExtra(POSITION_TRANSACTION_MESSAGE, -1);
-            transactionType.setSelection(0);
+            String msg = transactionMessage.getBody();
+            //get Account from Transaction Message
+            String accountNickName = TransactionMessageParser.getAccountNickName(this, transactionMessage.getSrc(), msg);
+            if(InputValidationUtilities.isValidString(accountNickName)){
+                et_account.setText(accountNickName);
+            }
+            //get transaction type from Transaction Message
+            GlobalConstants.TransactionType transType = TransactionMessageParser.getTransactionType(msg);
+            if(transType.equals(GlobalConstants.TransactionType.CREDIT)){
+                transactionType.setSelection(1);
+            } else {
+                transactionType.setSelection(0);
+            }
+            // get Amt From Transaction Message
+            et_amount.setText(TransactionMessageParser.getAmountStr(msg));
+            // get Date From Transaction Message
+            date = transactionMessage.getDate();
+            //convert date to string & display in text view
+            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
+            String dateString = sdf.format(date);
+            et_date.setText(dateString);
+
             et_description.setText(transactionMessage.toString());
             setTitle(R.string.title_add_transaction);
 
