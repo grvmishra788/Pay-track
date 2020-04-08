@@ -27,15 +27,29 @@
 
     <!-- Style for Sub-Category Name text -->
     <style name="Toolbar.SubCategoryName" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">@dimen/textSize_18_sp</item>
+        <item name="android:textSize">@dimen/textSize_16_sp</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:fontFamily">@font/montserrat</item>
     </style>
-
-
+    
+    <!-- Style for Group Amt Title text -->
+    <style name="Title.GroupAmount" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">@dimen/textSize_16_sp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+    
+    <!-- Style for Date Title text -->
+    <style name="Title.Date" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">@dimen/textSize_20_sp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+    </style>
+    
+    
     <!-- Style for Account NickName text -->
     <style name="Toolbar.AccountNickName" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">@dimen/textSize_24_sp</item>
+        <item name="android:textSize">@dimen/textSize_20_sp</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:fontFamily">@font/montserrat</item>
     </style>

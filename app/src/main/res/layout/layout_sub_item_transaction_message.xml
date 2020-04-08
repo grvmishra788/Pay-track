@@ -1,70 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content">
+<LinearLayout xmlns:android = "http://schemas.android.com/apk/res/android"
+	android:layout_width = "match_parent"
+	android:layout_height = "wrap_content"
+	android:orientation = "vertical">
 	
 	<View
-		android:layout_width="match_parent"
-		android:layout_height="@dimen/size_2_dp"
-		android:layout_marginLeft="@dimen/size_10_dp"
-		android:background="@color/colorPrimary"/>
+		android:layout_width = "match_parent"
+		android:layout_height = "@dimen/size_2_dp"
+		android:layout_marginLeft = "@dimen/size_20_dp"
+		android:layout_marginRight = "@dimen/size_20_dp"
+		android:background = "@color/colorPrimary" />
 	
 	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical">
+		android:layout_width = "match_parent"
+		android:layout_height = "wrap_content"
+		android:orientation = "vertical">
 		
 		<LinearLayout
-			android:id="@+id/ll_show_sender"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="@dimen/size_20_dp"
-			android:layout_marginTop="@dimen/size_4_dp"
-			android:layout_marginBottom="@dimen/size_4_dp"
-			android:orientation="horizontal">
+			android:id = "@+id/ll_show_sender"
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_20_dp"
+			android:layout_marginTop = "@dimen/size_4_dp"
+			android:layout_marginRight = "@dimen/size_20_dp"
+			android:layout_marginBottom = "@dimen/size_4_dp"
+			android:orientation = "horizontal">
 			
 			<TextView
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:text="@string/sender"
-				android:textAppearance="@style/Toolbar.SubCategoryText"
-				android:textColor="@color/colorPrimary" />
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "1"
+				android:text = "@string/sender"
+				android:textAppearance = "@style/Toolbar.SubCategoryText"
+				android:textColor = "@color/colorPrimary" />
 			
 			<TextView
-				android:id="@+id/tv_show_sender"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="2"
-				android:textAppearance="@style/Toolbar.SubCategoryText"
-				android:textColor="@color/colorPrimary" />
+				android:id = "@+id/tv_show_sender"
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "2"
+				android:textAppearance = "@style/Toolbar.SubCategoryText"
+				android:textColor = "@color/colorPrimary" />
 		
 		</LinearLayout>
 		
 		<LinearLayout
-			android:id="@+id/ll_show_msg"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="@dimen/size_20_dp"
-			android:layout_marginBottom="@dimen/size_4_dp"
-			android:orientation="horizontal">
+			android:id = "@+id/ll_show_msg"
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_20_dp"
+			android:layout_marginRight = "@dimen/size_20_dp"
+			android:layout_marginBottom = "@dimen/size_4_dp"
+			android:orientation = "horizontal">
 			
 			<TextView
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:text="@string/msg"
-				android:textAppearance="@style/Toolbar.SubCategoryText"
-				android:textColor="@color/colorPrimary" />
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "1"
+				android:text = "@string/msg"
+				android:textAppearance = "@style/Toolbar.SubCategoryText"
+				android:textColor = "@color/colorPrimary" />
 			
 			<TextView
-				android:id="@+id/tv_show_msg"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="2"
-				android:textAppearance="@style/Toolbar.SubCategoryText"
-				android:textColor="@color/colorPrimary" />
+				android:id = "@+id/tv_show_msg"
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "2"
+				android:textAppearance = "@style/Toolbar.SubCategoryText"
+				android:textColor = "@color/colorPrimary" />
 		
 		</LinearLayout>
 	

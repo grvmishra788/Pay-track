@@ -1,191 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-                                   xmlns:app="http://schemas.android.com/apk/res-auto"
-                                   android:layout_width="match_parent"
-                                   android:layout_height="wrap_content"
-                                   android:layout_marginTop="@dimen/size_16_dp"
-                                   app:cardCornerRadius="@dimen/radius_4_dp">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ll_left_border"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/ll_show_nick_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/size_20_dp"
-            android:layout_marginTop="@dimen/size_16_dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tv_show_nick_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Toolbar.AccountNickName"
-                android:textColor="@color/colorPrimary" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_show_account_number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/size_20_dp"
-            android:layout_marginTop="@dimen/size_16_dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/account_number"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-            <TextView
-                android:id="@+id/tv_show_account_number"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_show_bank_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/size_20_dp"
-            android:layout_marginTop="@dimen/size_10_dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/bank_name"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-            <TextView
-                android:id="@+id/tv_show_bank_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_show_service_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/size_20_dp"
-            android:layout_marginTop="@dimen/size_10_dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/service_name"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-            <TextView
-                android:id="@+id/tv_show_service_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_show_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/size_20_dp"
-            android:layout_marginTop="@dimen/size_10_dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/email"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-            <TextView
-                android:id="@+id/tv_show_email"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_show_mobile"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/size_20_dp"
-            android:layout_marginTop="@dimen/size_10_dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/mobile"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-            <TextView
-                android:id="@+id/tv_show_mobile"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_show_balance"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/size_20_dp"
-            android:layout_marginTop="@dimen/size_10_dp"
-            android:layout_marginBottom="@dimen/size_10_dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/balance"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-            <TextView
-                android:id="@+id/tv_show_balance"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textAppearance="@style/Toolbar.AccountText"
-                android:textColor="@color/colorPrimary" />
-
-        </LinearLayout>
-
-    </LinearLayout>
+<androidx.cardview.widget.CardView xmlns:android = "http://schemas.android.com/apk/res/android"
+	xmlns:app = "http://schemas.android.com/apk/res-auto"
+	android:layout_width = "match_parent"
+	android:layout_height = "wrap_content"
+	android:layout_marginTop = "@dimen/size_16_dp"
+	app:cardCornerRadius = "@dimen/radius_4_dp">
+	
+	<LinearLayout
+		android:layout_width = "match_parent"
+		android:layout_height = "wrap_content"
+		android:background = "@drawable/ll_left_border"
+		android:orientation = "vertical">
+		
+		<LinearLayout
+			android:id = "@+id/ll_show_nick_name"
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_20_dp"
+			android:layout_marginRight = "@dimen/size_20_dp"
+			android:orientation = "horizontal">
+			
+			<TextView
+				android:id = "@+id/tv_show_nick_name"
+				android:layout_width = "match_parent"
+				android:layout_height = "wrap_content"
+				android:textAppearance = "@style/Toolbar.AccountNickName"
+				android:textColor = "@color/colorPrimary" />
+		
+		</LinearLayout>
+		
+		<LinearLayout
+			android:id = "@+id/ll_show_account_number"
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_20_dp"
+			android:layout_marginTop = "@dimen/size_4_dp"
+			android:layout_marginRight = "@dimen/size_20_dp"
+			android:orientation = "horizontal">
+			
+			<TextView
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "1"
+				android:text = "@string/account_number"
+				android:textAppearance = "@style/Toolbar.AccountText"
+				android:textColor = "@color/colorPrimary" />
+			
+			<TextView
+				android:id = "@+id/tv_show_account_number"
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "2"
+				android:textAppearance = "@style/Toolbar.AccountText"
+				android:textColor = "@color/colorPrimary" />
+		
+		</LinearLayout>
+		
+		<LinearLayout
+			android:id = "@+id/ll_show_bank_name"
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_20_dp"
+			android:layout_marginTop = "@dimen/size_4_dp"
+			android:layout_marginRight = "@dimen/size_20_dp"
+			android:orientation = "horizontal">
+			
+			<TextView
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "1"
+				android:text = "@string/bank_name"
+				android:textAppearance = "@style/Toolbar.AccountText"
+				android:textColor = "@color/colorPrimary" />
+			
+			<TextView
+				android:id = "@+id/tv_show_bank_name"
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "2"
+				android:textAppearance = "@style/Toolbar.AccountText"
+				android:textColor = "@color/colorPrimary" />
+		
+		</LinearLayout>
+		
+		<LinearLayout
+			android:id = "@+id/ll_show_service_name"
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_20_dp"
+			android:layout_marginTop = "@dimen/size_4_dp"
+			android:layout_marginRight = "@dimen/size_20_dp"
+			android:orientation = "horizontal">
+			
+			<TextView
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "1"
+				android:text = "@string/service_name"
+				android:textAppearance = "@style/Toolbar.AccountText"
+				android:textColor = "@color/colorPrimary" />
+			
+			<TextView
+				android:id = "@+id/tv_show_service_name"
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "2"
+				android:textAppearance = "@style/Toolbar.AccountText"
+				android:textColor = "@color/colorPrimary" />
+		
+		</LinearLayout>
+		
+		<LinearLayout
+			android:id = "@+id/ll_show_email"
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_20_dp"
+			android:layout_marginTop = "@dimen/size_4_dp"
+			android:layout_marginRight = "@dimen/size_20_dp"
+			android:orientation = "horizontal">
+			
+			<TextView
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "1"
+				android:text = "@string/email"
+				android:textAppearance = "@style/Toolbar.AccountText"
+				android:textColor = "@color/colorPrimary" />
+			
+			<TextView
+				android:id = "@+id/tv_show_email"
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "2"
+				android:textAppearance = "@style/Toolbar.AccountText"
+				android:textColor = "@color/colorPrimary" />
+		
+		</LinearLayout>
+		
+		<LinearLayout
+			android:id = "@+id/ll_show_mobile"
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_20_dp"
+			android:layout_marginTop = "@dimen/size_4_dp"
+			android:layout_marginRight = "@dimen/size_20_dp"
+			android:orientation = "horizontal">
+			
+			<TextView
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "1"
+				android:text = "@string/mobile"
+				android:textAppearance = "@style/Toolbar.AccountText"
+				android:textColor = "@color/colorPrimary" />
+			
+			<TextView
+				android:id = "@+id/tv_show_mobile"
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "2"
+				android:textAppearance = "@style/Toolbar.AccountText"
+				android:textColor = "@color/colorPrimary" />
+		
+		</LinearLayout>
+		
+		<LinearLayout
+			android:id = "@+id/ll_show_balance"
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_20_dp"
+			android:layout_marginTop = "@dimen/size_4_dp"
+			android:layout_marginRight = "@dimen/size_20_dp"
+			android:layout_marginBottom = "@dimen/size_4_dp"
+			android:orientation = "horizontal">
+			
+			<TextView
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "1"
+				android:text = "@string/balance"
+				android:textAppearance = "@style/Toolbar.AccountText"
+				android:textColor = "@color/colorPrimary" />
+			
+			<TextView
+				android:id = "@+id/tv_show_balance"
+				android:layout_width = "0dp"
+				android:layout_height = "wrap_content"
+				android:layout_weight = "2"
+				android:textAppearance = "@style/Toolbar.AccountText"
+				android:textColor = "@color/colorPrimary" />
+		
+		</LinearLayout>
+	
+	</LinearLayout>
 
 </androidx.cardview.widget.CardView>
