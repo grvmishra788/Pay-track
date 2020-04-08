@@ -15,7 +15,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import androidx.annotation.NonNull;
@@ -33,7 +35,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
     //Variable to store context from which Adapter has been called
     private Context mContext;
 
-    private HashMap<Date, ArrayList<Transaction>> datedTransactionHashMap;
+    private HashMap<Date, ArrayList<Transaction>> allDatedTransactionHashMap, datedTransactionHashMap;
     private SortedList<Date> dates;
 
     //Variable for onItemClickListener
@@ -46,12 +48,44 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
     //Variable to store transactions when launching Contextual action mode
     private TreeSet<Transaction> selectedTransactions = new TreeSet<>();
 
+    //Variable to store selected month
+    private String selectedMonthString;
+
     //Constructor: binds Transaction object data to TransactionsAdapter
-    public TransactionsAdapter(Context mContext, HashMap<Date, ArrayList<Transaction>> datedTransactionHashMap) {
+    public TransactionsAdapter(Context mContext, HashMap<Date, ArrayList<Transaction>> allDatedTransactionHashMap) {
         Log.i(TAG, TAG + ": Constructor starts");
         this.mContext = mContext;
-        this.datedTransactionHashMap = datedTransactionHashMap;
+        this.allDatedTransactionHashMap = allDatedTransactionHashMap;
+        //set default selected month
+        Date date = Utilities.getTodayDateWithDefaultTime();
+        SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR);
+        this.selectedMonthString = sdf.format(date);;
+        //init datedHM
+        initSelectedMonthDatedTransactionsHM();
         Log.i(TAG, TAG + ": Constructor ends");
+    }
+
+    public void initSelectedMonthDatedTransactionsHM() {
+        SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR);
+
+        if(datedTransactionHashMap==null){
+            datedTransactionHashMap = new HashMap<>();
+        }
+        datedTransactionHashMap.clear();
+
+        Iterator it = allDatedTransactionHashMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Date, ArrayList<Transaction>> pair = (Map.Entry)it.next();
+            Date date = pair.getKey();
+            String dateStr = sdf.format(date);
+            if(dateStr.equals(selectedMonthString)){
+                datedTransactionHashMap.put(pair.getKey(), pair.getValue());
+            }
+        }
+
+        createSortedDatesList();
+
+        notifyDataSetChanged();
     }
 
 
@@ -73,9 +107,6 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
     @Override
     public void onBindViewHolder(@NonNull TransactionsAdapter.TransactionsViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder() :: " + position );
-        if(position==0){
-            createSortedDatesList();
-        }
 
         Date date = dates.get(position);
 
@@ -125,7 +156,8 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
 
     private void createSortedDatesList() {
         List<Date> datesList = new ArrayList<Date>(datedTransactionHashMap.keySet()); // <== Set to List
-        dates = new SortedList<Date>(Date.class, new SortedList.Callback<Date>() {
+        if(dates==null)
+            dates = new SortedList<Date>(Date.class, new SortedList.Callback<Date>() {
             @Override
             public int compare(Date o1, Date o2) {
                 return o2.compareTo(o1); // o2 compares to o1 for descending order
@@ -157,6 +189,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
             public void onMoved(int fromPosition, int toPosition) {
             }
         });
+        dates.clear();
         dates.beginBatchedUpdates();
         for (int i = 0; i < datesList.size(); i++) {
             dates.add(datesList.get(i));
@@ -206,6 +239,14 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
             return datedTransactionHashMap.size();
         else
             return 0;
+    }
+
+    public String getSelectedMonthString() {
+        return selectedMonthString;
+    }
+
+    public void setSelectedMonthString(String selectedMonthString) {
+        this.selectedMonthString = selectedMonthString;
     }
 
     public class TransactionsViewHolder extends RecyclerView.ViewHolder {

@@ -5,7 +5,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/windowBackground">
 
+    <Spinner
+        android:id="@+id/spinner_filter"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="center"
+        android:background="@drawable/spinner_background_transpose"/>
+
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_below="@+id/spinner_filter"
         android:id="@+id/show_transaction_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

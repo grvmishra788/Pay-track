@@ -31,6 +31,21 @@ public class Utilities {
         return RUPEE_SYMBOL + " " + amount;
     }
 
+    public static Date getStartDateOfMonthWithDefaultTime(Date date){
+        //set date of calendar instance
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        //set day as 1st day of month
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        //set time part of date as 0
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        return calendar.getTime();
+    }
+
     public static Date getTodayDateWithDefaultTime() {
         // set Today as default date
         //create date object

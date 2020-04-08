@@ -10,9 +10,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.grvmishra788.pay_track.BackEnd.DbHelper;
 import com.grvmishra788.pay_track.DS.Transaction;
 
 import java.text.SimpleDateFormat;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 
 import androidx.annotation.NonNull;
@@ -30,6 +33,7 @@ import androidx.appcompat.view.ActionMode;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SortedList;
 
 import static android.app.Activity.RESULT_OK;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ADD_TRANSACTION;
@@ -44,7 +48,8 @@ public class TransactionsFragment extends Fragment {
 
     //Transactions list
     private ArrayList<Transaction> mTransactions;
-
+    private HashMap<Date, ArrayList<Transaction>> filterTransactionHashMap;
+    private SortedList<Date> filterMonths;
     private HashMap<Date, ArrayList<Transaction>> datedTransactionHashMap;
 
     //recyclerView variables
@@ -60,6 +65,10 @@ public class TransactionsFragment extends Fragment {
     //Variable to store transactions when launching Contextual action mode
     private TreeSet<Transaction> selectedTransactions = new TreeSet<>();
 
+    //Variable to store date range
+    private Spinner filterTransactions;
+    private ArrayAdapter<String> filterAdapter;
+    private ArrayList<String> months;
 
     @Nullable
     @Override
@@ -69,16 +78,18 @@ public class TransactionsFragment extends Fragment {
 
         //init transasctions list
         mTransactions = ((MainActivity) getActivity()).getPayTrackDBHelper().getAllTransactions();
-
-        //init datedTransactionHashMap
-        datedTransactionHashMap = new HashMap<>();
-        initDatedTransactionHashMap();
-
         if(mTransactions == null){
             Log.d(TAG, "mTransactions is null");
             mTransactions = new ArrayList<>();
         }
 
+        //init datedTransactionHashMap
+        filterTransactionHashMap = new HashMap<>();
+        initFilterTransactionHashMap();
+
+        //init datedTransactionHashMap
+        datedTransactionHashMap = new HashMap<>();
+        initDatedTransactionHashMap();
 
 
         //init RecyclerView
@@ -156,8 +167,75 @@ public class TransactionsFragment extends Fragment {
                 startActivityForResult(addTransactionIntent, REQ_CODE_ADD_TRANSACTION);
             }
         });
+
+        initSpinner(view);
+
         Log.i(TAG, "onCreateView() ends!");
         return view;
+    }
+
+    private void initSpinner(View v) {
+        Log.i(TAG,"initSpinner()");
+        filterTransactions = (Spinner) v.findViewById(R.id.spinner_filter);
+        // Create an ArrayAdapter using the string array and a custom spinner layout
+        initMonthsList();
+
+        filterAdapter = new ArrayAdapter<String>(getActivity(), R.layout.layout_custom_spinner_item_transpose, months);
+        // Specify the layout to use when the list of choices appears
+        filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        filterTransactions.setAdapter(filterAdapter);
+        filterTransactions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d(TAG, "onItemSelected() - index : " + i);
+                transactionsRecyclerViewAdapter.setSelectedMonthString(filterAdapter.getItem(i));
+                transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
+                transactionsRecyclerViewAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
+
+    private void initMonthsList() {
+        months = new ArrayList<>();
+        for (int i=0; i<filterMonths.size();i++){
+            Date date = filterMonths.get(i);
+            SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR);
+            String dateString = sdf.format(date);
+            months.add(dateString);
+        }
+    }
+
+    private void refreshSpinner(){
+        int oldPos = -1, newPos=-1;
+        String selectedItem = "";
+        if(filterTransactions!=null && filterAdapter!=null){
+            selectedItem = (String) filterTransactions.getSelectedItem();
+            oldPos = filterAdapter.getPosition(selectedItem);
+        }
+        createSortedMonthsList();
+        initMonthsList();
+        if(filterAdapter!=null) {
+            filterAdapter.clear();
+            filterAdapter.addAll(months);
+            filterAdapter.notifyDataSetChanged();
+            if(InputValidationUtilities.isValidString(selectedItem))
+                newPos = months.indexOf(selectedItem);
+            if(newPos>=0){
+                filterTransactions.setSelection(newPos);
+            } else if(oldPos>=0){
+                filterTransactions.setSelection(oldPos);
+                selectedItem = (String) filterTransactions.getSelectedItem();
+                transactionsRecyclerViewAdapter.setSelectedMonthString(selectedItem);
+                transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
+                transactionsRecyclerViewAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     @Override
@@ -181,9 +259,15 @@ public class TransactionsFragment extends Fragment {
                 mTransactions.remove(oldTransaction);
                 mTransactions.add(newTransaction);
 
+                removeTransactionFromFilterHashMap(oldTransaction);
+                refreshSpinner();
                 removeTransactionFromHashMap(oldTransaction);
+                transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
                 transactionsRecyclerViewAdapter.notifyDataSetChanged();
-                addTransactionToHashMap(newTransaction);
+                addTransactionToFilterHashMap(newTransaction);
+                refreshSpinner();
+                addTransactionToDatedHashMap(newTransaction);
+                transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
                 transactionsRecyclerViewAdapter.notifyDataSetChanged();
 
             } else {
@@ -194,7 +278,29 @@ public class TransactionsFragment extends Fragment {
         }
     }
 
-        private void addTransactionToHashMap(Transaction transaction) {
+    private void addTransactionToFilterHashMap(Transaction transaction) {
+        Date dateOfTransaction = transaction.getDate();
+        if(filterTransactionHashMap==null){
+            filterTransactionHashMap = new HashMap<>();
+        }
+        if(dateOfTransaction!=null){
+            Date monthStartDate = Utilities.getStartDateOfMonthWithDefaultTime(dateOfTransaction);
+            ArrayList<Transaction> curMonthTransactions = null;
+            if(filterTransactionHashMap.containsKey(monthStartDate)){
+                curMonthTransactions = filterTransactionHashMap.get(monthStartDate);
+            }
+            if (curMonthTransactions == null) {
+                curMonthTransactions = new ArrayList<>();
+            }
+            curMonthTransactions.add(transaction);
+            filterTransactionHashMap.put(monthStartDate, curMonthTransactions);
+
+        } else {
+            Log.e(TAG,"Date of " + transaction.toString() + " is null!");
+        }
+    }
+
+    private void addTransactionToDatedHashMap(Transaction transaction) {
         Date dateOfTransaction = transaction.getDate();
         if(datedTransactionHashMap==null){
             datedTransactionHashMap = new HashMap<>();
@@ -210,6 +316,28 @@ public class TransactionsFragment extends Fragment {
             curDateTransactions.add(transaction);
             datedTransactionHashMap.put(dateOfTransaction, curDateTransactions);
 
+        } else {
+            Log.e(TAG,"Date of " + transaction.toString() + " is null!");
+        }
+    }
+
+    private void removeTransactionFromFilterHashMap(Transaction transaction) {
+        Date dateOfTransaction = transaction.getDate();
+        if(dateOfTransaction!=null){
+            ArrayList<Transaction> curDateTransactions = null;
+            Date monthStartDate = Utilities.getStartDateOfMonthWithDefaultTime(dateOfTransaction);
+            if(filterTransactionHashMap.containsKey(monthStartDate)){
+                curDateTransactions = filterTransactionHashMap.get(monthStartDate);
+                for(int i=0; i<curDateTransactions.size(); i++){
+                    if(curDateTransactions.get(i).getId().equals(transaction.getId())){
+                        curDateTransactions.remove(i);
+                        break;
+                    }
+                }
+                if(curDateTransactions==null || curDateTransactions.size()==0){
+                    filterTransactionHashMap.remove(monthStartDate);
+                }
+            }
         } else {
             Log.e(TAG,"Date of " + transaction.toString() + " is null!");
         }
@@ -236,10 +364,65 @@ public class TransactionsFragment extends Fragment {
         }
     }
 
+    private void initFilterTransactionHashMap() {
+        if(mTransactions!=null){
+            for(Transaction transaction:mTransactions){
+                addTransactionToFilterHashMap(transaction);
+            }
+            refreshSpinner();
+        } else {
+            Log.d(TAG, "mTransactions is null or empty!");
+        }
+    }
+
+    private void createSortedMonthsList() {
+        List<Date> monthsList = new ArrayList<Date>(filterTransactionHashMap.keySet()); // <== Set to List
+        if(filterMonths==null)
+            filterMonths = new SortedList<Date>(Date.class, new SortedList.Callback<Date>() {
+            @Override
+            public int compare(Date o1, Date o2) {
+                return o2.compareTo(o1); // o2 compares to o1 for descending order
+            }
+
+            @Override
+            public void onChanged(int position, int count) {
+            }
+
+            @Override
+            public boolean areContentsTheSame(Date oldItem, Date newItem) {
+                return oldItem.equals(newItem);
+            }
+
+            @Override
+            public boolean areItemsTheSame(Date item1, Date item2) {
+                return item1.equals(item2);
+            }
+
+            @Override
+            public void onInserted(int position, int count) {
+            }
+
+            @Override
+            public void onRemoved(int position, int count) {
+            }
+
+            @Override
+            public void onMoved(int fromPosition, int toPosition) {
+            }
+        });
+        filterMonths.clear();
+        filterMonths.beginBatchedUpdates();
+        for (int i = 0; i < monthsList.size(); i++) {
+            filterMonths.add(monthsList.get(i));
+        }
+        filterMonths.endBatchedUpdates();
+        Log.d(TAG,"All months - " + filterMonths);
+    }
+
     private void initDatedTransactionHashMap() {
         if(mTransactions!=null){
             for(Transaction transaction:mTransactions){
-                addTransactionToHashMap(transaction);
+                addTransactionToDatedHashMap(transaction);
             }
         } else {
             Log.d(TAG, "mTransactions is null or empty!");
@@ -272,7 +455,7 @@ public class TransactionsFragment extends Fragment {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     Log.d(TAG, "Positive button clicked on Delete alert dialog!!");
-                    //delete todos from end to start so as to avoid accidental damage to todolist
+                    //delete transactions from end to start so as to avoid accidental damage to list
                     Iterator<Integer> iterator = selectedItems.descendingIterator();
                     while (iterator.hasNext()) {
                         int pos = iterator.next();
@@ -284,7 +467,7 @@ public class TransactionsFragment extends Fragment {
                         Transaction transaction = transactionIterator.next();
                         deleteTransaction(transaction);
                     }
-
+                    transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
                     transactionsRecyclerViewAdapter.notifyDataSetChanged();
                     mode.finish();
                 }
@@ -318,7 +501,10 @@ public class TransactionsFragment extends Fragment {
         if(((MainActivity) getActivity()).getPayTrackDBHelper().insertDataToTransactionsTable(transaction)){
             Log.d(TAG,"Transaction inserted to db - " + transaction.toString());
             mTransactions.add(transaction);
-            addTransactionToHashMap(transaction);
+            addTransactionToFilterHashMap(transaction);
+            refreshSpinner();
+            addTransactionToDatedHashMap(transaction);
+            transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
             transactionsRecyclerViewAdapter.notifyDataSetChanged();
             Log.i(TAG, "Added transaction - " + transaction.toString());
             return true;
@@ -338,7 +524,10 @@ public class TransactionsFragment extends Fragment {
         }
 
         mTransactions.remove(transaction);
+        removeTransactionFromFilterHashMap(transaction);
+        refreshSpinner();
         removeTransactionFromHashMap(transaction);
+        transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
         transactionsRecyclerViewAdapter.notifyDataSetChanged();
     }
 
@@ -347,8 +536,6 @@ public class TransactionsFragment extends Fragment {
     private void deleteGroupOfTransactions(int position) {
         //remove transaction
         Date date = transactionsRecyclerViewAdapter.getDates().get(position);
-        ArrayList<Transaction> transactions = datedTransactionHashMap.get(date);
-
         datedTransactionHashMap.remove(date);
         //delete from mTransactions & db
         for (int  i = mTransactions.size()-1; i>=0; i--){
