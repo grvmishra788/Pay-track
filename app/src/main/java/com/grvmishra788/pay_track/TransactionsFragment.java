@@ -177,9 +177,15 @@ public class TransactionsFragment extends Fragment {
     private void initSpinner(View v) {
         Log.i(TAG,"initSpinner()");
         filterTransactions = (Spinner) v.findViewById(R.id.spinner_filter);
-        // Create an ArrayAdapter using the string array and a custom spinner layout
+        //init list of months
         initMonthsList();
-
+        //set visibility for spinner
+        if(months.size()==0){
+            filterTransactions.setVisibility(View.GONE);
+        } else if(filterTransactions.getVisibility()==View.GONE){
+            filterTransactions.setVisibility(View.VISIBLE);
+        }
+        // Create an ArrayAdapter using the string array and a custom spinner layout
         filterAdapter = new ArrayAdapter<String>(getActivity(), R.layout.layout_custom_spinner_item_transpose, months);
         // Specify the layout to use when the list of choices appears
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -220,6 +226,13 @@ public class TransactionsFragment extends Fragment {
         }
         createSortedMonthsList();
         initMonthsList();
+        if(filterTransactions!=null){
+            if(months.size()==0){
+                filterTransactions.setVisibility(View.GONE);
+            } else if(filterTransactions.getVisibility()==View.GONE){
+                filterTransactions.setVisibility(View.VISIBLE);
+            }
+        }
         if(filterAdapter!=null) {
             filterAdapter.clear();
             filterAdapter.addAll(months);

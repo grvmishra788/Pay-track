@@ -27,7 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
-public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapter.TransactionsViewHolder> {
+public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     //constants
     private static final String TAG = "Pay-Track: " + TransactionsAdapter.class.getName(); //constant Class TAG
@@ -51,6 +51,10 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
     //Variable to store selected month
     private String selectedMonthString;
 
+    //Variable to represent two types of recyclerview items
+    private static int TYPE_SUMMARY = 1;
+    private static int TYPE_ITEM = 2;
+
     //Constructor: binds Transaction object data to TransactionsAdapter
     public TransactionsAdapter(Context mContext, HashMap<Date, ArrayList<Transaction>> allDatedTransactionHashMap) {
         Log.i(TAG, TAG + ": Constructor starts");
@@ -73,6 +77,11 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
         }
         datedTransactionHashMap.clear();
 
+        if(allDatedTransactionHashMap!=null && allDatedTransactionHashMap.size()!=0) {
+            //add dummy item for position zero
+            datedTransactionHashMap.put(Utilities.getRandomDateFromFuture(), null);
+        }
+
         Iterator it = allDatedTransactionHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Date, ArrayList<Transaction>> pair = (Map.Entry)it.next();
@@ -88,70 +97,127 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
         notifyDataSetChanged();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if(position==0){
+            return TYPE_SUMMARY;
+        } else {
+            return TYPE_ITEM;
+        }
+    }
 
     @NonNull
     @Override
-    public TransactionsAdapter.TransactionsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.i(TAG, "onCreateViewHolder()...");
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item_transaction, parent, false);
-        TransactionsViewHolder transactionsViewHolder = new TransactionsViewHolder(view);
-        Log.i(TAG, "onCreateViewHolder() ends!");
-        return transactionsViewHolder;
-    }
-
-    public SortedList<Date> getDates() {
-        return dates;
+        View view;
+        if(viewType==TYPE_SUMMARY) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item_transaction_summary, parent, false);
+            SummaryViewHolder summaryViewHolder = new SummaryViewHolder(view);
+            Log.i(TAG, "onCreateViewHolder() ends!");
+            return summaryViewHolder;
+        } else {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_item_transaction, parent, false);
+            TransactionsViewHolder transactionsViewHolder = new TransactionsViewHolder(view);
+            Log.i(TAG, "onCreateViewHolder() ends!");
+            return transactionsViewHolder;
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
-    public void onBindViewHolder(@NonNull TransactionsAdapter.TransactionsViewHolder holder, int position) {
-        Log.d(TAG, "onBindViewHolder() :: " + position );
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        Date date = dates.get(position);
+        if(getItemViewType(position)==TYPE_SUMMARY){
 
-        //convert date to string & display in text view
-        if(date!=null){
-            Log.d(TAG,"Date for position - " + position + " is - " + date);
-            ArrayList<Transaction> curDateTransactions = datedTransactionHashMap.get(date);
-            if (curDateTransactions == null || curDateTransactions.size()==0) {
-                holder.itemView.setVisibility(View.GONE);
+            Double[] expenseOverview = getExpensesOverview();
+            ((SummaryViewHolder) holder).tv_income.setText(Utilities.getAmountWithRupeeSymbol(expenseOverview[0]));
+            ((SummaryViewHolder) holder).tv_expenses.setText(Utilities.getAmountWithRupeeSymbol(expenseOverview[1]));
+            if(expenseOverview[2]<0){
+                ((SummaryViewHolder) holder).tv_total.setText(" - " + Utilities.getAmountWithRupeeSymbol(-expenseOverview[2]));
             } else {
-
-                holder.itemView.setVisibility(View.VISIBLE);
-                //update grouped Transactions
-                holder.setmGroupedTransactions(curDateTransactions);
-
-                SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_DAY_AND_DATE);
-                String dateString = sdf.format(date);
-                holder.tv_date.setText(dateString);
-
-                //set total ampunt for curDateTransaction
-                String amountValue = "";
-                Double groupTransactionAmount = getGroupedTransactionAmount(curDateTransactions);
-                if(groupTransactionAmount>=new Double(0)){
-                    amountValue = " + " + Utilities.getAmountWithRupeeSymbol(groupTransactionAmount);
-                } else {
-                    amountValue = " - " + Utilities.getAmountWithRupeeSymbol(-groupTransactionAmount);
-                }
-                holder.tv_group_amt.setText(amountValue);
-
-                //update groupedTransactionRecyclerViewAdapter
-                holder.groupedTransactionRecyclerViewAdapter.setmGroupedTransactions(curDateTransactions);
-                holder.groupedTransactionRecyclerViewAdapter.setSelectedTransactions(selectedTransactions);
-
-                if (selectedItems.contains(position)) {
-                    //if item is selected then,set foreground color of FrameLayout.
-                    holder.itemView.setForeground(new ColorDrawable(ContextCompat.getColor(mContext, R.color.colorAccentTransparent)));
-                } else {
-                    //else remove selected item color.
-                    holder.itemView.setForeground(new ColorDrawable(ContextCompat.getColor(mContext, android.R.color.transparent)));
-                }
-
+                ((SummaryViewHolder) holder).tv_total.setText(" + " + Utilities.getAmountWithRupeeSymbol(expenseOverview[2]));
             }
+
         } else {
-            Log.e(TAG,"Date for position - " + position + " is null !");
+            Log.d(TAG, "onBindViewHolder() :: " + position );
+
+            Date date = dates.get(position);
+
+            //convert date to string & display in text view
+            if(date!=null){
+                Log.d(TAG,"Date for position - " + position + " is - " + date);
+                ArrayList<Transaction> curDateTransactions = datedTransactionHashMap.get(date);
+                if (curDateTransactions == null || curDateTransactions.size()==0) {
+                    holder.itemView.setVisibility(View.GONE);
+                } else {
+
+                    holder.itemView.setVisibility(View.VISIBLE);
+                    //update grouped Transactions
+                    ((TransactionsAdapter.TransactionsViewHolder)holder).setmGroupedTransactions(curDateTransactions);
+
+                    SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_DAY_AND_DATE);
+                    String dateString = sdf.format(date);
+                    ((TransactionsAdapter.TransactionsViewHolder)holder).tv_date.setText(dateString);
+
+                    //set total ampunt for curDateTransaction
+                    String amountValue = "";
+                    Double groupTransactionAmount = getGroupedTransactionAmount(curDateTransactions);
+                    if(groupTransactionAmount>=new Double(0)){
+                        amountValue = " + " + Utilities.getAmountWithRupeeSymbol(groupTransactionAmount);
+                    } else {
+                        amountValue = " - " + Utilities.getAmountWithRupeeSymbol(-groupTransactionAmount);
+                    }
+                    ((TransactionsAdapter.TransactionsViewHolder)holder).tv_group_amt.setText(amountValue);
+
+                    //update groupedTransactionRecyclerViewAdapter
+                    ((TransactionsAdapter.TransactionsViewHolder)holder).groupedTransactionRecyclerViewAdapter.setmGroupedTransactions(curDateTransactions);
+                    ((TransactionsAdapter.TransactionsViewHolder)holder).groupedTransactionRecyclerViewAdapter.setSelectedTransactions(selectedTransactions);
+
+                    if (selectedItems.contains(position)) {
+                        //if item is selected then,set foreground color of FrameLayout.
+                        holder.itemView.setForeground(new ColorDrawable(ContextCompat.getColor(mContext, R.color.colorAccentTransparent)));
+                    } else {
+                        //else remove selected item color.
+                        holder.itemView.setForeground(new ColorDrawable(ContextCompat.getColor(mContext, android.R.color.transparent)));
+                    }
+
+                }
+            } else {
+                Log.e(TAG,"Date for position - " + position + " is null !");
+            }
         }
+    }
+
+    private Double[] getExpensesOverview() {
+        //amount[0] -> stores income
+        //amount[1] -> stores expenses
+        //amount[2] -> stores total
+        Iterator it = datedTransactionHashMap.entrySet().iterator();
+        Double[] amount = new Double[]{(double)0,(double)0,(double)0};
+        while (it.hasNext()) {
+            Map.Entry<Date, ArrayList<Transaction>> pair = (Map.Entry) it.next();
+            ArrayList<Transaction> transactions = pair.getValue();
+            if(transactions!=null){
+                for (Transaction transaction : transactions) {
+                    if (transaction.getType() == GlobalConstants.TransactionType.CREDIT) {
+                        amount[0] += transaction.getAmount();
+                    } else {
+                        amount[1] += transaction.getAmount();
+                    }
+                }
+            }
+        }
+        amount[2] = amount[0] - amount[1];
+        //round all values to 2 decimal places
+        for(int i=0;i<3;i++){
+            amount[i] = Math.round(amount[i] * 100.0) / 100.0;
+        }
+        return amount;
+    }
+
+    public SortedList<Date> getDates() {
+        return dates;
     }
 
     private void createSortedDatesList() {
@@ -319,4 +385,15 @@ public class TransactionsAdapter extends RecyclerView.Adapter<TransactionsAdapte
         }
 
     }
+
+    public class SummaryViewHolder extends RecyclerView.ViewHolder{
+        private TextView tv_income, tv_expenses, tv_total;
+        public SummaryViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tv_income = itemView.findViewById(R.id.tv_show_income);
+            tv_expenses = itemView.findViewById(R.id.tv_show_expenses);
+            tv_total = itemView.findViewById(R.id.tv_show_total);
+        }
+    }
+
 }

@@ -52,6 +52,11 @@
     <string name="date">Date</string>
     <string name="description">Description</string>
     <string name="account">Account</string>
+    
+    <!--Transaction Overview Fields-->
+    <string name="overview">Overview</string>
+    <string name="income">Income</string>
+    <string name="expenses">Expenses</string>
 
     <!--Debt Fields-->
     <string name="person">Name Of The Person</string>

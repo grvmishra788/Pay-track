@@ -46,6 +46,20 @@ public class Utilities {
         return calendar.getTime();
     }
 
+    public static Date getRandomDateFromFuture() {
+        // set Today as default date
+        //create date object
+        Calendar calendar = Calendar.getInstance();
+        //set time part of date as 0
+        calendar.set(Calendar.YEAR, 25000);
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        return calendar.getTime();
+    }
+
     public static Date getTodayDateWithDefaultTime() {
         // set Today as default date
         //create date object
