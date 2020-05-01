@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.SortedList;
 
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.ACCOUNTS_TABLE;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.ACCOUNTS_TABLE_COL_ACCOUNT_NO;
@@ -795,14 +796,49 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public ArrayList<SubCategory> getAllSubCategories() {
+    public SortedList<SubCategory> getAllSubCategories() {
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery("Select * FROM " + SUB_CATEGORIES_TABLE, null);
         if (cursor.getCount() == 0) {
             Log.d(TAG, "No subcategories in db!");
             return null;
         } else {
-            ArrayList<SubCategory> subCategories = new ArrayList<>();
+            SortedList<SubCategory> subCategories = new SortedList<SubCategory>(SubCategory.class, new SortedList.Callback<SubCategory>() {
+                @Override
+                public int compare(SubCategory o1, SubCategory o2) {
+                    return o1.getSubCategoryName().toLowerCase().compareTo(o2.getSubCategoryName().toLowerCase());
+                }
+
+                @Override
+                public void onChanged(int position, int count) {
+
+                }
+
+                @Override
+                public boolean areContentsTheSame(SubCategory oldItem, SubCategory newItem) {
+                    return false;
+                }
+
+                @Override
+                public boolean areItemsTheSame(SubCategory item1, SubCategory item2) {
+                    return false;
+                }
+
+                @Override
+                public void onInserted(int position, int count) {
+
+                }
+
+                @Override
+                public void onRemoved(int position, int count) {
+
+                }
+
+                @Override
+                public void onMoved(int fromPosition, int toPosition) {
+
+                }
+            });
             while (cursor.moveToNext()) {
                 String subCategoryName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME));
                 String accountNickName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME));
@@ -814,19 +850,54 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public ArrayList<Category> getAllCategories() {
+    public SortedList<Category> getAllCategories() {
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery("Select * FROM " + CATEGORIES_TABLE, null);
         if (cursor.getCount() == 0) {
             Log.d(TAG, "No categories in db!");
             return null;
         } else {
-            ArrayList<Category> categories = new ArrayList<>();
+            SortedList<Category> categories = new SortedList<Category>(Category.class, new SortedList.Callback<Category>() {
+                @Override
+                public int compare(Category o1, Category o2) {
+                    return o1.getCategoryName().toLowerCase().compareTo(o2.getCategoryName().toLowerCase());
+                }
+
+                @Override
+                public void onChanged(int position, int count) {
+
+                }
+
+                @Override
+                public boolean areContentsTheSame(Category oldItem, Category newItem) {
+                    return false;
+                }
+
+                @Override
+                public boolean areItemsTheSame(Category item1, Category item2) {
+                    return false;
+                }
+
+                @Override
+                public void onInserted(int position, int count) {
+
+                }
+
+                @Override
+                public void onRemoved(int position, int count) {
+
+                }
+
+                @Override
+                public void onMoved(int fromPosition, int toPosition) {
+
+                }
+            });
             while (cursor.moveToNext()) {
                 String categoryName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_CATEGORY_NAME));
                 String accountNickName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_ACCOUNT_NAME));
                 String description = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_DESCRIPTION));
-                ArrayList<SubCategory> subCategories = getAllSubCategoriesInParent(categoryName);
+                SortedList<SubCategory> subCategories = getAllSubCategoriesInParent(categoryName);
                 categories.add(new Category(categoryName, accountNickName, description, subCategories));
             }
             return categories;
@@ -907,7 +978,7 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public ArrayList<SubCategory> getAllSubCategoriesInParent(String parent) {
+    public SortedList<SubCategory> getAllSubCategoriesInParent(String parent) {
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.query(SUB_CATEGORIES_TABLE, null, SUB_CATEGORIES_TABLE_COL_PARENT + "=?", new String[]{parent}, null, null, null, null);
 
@@ -915,7 +986,42 @@ public class DbHelper extends SQLiteOpenHelper {
             Log.d(TAG, "No subcategories in db with parent - " + parent);
             return null;
         } else {
-            ArrayList<SubCategory> subCategoriesUnderParent = new ArrayList<>();
+            SortedList<SubCategory> subCategoriesUnderParent = new SortedList<SubCategory>(SubCategory.class, new SortedList.Callback<SubCategory>() {
+                @Override
+                public int compare(SubCategory o1, SubCategory o2) {
+                    return o1.getSubCategoryName().toLowerCase().compareTo(o2.getSubCategoryName().toLowerCase());
+                }
+
+                @Override
+                public void onChanged(int position, int count) {
+
+                }
+
+                @Override
+                public boolean areContentsTheSame(SubCategory oldItem, SubCategory newItem) {
+                    return false;
+                }
+
+                @Override
+                public boolean areItemsTheSame(SubCategory item1, SubCategory item2) {
+                    return false;
+                }
+
+                @Override
+                public void onInserted(int position, int count) {
+
+                }
+
+                @Override
+                public void onRemoved(int position, int count) {
+
+                }
+
+                @Override
+                public void onMoved(int fromPosition, int toPosition) {
+
+                }
+            });
             while (cursor.moveToNext()) {
                 String subCategoryName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME));
                 String accountNickName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME));
@@ -944,7 +1050,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 String categoryName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_CATEGORY_NAME));
                 String accountNickName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_ACCOUNT_NAME));
                 String description = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_DESCRIPTION));
-                ArrayList<SubCategory> subCategories = getAllSubCategoriesInParent(categoryName);
+                SortedList<SubCategory> subCategories = getAllSubCategoriesInParent(categoryName);
                 return new Category(categoryName, accountNickName, description, subCategories);
             }
         }

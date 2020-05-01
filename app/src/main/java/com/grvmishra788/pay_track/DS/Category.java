@@ -3,15 +3,15 @@ package com.grvmishra788.pay_track.DS;
 import android.util.Log;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.SortedList;
 
 public class Category implements Serializable {
     private String categoryName;
     private String description;
     private String accountNickName;
-    private ArrayList<SubCategory> subCategories;
+    private SortedList<SubCategory> subCategories;
 
     public Category(String categoryName) {
         this.categoryName = categoryName;
@@ -27,7 +27,7 @@ public class Category implements Serializable {
         this.subCategories = null;
     }
 
-    public Category(String categoryName, String accountNickName, String description, ArrayList<SubCategory> subCategories) {
+    public Category(String categoryName, String accountNickName, String description, SortedList<SubCategory> subCategories) {
         this.categoryName = categoryName;
         this.accountNickName = accountNickName;
         this.description = description;
@@ -60,7 +60,42 @@ public class Category implements Serializable {
 
     public void addSubCategory(SubCategory subCategory) {
         if (subCategories == null) {
-            subCategories = new ArrayList<>();
+            subCategories = new SortedList<SubCategory>(SubCategory.class, new SortedList.Callback<SubCategory>() {
+                @Override
+                public int compare(SubCategory o1, SubCategory o2) {
+                    return o1.getSubCategoryName().toLowerCase().compareTo(o2.getSubCategoryName().toLowerCase());
+                }
+
+                @Override
+                public void onChanged(int position, int count) {
+
+                }
+
+                @Override
+                public boolean areContentsTheSame(SubCategory oldItem, SubCategory newItem) {
+                    return false;
+                }
+
+                @Override
+                public boolean areItemsTheSame(SubCategory item1, SubCategory item2) {
+                    return false;
+                }
+
+                @Override
+                public void onInserted(int position, int count) {
+
+                }
+
+                @Override
+                public void onRemoved(int position, int count) {
+
+                }
+
+                @Override
+                public void onMoved(int fromPosition, int toPosition) {
+
+                }
+            });
         }
         subCategories.add(subCategory);
     }
@@ -70,14 +105,14 @@ public class Category implements Serializable {
             return;
         }
         int pos = getSubCategoryIndex(subCategory);
-        subCategories.remove(pos);
+        subCategories.removeItemAt(pos);
     }
 
-    public ArrayList<SubCategory> getSubCategories() {
+    public SortedList<SubCategory> getSubCategories() {
         return subCategories;
     }
 
-    public void setSubCategories(ArrayList<SubCategory> subCategories) {
+    public void setSubCategories(SortedList<SubCategory> subCategories) {
         this.subCategories = subCategories;
     }
 
@@ -91,7 +126,8 @@ public class Category implements Serializable {
                 " Sub-Categories - ";
 
         if (subCategories != null) {
-            for (SubCategory subCategory : subCategories) {
+            for (int i=0; i<subCategories.size(); i++) {
+                SubCategory subCategory = subCategories.get(i);
                 str += ((subCategory.getSubCategoryName()) + ", ");
             }
         }

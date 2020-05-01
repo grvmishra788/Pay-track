@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SortedList;
 
 import static com.grvmishra788.pay_track.GlobalConstants.CATEGORY_INTENT_TYPE;
 import static com.grvmishra788.pay_track.GlobalConstants.CATEGORY_OBJECT;
@@ -57,7 +58,7 @@ public class CategoryActivity extends AppCompatActivity {
     private int categoryActivityType;
 
     //Categories list
-    private ArrayList<Category> mCategories;
+    private SortedList<Category> mCategories;
 
     //recyclerView variables
     private RecyclerView categoriesRecyclerView;
@@ -94,10 +95,7 @@ public class CategoryActivity extends AppCompatActivity {
         payTrackDBHelper = new DbHelper(this);
 
         //init accounts list
-        mCategories = payTrackDBHelper.getAllCategories();
-        if (mCategories == null) {
-            mCategories = new ArrayList<>();
-        }
+        initCategoriesList();
 
         //init RecyclerView
         categoriesRecyclerView = (RecyclerView) findViewById(R.id.show_category_recycler_view);
@@ -238,6 +236,48 @@ public class CategoryActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate() ends!");
     }
 
+    private void initCategoriesList() {
+        mCategories = payTrackDBHelper.getAllCategories();
+        if (mCategories == null) {
+            mCategories = new SortedList<Category>(Category.class, new SortedList.Callback<Category>() {
+                @Override
+                public int compare(Category o1, Category o2) {
+                    return o1.getCategoryName().toLowerCase().compareTo(o2.getCategoryName().toLowerCase());
+                }
+
+                @Override
+                public void onChanged(int position, int count) {
+
+                }
+
+                @Override
+                public boolean areContentsTheSame(Category oldItem, Category newItem) {
+                    return false;
+                }
+
+                @Override
+                public boolean areItemsTheSame(Category item1, Category item2) {
+                    return false;
+                }
+
+                @Override
+                public void onInserted(int position, int count) {
+
+                }
+
+                @Override
+                public void onRemoved(int position, int count) {
+
+                }
+
+                @Override
+                public void onMoved(int fromPosition, int toPosition) {
+
+                }
+            });
+        }
+    }
+
     //function to multi-select Category once contextual action mode is launched
     private void selectMultiple(int position) {
         Log.d(TAG, "selectMultiple() called at position - " + String.valueOf(position));
@@ -247,9 +287,10 @@ public class CategoryActivity extends AppCompatActivity {
             else {
                 selectedItems.add(position);
                 Category category = mCategories.get(position);
-                ArrayList<SubCategory> subCategories = category.getSubCategories();
+                SortedList<SubCategory> subCategories = category.getSubCategories();
                 if (subCategories != null) {
-                    for (SubCategory subCategory : subCategories) {
+                    for (int i=0; i<subCategories.size(); i++) {
+                        SubCategory subCategory = subCategories.get(i);
                         if (selectedSubCategories.contains(subCategory)) {
                             selectedSubCategories.remove(subCategory);
                         }
@@ -391,20 +432,13 @@ public class CategoryActivity extends AppCompatActivity {
                 if (data.hasExtra(GlobalConstants.CATEGORY_OBJECT)) {     //received category object
 
                     Category category = (Category) data.getSerializableExtra(GlobalConstants.CATEGORY_OBJECT);
-                    addNewCategory(category);
+                    addCategory(category);
 
                 } else if (data.hasExtra(GlobalConstants.SUB_CATEGORY_OBJECT)) {     //received sub-category object
 
                     SubCategory subCategory = (SubCategory) data.getSerializableExtra(GlobalConstants.SUB_CATEGORY_OBJECT);
-                    addSubCategoryToItsParent(subCategory);
-                    if (payTrackDBHelper.insertDataToSubCategoriesTable(subCategory)) {
-                        Log.d(TAG, "Sub-Category inserted to db - " + subCategory.toString());
-                    } else {
-                        Log.e(TAG, "Couldn't insert sub-category to db - " + subCategory.toString());
-                    }
-
+                    addSubCategory(subCategory);
                 }
-                categoriesRecyclerViewAdapter.notifyDataSetChanged();
 
             } else if (requestCode == REQ_CODE_EDIT_CATEGORY) {       //edit category activity result
 
@@ -416,25 +450,13 @@ public class CategoryActivity extends AppCompatActivity {
 
                         Category oldCategory = mCategories.get(position);
                         Category newCategory = (Category) data.getSerializableExtra(GlobalConstants.CATEGORY_OBJECT);
-                        if (payTrackDBHelper.updateDataInCategoriesTable(oldCategory, newCategory)) {
-                            Log.d(TAG, "Category updated in db - FROM : " + oldCategory.toString() + " TO : " + newCategory.toString());
-                        } else {
-                            Log.e(TAG, "Couldn't update category to db - " + oldCategory.toString());
-                        }
-                        updateCategoryOnCascade(position, oldCategory, newCategory);
+                        updateCategory(position, oldCategory, newCategory);
 
                     } else if (data.hasExtra(SUB_CATEGORY_OBJECT)) {     //category to sub-category edit
 
-                        //delete category from mCategories & db
-                        deleteCategory(position);
-                        //add sub-category
                         SubCategory subCategory = (SubCategory) data.getSerializableExtra(GlobalConstants.SUB_CATEGORY_OBJECT);
-                        addSubCategoryToItsParent(subCategory);
-                        if (payTrackDBHelper.insertDataToSubCategoriesTable(subCategory)) {
-                            Log.d(TAG, "Sub-Category inserted to db - " + subCategory.toString());
-                        } else {
-                            Log.e(TAG, "Couldn't insert sub-category to db - " + subCategory.toString());
-                        }
+                        deleteCategory(position);
+                        addSubCategory(subCategory);
 
                     }
 
@@ -444,25 +466,17 @@ public class CategoryActivity extends AppCompatActivity {
 
                         SubCategory oldSubCategory = (SubCategory) data.getSerializableExtra(GlobalConstants.OLD_SUB_CATEGORY_OBJECT);
                         SubCategory newSubCategory = (SubCategory) data.getSerializableExtra(GlobalConstants.NEW_SUB_CATEGORY_OBJECT);
-                        if (payTrackDBHelper.updateDataInSubCategoriesTable(oldSubCategory, newSubCategory)) {
-                            Log.d(TAG, "SubCategory updated in db - FROM : " + oldSubCategory.toString() + " TO : " + newSubCategory.toString());
-                        } else {
-                            Log.e(TAG, "Couldn't update sub-category to db - " + oldSubCategory.toString());
-                        }
-                        removeSubCategoryFromItsParent(oldSubCategory);
-                        addSubCategoryToItsParent(newSubCategory);
+                        updateSubCategory(oldSubCategory, newSubCategory);
 
                     } else if (data.hasExtra(OLD_SUB_CATEGORY_OBJECT) && data.hasExtra(NEW_CATEGORY_OBJECT)) {      //sub-category to category edit
 
                         SubCategory oldSubCategory = (SubCategory) data.getSerializableExtra(GlobalConstants.OLD_SUB_CATEGORY_OBJECT);
                         Category newCategory = (Category) data.getSerializableExtra(NEW_CATEGORY_OBJECT);
                         deleteSubCategory(oldSubCategory);
-                        addNewCategory(newCategory);
+                        addCategory(newCategory);
 
                     }
-
                 }
-
             } else {
                 Log.i(TAG, "Wrong request code");
             }
@@ -472,22 +486,60 @@ public class CategoryActivity extends AppCompatActivity {
 
     }
 
-    private void updateCategoryOnCascade(int position, Category oldCategory, Category newCategory) {
-        String newCategoryName = newCategory.getCategoryName();
-        ArrayList<SubCategory> subCategories = oldCategory.getSubCategories();
-        if (subCategories != null) {
-            for (SubCategory subCategory : subCategories) {
-                subCategory.setParent(newCategoryName);
-            }
-            newCategory.setSubCategories(subCategories);
+    private void addCategory(Category newCategory) {
+        if (payTrackDBHelper.insertDataToCategoriesTable(newCategory)) {
+            mCategories.add(newCategory);
+            categoriesRecyclerViewAdapter.notifyDataSetChanged();
+            Log.d(TAG, "Category inserted - " + newCategory.toString());
+        } else {
+            Log.e(TAG, "Couldn't insert category - " + newCategory.toString());
         }
-        mCategories.set(position, newCategory);
-        categoriesRecyclerViewAdapter.notifyDataSetChanged();
+
+    }
+
+    private void addSubCategory(SubCategory subCategory) {
+        if (payTrackDBHelper.insertDataToSubCategoriesTable(subCategory)) {
+            addSubCategoryToItsParent(subCategory);
+            Log.d(TAG, "Sub-Category inserted - " + subCategory.toString());
+        } else {
+            Log.e(TAG, "Couldn't insert sub-category - " + subCategory.toString());
+        }
+    }
+
+    private void updateCategory(int position, Category oldCategory, Category newCategory) {
+        if (payTrackDBHelper.updateDataInCategoriesTable(oldCategory, newCategory)) {
+            String newCategoryName = newCategory.getCategoryName();
+            SortedList<SubCategory> subCategories = oldCategory.getSubCategories();
+            if (subCategories != null) {
+                for (int i=0; i<subCategories.size(); i++) {
+                    SubCategory subCategory = subCategories.get(i);
+                    subCategory.setParent(newCategoryName);
+                }
+                newCategory.setSubCategories(subCategories);
+            }
+            mCategories.updateItemAt(position, newCategory);
+            categoriesRecyclerViewAdapter.notifyDataSetChanged();
+            Log.d(TAG, "Category updated - FROM : " + oldCategory.toString() + " TO : " + newCategory.toString());
+        } else {
+            Log.e(TAG, "Couldn't update category - " + oldCategory.toString());
+        }
+
+    }
+
+    private void updateSubCategory(SubCategory oldSubCategory, SubCategory newSubCategory) {
+        if (payTrackDBHelper.updateDataInSubCategoriesTable(oldSubCategory, newSubCategory)) {
+            removeSubCategoryFromItsParent(oldSubCategory);
+            addSubCategoryToItsParent(newSubCategory);
+            Log.d(TAG, "SubCategory updated - FROM : " + oldSubCategory.toString() + " TO : " + newSubCategory.toString());
+        } else {
+            Log.e(TAG, "Couldn't update sub-category - " + oldSubCategory.toString());
+        }
     }
 
     private void addSubCategoryToItsParent(SubCategory subCategory) {
         String parent = subCategory.getParent();
-        for (Category category : mCategories) {
+        for (int i=0; i<mCategories.size(); i++) {
+            Category category = mCategories.get(i);
             if (category.getCategoryName().equals(parent)) {
                 category.addSubCategory(subCategory);
                 break;
@@ -498,7 +550,8 @@ public class CategoryActivity extends AppCompatActivity {
 
     private void removeSubCategoryFromItsParent(SubCategory subCategory) {
         String parent = subCategory.getParent();
-        for (Category category : mCategories) {
+        for (int i=0; i<mCategories.size(); i++) {
+            Category category = mCategories.get(i);
             if (category.getCategoryName().equals(parent)) {
                 category.removeSubCategory(subCategory);
                 break;
@@ -511,30 +564,21 @@ public class CategoryActivity extends AppCompatActivity {
         //remove category
         Category category = mCategories.get(position);
         if (payTrackDBHelper.deleteDataInCategoriesTable(category)) {
-            Log.d(TAG, "Category deleted from db : " + category.toString());
+            mCategories.removeItemAt(position);
+            Log.d(TAG, "Category deleted : " + category.toString());
         } else {
-            Log.e(TAG, "Couldn't delete category from db : " + category.toString());
+            Log.e(TAG, "Couldn't delete category : " + category.toString());
         }
-        mCategories.remove(position);
     }
 
     private void deleteSubCategory(SubCategory subCategory) {
         if (payTrackDBHelper.deleteDataInSubCategoriesTable(subCategory)) {
-            Log.d(TAG, "SubCategory deleted from db : " + subCategory.toString());
+            removeSubCategoryFromItsParent(subCategory);
+            categoriesRecyclerViewAdapter.notifyDataSetChanged();
+            Log.d(TAG, "SubCategory deleted : " + subCategory.toString());
         } else {
-            Log.e(TAG, "Couldn't delete sub-category from db : " + subCategory.toString());
+            Log.e(TAG, "Couldn't delete sub-category : " + subCategory.toString());
         }
-        removeSubCategoryFromItsParent(subCategory);
-        categoriesRecyclerViewAdapter.notifyDataSetChanged();
     }
 
-    private void addNewCategory(Category newCategory) {
-        mCategories.add(newCategory);
-        if (payTrackDBHelper.insertDataToCategoriesTable(newCategory)) {
-            Log.d(TAG, "Category inserted to db - " + newCategory.toString());
-        } else {
-            Log.e(TAG, "Couldn't insert category to db - " + newCategory.toString());
-        }
-        categoriesRecyclerViewAdapter.notifyDataSetChanged();
-    }
 }

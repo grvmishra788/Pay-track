@@ -21,6 +21,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SortedList;
 
 import static com.grvmishra788.pay_track.GlobalConstants.SELECT_PARENT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SHOW_CATEGORY;
@@ -34,7 +35,7 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
     private Context mContext;
 
     //Variable for accessing Categories List in  CategoriesAdapter
-    private ArrayList<Category> mCategories;
+    private SortedList<Category> mCategories;
 
     //Variable for onItemClickListener
     private OnItemClickListener mOnItemClickListener;
@@ -50,7 +51,7 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
     private TreeSet<SubCategory> selectedSubCategories = new TreeSet<>();
 
     //Constructor: binds Category object data to CategoriesAdapter
-    public CategoriesAdapter(Context context, ArrayList<Category> categories, int categoryActivityType) {
+    public CategoriesAdapter(Context context, SortedList<Category> categories, int categoryActivityType) {
         Log.d(TAG, TAG + ": Constructor starts");
         this.mContext = context;
         this.mCategories = categories;
@@ -72,7 +73,7 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
     @Override
     public void onBindViewHolder(@NonNull CategoriesViewHolder categoriesViewHolder, int position) {
         Category category = mCategories.get(position);
-        ArrayList<SubCategory> subCategories = category.getSubCategories();
+        SortedList<SubCategory> subCategories = category.getSubCategories();
         if (subCategories == null || subCategories.size()==0 || categoryActivityType == SELECT_PARENT_CATEGORY) {
             categoriesViewHolder.horizontal_bar.setVisibility(View.GONE);
         } else {
@@ -142,7 +143,7 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
         //Variables to store linear layout associated with category description
         private LinearLayout ll_show_description, rootView;
 
-        private ArrayList<SubCategory> mSubCategories;
+        private SortedList<SubCategory> mSubCategories;
 
         private RecyclerView subCategoryRecyclerView;
         private SubCategoriesAdapter subCategoryRecyclerViewAdapter;
@@ -193,17 +194,52 @@ class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Categorie
             }
         }
 
-        public void setSubCategories(ArrayList<SubCategory> subCategories) {
+        public void setSubCategories(SortedList<SubCategory> subCategories) {
             this.mSubCategories = subCategories;
         }
 
-        public ArrayList<SubCategory> getSubCategories() {
+        public SortedList<SubCategory> getSubCategories() {
             return mSubCategories;
         }
 
         private void initSubCategoryRecyclerView() {
             if (mSubCategories == null) {
-                mSubCategories = new ArrayList<>();
+                mSubCategories = new SortedList<SubCategory>(SubCategory.class, new SortedList.Callback<SubCategory>() {
+                    @Override
+                    public int compare(SubCategory o1, SubCategory o2) {
+                        return o1.getSubCategoryName().toLowerCase().compareTo(o2.getSubCategoryName().toLowerCase());
+                    }
+
+                    @Override
+                    public void onChanged(int position, int count) {
+
+                    }
+
+                    @Override
+                    public boolean areContentsTheSame(SubCategory oldItem, SubCategory newItem) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean areItemsTheSame(SubCategory item1, SubCategory item2) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onInserted(int position, int count) {
+
+                    }
+
+                    @Override
+                    public void onRemoved(int position, int count) {
+
+                    }
+
+                    @Override
+                    public void onMoved(int fromPosition, int toPosition) {
+
+                    }
+                });
             }
 
             subCategoryRecyclerView.setHasFixedSize(true);

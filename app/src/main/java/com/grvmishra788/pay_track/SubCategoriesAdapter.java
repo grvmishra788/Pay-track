@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SortedList;
 
 public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdapter.SubCategoriesViewHolder> {
     //constants
@@ -28,7 +29,7 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
     private Context mContext;
 
     //Variable for accessing Categories List in  CategoriesAdapter
-    private ArrayList<SubCategory> mSubCategories;
+    private SortedList<SubCategory> mSubCategories;
 
     //Variable for onItemclickListener
     private OnSubCategoryClickListener onSubCategoryClickListener;
@@ -37,7 +38,7 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
     private TreeSet<SubCategory> selectedSubCategories = new TreeSet<>();
 
 
-    public SubCategoriesAdapter(Context mContext, ArrayList<SubCategory> mSubCategories) {
+    public SubCategoriesAdapter(Context mContext, SortedList<SubCategory> mSubCategories) {
         this.mContext = mContext;
         this.mSubCategories = mSubCategories;
     }
@@ -87,7 +88,7 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
 
     }
 
-    public void setSubCategories(ArrayList<SubCategory> subCategories) {
+    public void setSubCategories(SortedList<SubCategory> subCategories) {
         this.mSubCategories = subCategories;
     }
 

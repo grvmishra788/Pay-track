@@ -12,11 +12,11 @@ import com.grvmishra788.pay_track.DS.Category;
 import com.grvmishra788.pay_track.DS.SubCategory;
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.SortedList;
 
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE_COL_CATEGORY_NAME;
@@ -245,7 +245,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                             if(categoryToEdit!=null){   //Editing Category to sub-category
 
                                 //category to sub-category edit
-                                ArrayList<SubCategory> subCategories = categoryToEdit.getSubCategories();
+                                SortedList<SubCategory> subCategories = categoryToEdit.getSubCategories();
                                 if(subCategories==null){    //original category doesn't have sub-category
 
                                     Intent resultIntent = new Intent();
