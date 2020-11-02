@@ -5,6 +5,15 @@ A Daily Money Tracking App
 <img width="200" height="200" src="https://github.com/grvmishra788/Pay-track/blob/master/images/icon_payTrack.png"> <br/>
 Designed by [Gaurav Mishra](https://github.com/grvmishra788)
 
+## Features
+- Keep track of monetary transactions and/or debts
+- Keep track of accounts - bank/digital/cash
+- Associate transactions & debts with accounts
+- Categorize & sub-categorize transactions
+- Auto-detect monetary messages
+- Auto-extract & add transactional details from messages
+- Import/Export to/from spreadsheets
+
 ## License
 
    Copyright [2020] [Gaurav Mishra]
