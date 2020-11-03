@@ -9,10 +9,15 @@ Designed by [Gaurav Mishra](https://github.com/grvmishra788)
 - Keep track of monetary transactions and/or debts
 - Keep track of accounts - bank/digital/cash
 - Associate transactions & debts with accounts
+- Filter transactions by month
 - Categorize & sub-categorize transactions
 - Auto-detect monetary messages
 - Auto-extract & add transactional details from messages
 - Import/Export to/from spreadsheets
+- Multi select & take action on transactions and/or debts
+- Customize various settings
+- Analyze transactions
+- and many more...
 
 ## License
 
