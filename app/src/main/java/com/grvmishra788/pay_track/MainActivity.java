@@ -43,6 +43,7 @@ import java.util.Date;
 
 import static com.grvmishra788.pay_track.GlobalConstants.DATE_FORMAT_SIMPLE_UNDERSCORE;
 import static com.grvmishra788.pay_track.GlobalConstants.MY_PERMISSIONS_REQUEST;
+import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ANALYZE_TRANSACTIONS;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SHOW_PENDING_MESSAGES;
 import static com.grvmishra788.pay_track.GlobalConstants.TRANSACTION_OBJECT;
 
@@ -148,7 +149,11 @@ public class MainActivity extends AppCompatActivity {
                 } else if (id == R.id.nav_pending_messages){
                     Intent intent = new Intent(getBaseContext(), TransactionMessagesActivity.class);
                     startActivityForResult(intent, REQ_CODE_SHOW_PENDING_MESSAGES);
-                } else if (id == R.id.nav_all){
+                } else if (id == R.id.nav_analyze){
+                    Intent intent = new Intent(getBaseContext(), AnalyzeActivity.class);
+                    startActivityForResult(intent, REQ_CODE_ANALYZE_TRANSACTIONS);
+                }
+                else if (id == R.id.nav_all){
                     //just close drawers
                 } else {
                     Log.e(TAG,"No match for navigation menu click!");
