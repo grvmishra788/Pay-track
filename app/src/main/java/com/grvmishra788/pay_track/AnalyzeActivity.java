@@ -50,7 +50,7 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
 
     //recyclerView variables
     private RecyclerView analyzeRecyclerView;
-    private TransactionsAdapter analyzeRecyclerViewAdapter;
+    private AnalyzeAdapter analyzeRecyclerViewAdapter;
     private RecyclerView.LayoutManager analyzeRecyclerViewLayoutManager;
 
     @Override
@@ -72,24 +72,22 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
             mTransactions = new ArrayList<>();
         }
 
-        //init datedTransactionHashMap
-        filterTransactionHashMap = new HashMap<>();
-        initFilterTransactionHashMap();
-
-        if(mTransactions==null || mTransactions.size()==0){
+        if(mTransactions.size()==0){
             Log.d(TAG, "No transactions present!");
             filterLayout.setVisibility(View.GONE);
 
         } else {
             initFilterSpinner();
             initDatePickers();
+            //init filterTransactionHashMap
+            initFilterTransactionHashMap();
         }
 
         //init RecyclerView
         analyzeRecyclerView = (RecyclerView) findViewById(R.id.analyze_recycler_view);
         analyzeRecyclerView.setHasFixedSize(true);
         analyzeRecyclerViewLayoutManager = new LinearLayoutManager(this);
-//        analyzeRecyclerViewAdapter = new TransactionsAdapter(this, datedTransactionHashMap);
+        analyzeRecyclerViewAdapter = new AnalyzeAdapter(this, filterTransactionHashMap);
         analyzeRecyclerView.setLayoutManager(analyzeRecyclerViewLayoutManager);
         analyzeRecyclerView.setAdapter(analyzeRecyclerViewAdapter);
 
@@ -131,6 +129,7 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
 
     private void initDatePickers() {
         Log.i(TAG,"initDatePickers()");
+
         et_startDate = findViewById(R.id.et_start_date);
         ib_startDate = findViewById(R.id.ib_start_date);
         ib_startDate.setOnClickListener(dateClickListener);
@@ -140,11 +139,33 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
         ib_endDate = findViewById(R.id.ib_end_date);
         ib_endDate.setOnClickListener(dateClickListener);
         et_endDate.setOnClickListener(dateClickListener);
+
+        endDate = Utilities.getTodayDateWithDefaultTime();
+        startDate = Utilities.getOneYearBackwardDate(endDate);
+        //convert start date to string & display in text view
+        SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
+        String currentDateTimeString = sdf.format(startDate);
+        et_startDate.setText(currentDateTimeString);
+        //convert end date to string & display in text view
+        currentDateTimeString = sdf.format(endDate);
+        et_endDate.setText(currentDateTimeString);
     }
 
     private void initFilterTransactionHashMap() {
+        if(filterTransactionHashMap==null)
+            filterTransactionHashMap = new HashMap<>();
+        else
+            filterTransactionHashMap.clear();
+
+        if(startDate==null || endDate==null){
+            Log.e(TAG,"Either or both of start and end dates are null!");
+            return;
+        }
         if(mTransactions!=null){
             for(Transaction transaction:mTransactions) {
+                if(transaction.getDate().before(startDate) || transaction.getDate().after(endDate)){
+                    continue;
+                }
                 addTransactionToFilterHashMap(transaction);
             }
         } else {
@@ -206,12 +227,14 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
             String currentDateTimeString = sdf.format(startDate);
             et_startDate.setText(currentDateTimeString);
             if(endDate!=null && endDate.before(startDate)){
-                endDate = null;
-                et_endDate.setText("");
+                endDate = Utilities.getOneYearForwardDate(endDate);
+                //convert end date to string & display in text view
+               currentDateTimeString = sdf.format(endDate);
+                et_endDate.setText(currentDateTimeString);
             }
             Log.d(TAG, "OnDateSetListener() call completed - date : " + currentDateTimeString);
         } else if (dateType!=-1 && (dateType==et_endDate.getId() || dateType==ib_endDate.getId())){
-            endDate = Utilities.getDateWithEndTime(year, month, day);
+            endDate = Utilities.getDateWithDefaultTime(year, month, day);
             //convert date to string & display in text view
             SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
             String currentDateTimeString = sdf.format(endDate);
@@ -219,6 +242,8 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
             Log.d(TAG, "OnDateSetListener() call completed - date : " + currentDateTimeString);
         }
 
-
+        initFilterTransactionHashMap();
+        analyzeRecyclerViewAdapter.setFilterTransactionHashMap(filterTransactionHashMap);
+        analyzeRecyclerViewAdapter.refreshMonthsList();
     }
 }
