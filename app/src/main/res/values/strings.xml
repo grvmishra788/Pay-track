@@ -63,6 +63,11 @@
     <string name="person">Name Of The Person</string>
     <string name="lender">Lender</string>
     <string name="borrower">Borrower</string>
+    
+    <!--Analyze Fields-->
+    <string name="filter">Filter Options</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
 
     <!--Default Options-->
     <string name="default_parent">None</string>
@@ -87,6 +92,12 @@
     <string-array name="debt_type">
         <item>Pay</item>
         <item>Receive</item>
+    </string-array>
+    
+    <!--Analyze filterBy choices-->
+    <string-array name="analyze_filterBy">
+        <item>By Category</item>
+        <item>By Time</item>
     </string-array>
     
     <!--Import fields-->

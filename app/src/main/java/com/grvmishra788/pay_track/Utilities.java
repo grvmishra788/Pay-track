@@ -101,6 +101,13 @@ public class Utilities {
         return calendar.getTime();
     }
 
+    public static Date getDateWithEndTime(int year, int month, int day){
+        //set year, month and day of calendar instance with end time of the day
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day, 23, 59, 59);
+        return calendar.getTime();
+    }
+
     public static boolean entryPresentInDB(Context mContext, String tableName, String colName, String value) {
         DbHelper dbHelper = new DbHelper(mContext);
         return dbHelper.entryPresentInDB(tableName, colName, value);

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android = "http://schemas.android.com/apk/res/android"
+	xmlns:app = "http://schemas.android.com/apk/res-auto"
+	android:layout_width = "match_parent"
+	android:layout_height = "wrap_content"
+	android:layout_marginTop = "@dimen/size_16_dp"
+	app:cardCornerRadius = "@dimen/radius_4_dp">
+	
+	<LinearLayout
+		android:id = "@+id/ll_summary"
+		android:layout_width = "match_parent"
+		android:layout_height = "wrap_content"
+		android:background = "@drawable/ll_left_border"
+		android:orientation = "vertical">
+		
+		<LinearLayout
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_20_dp"
+			android:layout_marginRight = "@dimen/size_20_dp"
+			android:orientation = "horizontal">
+			
+			<TextView
+				android:layout_width = "match_parent"
+				android:layout_height = "wrap_content"
+				android:text = "@string/filter"
+				android:textAppearance = "@style/Toolbar.AccountNickName"
+				android:textColor = "@color/colorPrimary" />
+		
+		</LinearLayout>
+		
+		<View
+			android:layout_width = "match_parent"
+			android:layout_height = "@dimen/size_2_dp"
+			android:layout_marginLeft = "@dimen/size_20_dp"
+			android:layout_marginRight = "@dimen/size_20_dp"
+			android:background = "@color/colorPrimary" />
+		
+		<LinearLayout
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_20_dp"
+			android:layout_marginTop = "@dimen/size_4_dp"
+			android:layout_marginRight = "@dimen/size_20_dp">
+			
+			<Spinner
+				android:id="@+id/spinner_type"
+				android:layout_width="match_parent"
+				android:layout_height="@dimen/size_48_dp"
+				android:layout_gravity="center"
+				android:background="@drawable/spinner_background"/>
+		
+		</LinearLayout>
+		
+		<LinearLayout
+			android:layout_width = "match_parent"
+			android:layout_height = "wrap_content"
+			android:layout_marginLeft = "@dimen/size_20_dp"
+			android:layout_marginTop = "@dimen/size_4_dp"
+			android:layout_marginRight = "@dimen/size_20_dp"
+			android:layout_marginBottom = "@dimen/size_4_dp">
+			
+			<LinearLayout
+				android:layout_width="0dp"
+				android:layout_weight="1"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:background="@color/textColorPrimary">
+				
+				<EditText
+					android:id="@+id/et_start_date"
+					android:focusable="false"
+					android:layout_width="0dp"
+					android:layout_height="@dimen/size_48_dp"
+					android:layout_weight="8"
+					android:paddingLeft="@dimen/size_10_dp"
+					android:hint="@string/start_date"
+					android:background="@color/textColorPrimary"
+					android:textColor="@color/colorPrimary"
+					android:textColorHint="@color/colorPrimary"
+					android:textAppearance="@style/EditText.Text"/>
+				
+				<ImageButton
+					android:id="@+id/ib_start_date"
+					android:src="@drawable/ic_date_picker"
+					android:backgroundTint="@color/textColorPrimary"
+					android:layout_width="0dp"
+					android:layout_weight="1"
+					android:layout_height="@dimen/size_48_dp" />
+			
+			</LinearLayout>
+			
+			<LinearLayout
+				android:layout_width="0dp"
+				android:layout_weight="1"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:background="@color/textColorPrimary">
+				
+				<EditText
+					android:id="@+id/et_end_date"
+					android:focusable="false"
+					android:layout_width="0dp"
+					android:layout_height="@dimen/size_48_dp"
+					android:layout_weight="8"
+					android:paddingLeft="@dimen/size_10_dp"
+					android:hint="@string/end_date"
+					android:background="@color/textColorPrimary"
+					android:textColor="@color/colorPrimary"
+					android:textColorHint="@color/colorPrimary"
+					android:textAppearance="@style/EditText.Text"/>
+				
+				<ImageButton
+					android:id="@+id/ib_end_date"
+					android:src="@drawable/ic_date_picker"
+					android:backgroundTint="@color/textColorPrimary"
+					android:layout_width="0dp"
+					android:layout_weight="1"
+					android:layout_height="@dimen/size_48_dp" />
+			
+			</LinearLayout>
+			
+		</LinearLayout>
+		
+	</LinearLayout>
+
+</androidx.cardview.widget.CardView>

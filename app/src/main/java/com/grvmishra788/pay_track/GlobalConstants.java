@@ -80,6 +80,10 @@ public abstract class GlobalConstants {
         DEBIT, CREDIT
     }
 
+    public static enum Filter{
+        BY_CATEGORY, BY_DATE
+    }
+
     public static enum DebtType{
         PAY, RECEIVE
     }

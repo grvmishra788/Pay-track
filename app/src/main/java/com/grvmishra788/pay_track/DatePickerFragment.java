@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +14,16 @@ import androidx.fragment.app.DialogFragment;
 
 public class DatePickerFragment extends DialogFragment {
     private static final String TAG = DatePickerFragment.class.getName();     //constant Class TAG
+    private  DatePickerDialog mDialog;
+    private Date mInitDate;
+
+    public DatePickerFragment(){
+
+    }
+
+    public DatePickerFragment(Date initialDate) {
+        mInitDate = initialDate;
+    }
 
     @NonNull
     @Override
@@ -22,7 +33,10 @@ public class DatePickerFragment extends DialogFragment {
         int year = mCalendar.get(mCalendar.YEAR);
         int month = mCalendar.get(mCalendar.MONTH);
         int day = mCalendar.get(mCalendar.DAY_OF_MONTH);
-        Dialog mDialog = new DatePickerDialog(getActivity(), (DatePickerDialog.OnDateSetListener)getActivity(), year, month, day);
+        mDialog = new DatePickerDialog(getActivity(), (DatePickerDialog.OnDateSetListener)getActivity(), year, month, day);
+        if(mInitDate!=null){
+            mDialog.getDatePicker().setMinDate(mInitDate.getTime());
+        }
         Log.d(TAG, "OnCreateDialog() call completed");
         return mDialog;
     }
