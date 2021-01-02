@@ -5,6 +5,7 @@ import android.util.Log;
 import java.io.Serializable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.SortedList;
 
 public class Category implements Serializable {
@@ -142,5 +143,19 @@ public class Category implements Serializable {
             }
         }
         return -1;
+    }
+
+    @Override
+    public int hashCode() {
+        return categoryName.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(obj instanceof Category) {
+            return categoryName.equals(((Category)obj).getCategoryName());
+        } else {
+            return false;
+        }
     }
 }

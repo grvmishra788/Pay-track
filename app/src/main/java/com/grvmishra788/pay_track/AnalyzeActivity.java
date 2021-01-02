@@ -13,6 +13,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.grvmishra788.pay_track.BackEnd.DbHelper;
+import com.grvmishra788.pay_track.DS.Category;
+import com.grvmishra788.pay_track.DS.SubCategory;
 import com.grvmishra788.pay_track.DS.Transaction;
 
 import java.text.SimpleDateFormat;
@@ -37,8 +39,8 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
     private ArrayList<Transaction> mTransactions;
 
     private HashMap<Date, ArrayList<Transaction>> filterTransactionHashMap;
-    private SortedList<Date> filterMonths;
-    private ArrayList<String> months;
+    private HashMap<Category, ArrayList<Transaction>> filterCategoryTransactionHashMap;
+    private HashMap<SubCategory, ArrayList<Transaction>> filterSubCategoryTransactionHashMap;
 
     private CardView filterLayout;
     private Spinner filterBy;
@@ -46,11 +48,14 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
     private ImageButton ib_startDate, ib_endDate;
     private Date startDate, endDate;
     private int dateType = -1;
-    private GlobalConstants.Filter type;
+    private GlobalConstants.Filter type = GlobalConstants.Filter.BY_DATE;
 
     //recyclerView variables
     private RecyclerView analyzeRecyclerView;
-    private AnalyzeAdapter analyzeRecyclerViewAdapter;
+    private RecyclerView.Adapter<RecyclerView.ViewHolder> analyzeRecyclerViewAdapter;
+    private AnalyzeAdapter dateAdapter;
+    private AnalyzeCategoryAdapter categoryAdapter;
+
     private RecyclerView.LayoutManager analyzeRecyclerViewLayoutManager;
 
     @Override
@@ -81,13 +86,22 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
             initDatePickers();
             //init filterTransactionHashMap
             initFilterTransactionHashMap();
+            initFilterCategoryTransactionHashMap();
+            initFilterSubCategoryTransactionHashMap();
         }
 
         //init RecyclerView
         analyzeRecyclerView = (RecyclerView) findViewById(R.id.analyze_recycler_view);
         analyzeRecyclerView.setHasFixedSize(true);
         analyzeRecyclerViewLayoutManager = new LinearLayoutManager(this);
-        analyzeRecyclerViewAdapter = new AnalyzeAdapter(this, filterTransactionHashMap);
+        dateAdapter = new AnalyzeAdapter(this, filterTransactionHashMap);
+        categoryAdapter = new AnalyzeCategoryAdapter(this, filterCategoryTransactionHashMap, filterSubCategoryTransactionHashMap);
+        if(type== GlobalConstants.Filter.BY_DATE) {
+            analyzeRecyclerViewAdapter = dateAdapter;
+        } else if (type == GlobalConstants.Filter.BY_CATEGORY) {
+            analyzeRecyclerViewAdapter = categoryAdapter;
+            ((AnalyzeCategoryAdapter)analyzeRecyclerViewAdapter).setFilterSubCategoryTransactionHashMap(filterSubCategoryTransactionHashMap);
+        }
         analyzeRecyclerView.setLayoutManager(analyzeRecyclerViewLayoutManager);
         analyzeRecyclerView.setAdapter(analyzeRecyclerViewAdapter);
 
@@ -109,15 +123,16 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.d(TAG, "onItemSelected() - index : " + i);
                 switch (i) {
-                    case 1:
-                        //if credit selected, change type of transaction
+                    case 0:
                         type = GlobalConstants.Filter.BY_CATEGORY;
+                        analyzeRecyclerViewAdapter = categoryAdapter;
                         break;
                     default:
-                        //else keep it as debit
                         type = GlobalConstants.Filter.BY_DATE;
+                        analyzeRecyclerViewAdapter = dateAdapter;
                         break;
                 }
+                analyzeRecyclerView.setAdapter(analyzeRecyclerViewAdapter);
             }
 
             @Override
@@ -195,6 +210,93 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
         }
     }
 
+    private void initFilterCategoryTransactionHashMap() {
+        if(filterCategoryTransactionHashMap==null)
+            filterCategoryTransactionHashMap = new HashMap<>();
+        else
+            filterCategoryTransactionHashMap.clear();
+
+        if(startDate==null || endDate==null){
+            Log.e(TAG,"Either or both of start and end dates are null!");
+            return;
+        }
+        if(mTransactions!=null){
+            for(Transaction transaction:mTransactions) {
+                if(transaction.getDate().before(startDate) || transaction.getDate().after(endDate)){
+                    continue;
+                }
+                addTransactionToFilterCategoryHashMap(transaction);
+            }
+        } else {
+            Log.d(TAG, "mTransactions is null or empty!");
+        }
+    }
+
+    private void addTransactionToFilterCategoryHashMap(Transaction transaction) {
+        Category categoryOfTransaction = payTrackDBHelper.getCategory(transaction.getCategory());
+        if(filterCategoryTransactionHashMap==null){
+            filterCategoryTransactionHashMap = new HashMap<>();
+        }
+        if(categoryOfTransaction!=null){
+            ArrayList<Transaction> curMonthTransactions = null;
+            if(filterCategoryTransactionHashMap.containsKey(categoryOfTransaction)){
+                curMonthTransactions = filterCategoryTransactionHashMap.get(categoryOfTransaction);
+            }
+            if (curMonthTransactions == null) {
+                curMonthTransactions = new ArrayList<>();
+            }
+            curMonthTransactions.add(transaction);
+            filterCategoryTransactionHashMap.put(categoryOfTransaction, curMonthTransactions);
+
+        } else {
+            Log.e(TAG,"Category of " + transaction.toString() + " is null!");
+        }
+    }
+
+    private void initFilterSubCategoryTransactionHashMap() {
+        if(filterSubCategoryTransactionHashMap==null)
+            filterSubCategoryTransactionHashMap = new HashMap<>();
+        else
+            filterSubCategoryTransactionHashMap.clear();
+
+        if(startDate==null || endDate==null){
+            Log.e(TAG,"Either or both of start and end dates are null!");
+            return;
+        }
+        if(mTransactions!=null){
+            for(Transaction transaction:mTransactions) {
+                if(transaction.getDate().before(startDate) || transaction.getDate().after(endDate)){
+                    continue;
+                }
+                addTransactionToFilterSubCategoryHashMap(transaction);
+            }
+        } else {
+            Log.d(TAG, "mTransactions is null or empty!");
+        }
+    }
+
+    private void addTransactionToFilterSubCategoryHashMap(Transaction transaction) {
+        SubCategory subCategoryOfTransaction = payTrackDBHelper.getSubCategory(transaction.getSubCategory());
+        if(filterSubCategoryTransactionHashMap==null){
+            filterSubCategoryTransactionHashMap = new HashMap<>();
+        }
+        if(subCategoryOfTransaction!=null){
+            ArrayList<Transaction> curSubCategoryTransactions = null;
+            if(filterSubCategoryTransactionHashMap.containsKey(subCategoryOfTransaction)){
+                curSubCategoryTransactions = filterSubCategoryTransactionHashMap.get(subCategoryOfTransaction);
+            }
+            if (curSubCategoryTransactions == null) {
+                curSubCategoryTransactions = new ArrayList<>();
+            }
+            curSubCategoryTransactions.add(transaction);
+            filterSubCategoryTransactionHashMap.put(subCategoryOfTransaction, curSubCategoryTransactions);
+
+        } else {
+            Log.e(TAG,"SubCategory of " + transaction.toString() + " is null!");
+        }
+    }
+
+
     private View.OnClickListener dateClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -243,7 +345,17 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
         }
 
         initFilterTransactionHashMap();
-        analyzeRecyclerViewAdapter.setFilterTransactionHashMap(filterTransactionHashMap);
-        analyzeRecyclerViewAdapter.refreshMonthsList();
+        initFilterCategoryTransactionHashMap();
+        initFilterSubCategoryTransactionHashMap();
+
+        if(type== GlobalConstants.Filter.BY_DATE) {
+            ((AnalyzeAdapter)analyzeRecyclerViewAdapter).setFilterTransactionHashMap(filterTransactionHashMap);
+            ((AnalyzeAdapter)analyzeRecyclerViewAdapter).refreshMonthsList();
+        } else if (type == GlobalConstants.Filter.BY_CATEGORY) {
+            ((AnalyzeCategoryAdapter)analyzeRecyclerViewAdapter).setFilterTransactionHashMap(filterCategoryTransactionHashMap);
+            ((AnalyzeCategoryAdapter)analyzeRecyclerViewAdapter).setFilterSubCategoryTransactionHashMap(filterSubCategoryTransactionHashMap);
+            ((AnalyzeCategoryAdapter)analyzeRecyclerViewAdapter).refreshCategoriesList();
+        }
+
     }
 }

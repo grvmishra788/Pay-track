@@ -1033,6 +1033,9 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public Category getCategory(String name) {
+        if(name==null){
+            return null;
+        }
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = null;
         try {
@@ -1054,6 +1057,36 @@ public class DbHelper extends SQLiteOpenHelper {
                 return new Category(categoryName, accountNickName, description, subCategories);
             }
         }
+        cursor.close();
+        return null;
+    }
+
+    public SubCategory getSubCategory(String name) {
+        if(name==null){
+            return null;
+        }
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = null;
+        try {
+            cursor = database.query(SUB_CATEGORIES_TABLE, null, SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME + "=?", new String[]{name}, null, null, null, null);
+            Log.d(TAG, "Successfully executed query.");
+        } catch (SQLException e) {
+            Log.e(TAG, "Unable to execute query!");
+        }
+
+        if (cursor == null)
+            return null;
+
+        if (cursor.getCount() == 1) {
+            while (cursor.moveToNext()) {
+                String categoryName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME));
+                String accountNickName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME));
+                String description = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_DESCRIPTION));
+                String parent = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_PARENT));
+                return new SubCategory(categoryName, accountNickName, description, parent);
+            }
+        }
+        cursor.close();
         return null;
     }
 

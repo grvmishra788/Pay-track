@@ -3,6 +3,7 @@ package com.grvmishra788.pay_track.DS;
 import java.io.Serializable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class SubCategory implements Serializable, Comparable<SubCategory> {
 
@@ -84,5 +85,19 @@ public class SubCategory implements Serializable, Comparable<SubCategory> {
     @Override
     public int compareTo(SubCategory subCategory) {
         return this.subCategoryName.compareTo(subCategory.getSubCategoryName());
+    }
+
+    @Override
+    public int hashCode() {
+        return subCategoryName.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(obj instanceof SubCategory) {
+            return subCategoryName.equals(((SubCategory)obj).getSubCategoryName());
+        } else {
+            return false;
+        }
     }
 }
