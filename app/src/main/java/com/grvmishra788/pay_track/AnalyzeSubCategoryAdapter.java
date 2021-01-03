@@ -5,10 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.grvmishra788.pay_track.DS.Category;
 import com.grvmishra788.pay_track.DS.SubCategory;
 import com.grvmishra788.pay_track.DS.Transaction;
 
@@ -28,7 +26,7 @@ public class AnalyzeSubCategoryAdapter extends RecyclerView.Adapter<RecyclerView
     private Context mContext;
     //Variable for accessing Categories List in  CategoriesAdapter
     HashMap<SubCategory, ArrayList<Transaction>> mFilterSubCategoryTransactionHashMap;
-    private SortedList<SubCategory> mSubCategories;
+    private SortedList<SubCategory> subCategories;
 
     public void setFilterSubCategoryTransactionHashMap( HashMap<SubCategory, ArrayList<Transaction>> filterSubCategoryTransactionHashMap) {
         this.mFilterSubCategoryTransactionHashMap = filterSubCategoryTransactionHashMap;
@@ -37,6 +35,7 @@ public class AnalyzeSubCategoryAdapter extends RecyclerView.Adapter<RecyclerView
     public AnalyzeSubCategoryAdapter(Context mContext, HashMap<SubCategory, ArrayList<Transaction>> filterSubCategoryTransactionHashMap) {
         this.mContext = mContext;
         this.mFilterSubCategoryTransactionHashMap = filterSubCategoryTransactionHashMap;
+        createSortedSubCategoriesList();
     }
     @NonNull
     @Override
@@ -50,7 +49,7 @@ public class AnalyzeSubCategoryAdapter extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        SubCategory category = mSubCategories.get(position);
+        SubCategory category = subCategories.get(position);
         Double[] expenseOverview = getExpensesOverview(category);
 
         ((SubCategoryViewHolder) holder).tv_title.setText(category.getSubCategoryName());
@@ -65,8 +64,8 @@ public class AnalyzeSubCategoryAdapter extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public int getItemCount() {
-        if(mFilterSubCategoryTransactionHashMap!=null)
-            return mFilterSubCategoryTransactionHashMap.size();
+        if(subCategories!=null)
+            return subCategories.size();
         else
             return 0;
     }
@@ -78,8 +77,8 @@ public class AnalyzeSubCategoryAdapter extends RecyclerView.Adapter<RecyclerView
 
     private void createSortedSubCategoriesList() {
         List<SubCategory> subCategoriesList = new ArrayList<SubCategory>(mFilterSubCategoryTransactionHashMap.keySet()); // <== Set to List
-        if(mSubCategories ==null)
-            mSubCategories = new SortedList<SubCategory>(SubCategory.class, new SortedList.Callback<SubCategory>() {
+        if(subCategories ==null)
+            subCategories = new SortedList<SubCategory>(SubCategory.class, new SortedList.Callback<SubCategory>() {
                 @Override
                 public int compare(SubCategory o1, SubCategory o2) {
                     return o1.getSubCategoryName().toLowerCase().compareTo(o2.getSubCategoryName().toLowerCase());
@@ -115,13 +114,13 @@ public class AnalyzeSubCategoryAdapter extends RecyclerView.Adapter<RecyclerView
 
                 }
             });
-        mSubCategories.clear();
-        mSubCategories.beginBatchedUpdates();
+        subCategories.clear();
+        subCategories.beginBatchedUpdates();
         for (int i = 0; i < subCategoriesList.size(); i++) {
-            mSubCategories.add(subCategoriesList.get(i));
+            subCategories.add(subCategoriesList.get(i));
         }
-        mSubCategories.endBatchedUpdates();
-        Log.d(TAG,"All months - " + mSubCategories);
+        subCategories.endBatchedUpdates();
+        Log.d(TAG,"All months - " + subCategories);
     }
 
     private Double[] getExpensesOverview(SubCategory subCategory) {

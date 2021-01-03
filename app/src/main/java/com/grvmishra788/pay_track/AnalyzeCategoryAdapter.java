@@ -44,7 +44,7 @@ public class AnalyzeCategoryAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         mContext = context;
         this.mFilterTransactionHashMap = filterTransactionHashMap;
         this.mFilterSubCategoryTransactionHashMap = filterSubCategoryTransactionHashMap;
-        refreshCategoriesList();
+        createSortedCategoriesList();
     }
 
     public void refreshCategoriesList() {
@@ -138,8 +138,8 @@ public class AnalyzeCategoryAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     @Override
     public int getItemCount() {
-        if(mFilterTransactionHashMap!=null)
-            return mFilterTransactionHashMap.size();
+        if(categories!=null)
+            return categories.size();
         else
             return 0;
     }
