@@ -42,6 +42,10 @@
         <activity
             android:name=".TransactionMessagesActivity"
             android:parentActivityName=".MainActivity" />
+    
+        <activity
+            android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity" />
 
         <activity
             android:name=".SelectAccountActivity"

@@ -142,7 +142,10 @@ public class MainActivity extends AppCompatActivity {
                 if (id == R.id.nav_about) {
                     //TODO::create AboutActivity
                 } else if (id == R.id.nav_setting) {
-                    //TODO::create SettingsActivity
+                    Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
+                    startActivity(intent);
+                    //finish this MainActivity after transferring control to SettingsActivity
+                    finish();
                 } else if (id == R.id.nav_categories){
                     Intent intent = new Intent(getBaseContext(), CategoryActivity.class);
                     startActivity(intent);
