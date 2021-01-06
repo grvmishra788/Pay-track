@@ -16,7 +16,12 @@ public class SettingsActivity  extends AppCompatActivity {
         //init close activity button on left hand top side of activity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //set title of activity
-        setTitle("Settings");
+        setTitle(R.string.title_settings);
+
+        //replace content with SettingsFragment
+        getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new SettingsFragment())
+                .commit();
 
         Log.d(TAG, "OnCreate() completed ");
     }
