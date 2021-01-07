@@ -58,7 +58,7 @@ public class TransactionMessage implements Serializable, Comparable<TransactionM
     @NonNull
     @Override
     public String toString() {
-        SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_DAY_AND_DATE);
+        SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DEFAULT_FORMAT_DAY_AND_DATE);
         String dateString = sdf.format(date);
 
         return "Transaction Message - " +

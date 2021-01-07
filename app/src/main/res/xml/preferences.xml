@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android = "http://schemas.android.com/apk/res/android">
+	<ListPreference
+		android:key="@string/pref_key_date_format"
+		android:title="@string/pref_title_date_format"
+		android:summary="@string/pref_summary_date_format"
+		android:entries="@array/pref_date_format_types"
+		android:entryValues="@array/pref_date_format_values"
+		android:defaultValue="EEE - MMM dd, yyyy"
+		android:negativeButtonText="@null"
+		android:positiveButtonText="@null" />
+</PreferenceScreen>

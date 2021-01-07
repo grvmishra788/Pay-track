@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	
+	<string-array name="pref_date_format_types">
+		<item>Sat - Jan 01, 2000</item>
+		<item>Jan 01, 2000</item>
+	</string-array>
+	
+	<string-array name="pref_date_format_values">
+		<item>EEE - MMM dd, yyyy</item>
+		<item>MMM dd, yyyy</item>
+	</string-array>
+	
+</resources>

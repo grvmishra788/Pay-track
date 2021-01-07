@@ -1,8 +1,10 @@
 package com.grvmishra788.pay_track;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +12,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.grvmishra788.pay_track.DS.Debt;
-import com.grvmishra788.pay_track.DS.Debt;
 import com.grvmishra788.pay_track.DS.Debt;
 
 import java.text.SimpleDateFormat;
@@ -25,10 +25,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import static android.graphics.Color.GREEN;
 import static android.graphics.Color.RED;
+import static com.grvmishra788.pay_track.GlobalConstants.DEFAULT_FORMAT_DAY_AND_DATE;
 
 public class DebtsAdapter extends RecyclerView.Adapter<DebtsAdapter.DebtsViewHolder> {
     //constants
     private static final String TAG = "Pay-Track: " + DebtsAdapter.class.getName(); //constant Class TAG
+
+    //Variables to store User Settings
+    private SharedPreferences userPreferences;
+    private String defaultDateFormat;
 
     //Variable to store context from which Adapter has been called
     private Context mContext;
@@ -46,6 +51,15 @@ public class DebtsAdapter extends RecyclerView.Adapter<DebtsAdapter.DebtsViewHol
         Log.d(TAG, TAG + ": Constructor starts");
         this.mContext = context;
         this.mDebts = mDebts;
+
+        //--------------------init user settings----------------------//
+        userPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        if (userPreferences != null) {
+            defaultDateFormat = userPreferences.getString(mContext.getString(R.string.pref_key_date_format), "" );
+        } else {
+            defaultDateFormat = DEFAULT_FORMAT_DAY_AND_DATE;
+        }
+
         Log.d(TAG, TAG + ": Constructor ends");
     }
 
@@ -79,7 +93,7 @@ public class DebtsAdapter extends RecyclerView.Adapter<DebtsAdapter.DebtsViewHol
         holder.amount.setText(amountValue);
 
         //set date
-        SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_DAY_AND_DATE);
+        SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
         String dateString = sdf.format(debt.getDate());
         holder.date.setText(dateString);
 

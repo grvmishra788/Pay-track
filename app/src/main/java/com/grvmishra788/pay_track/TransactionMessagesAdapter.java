@@ -1,8 +1,10 @@
 package com.grvmishra788.pay_track;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +27,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
+import static com.grvmishra788.pay_track.GlobalConstants.DEFAULT_FORMAT_DAY_AND_DATE;
+
 class TransactionMessagesAdapter extends RecyclerView.Adapter<TransactionMessagesAdapter.TransactionMessagesViewHolder>  {
     //constants
     private static final String TAG = "Pay-Track: " + TransactionMessagesAdapter.class.getName(); //constant Class TAG
+
+    //Variables to store User Settings
+    private SharedPreferences userPreferences;
+    private String defaultDateFormat;
 
     //Variable to store context from which Adapter has been called
     private Context mContext;
@@ -45,9 +53,18 @@ class TransactionMessagesAdapter extends RecyclerView.Adapter<TransactionMessage
     //Variable to store transactions when launching Contextual action mode
     private TreeSet<TransactionMessage> selectedTransactionMessages = new TreeSet<>();
 
-    TransactionMessagesAdapter(Context mContext, HashMap<Date, ArrayList<TransactionMessage>> datedTransactionMessagesHashMap) {
+    public TransactionMessagesAdapter(Context mContext, HashMap<Date, ArrayList<TransactionMessage>> datedTransactionMessagesHashMap) {
         this.mContext = mContext;
         this.datedTransactionMessagesHashMap = datedTransactionMessagesHashMap;
+        //--------------------init user settings----------------------//
+        userPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        if (userPreferences != null) {
+            defaultDateFormat = userPreferences.getString(mContext.getString(R.string.pref_key_date_format), "" );
+        } else {
+            defaultDateFormat = DEFAULT_FORMAT_DAY_AND_DATE;
+        }
+
+
     }
 
     @NonNull
@@ -82,7 +99,7 @@ class TransactionMessagesAdapter extends RecyclerView.Adapter<TransactionMessage
                 //update grouped Transactions
                 holder.setmGroupedTransactionMessages(curDateTransactionMessages);
 
-                SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_DAY_AND_DATE);
+                SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
                 String dateString = sdf.format(date);
                 holder.tv_date.setText(dateString);
 

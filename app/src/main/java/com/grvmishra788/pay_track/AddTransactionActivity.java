@@ -2,7 +2,9 @@ package com.grvmishra788.pay_track;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -26,7 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import static com.grvmishra788.pay_track.GlobalConstants.DATE_FORMAT_DAY_AND_DATE;
+import static com.grvmishra788.pay_track.GlobalConstants.DEFAULT_FORMAT_DAY_AND_DATE;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_ACCOUNT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_ACCOUNT_NAME;
@@ -42,6 +44,10 @@ import static com.grvmishra788.pay_track.GlobalConstants.TRANSACTION_MESSAGE_OBJ
 public class AddTransactionActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     //constant Class TAG
     private static final String TAG = "Pay-Track: " + AddTransactionActivity.class.getName();
+
+    //Variables to store User Settings
+    private SharedPreferences userPreferences;
+    private String defaultDateFormat;
 
     private TextView tv_submit;
     private EditText et_amount, et_date, et_category, et_account, et_description;
@@ -73,6 +79,14 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_transaction);
 
+        //--------------------init user settings----------------------//
+        userPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (userPreferences != null) {
+            defaultDateFormat = userPreferences.getString(getString(R.string.pref_key_date_format), "" );
+        } else {
+            defaultDateFormat = DEFAULT_FORMAT_DAY_AND_DATE;
+        }
+
         initViews();
         initDatePicker();
         initSpinner();
@@ -88,7 +102,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
 
             //convert date to string & display in text view
             date = transactionToEdit.getDate();
-            SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
+            SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
             String dateString = sdf.format(date);
             et_date.setText(dateString);
 
@@ -131,7 +145,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
             // get Date From Transaction Message
             date = transactionMessage.getDate();
             //convert date to string & display in text view
-            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
+            SimpleDateFormat sdf = new SimpleDateFormat(defaultDateFormat);
             String dateString = sdf.format(date);
             et_date.setText(dateString);
 
@@ -154,7 +168,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
 
         date = Utilities.getTodayDateWithDefaultTime();
         //convert date to string & display in text view
-        SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
+        SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
         String currentDateString = sdf.format(date);
         et_date.setText(currentDateString);
     }
@@ -409,7 +423,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         //create date object
         date = Utilities.getDateWithDefaultTime(year, month, day);
         //convert date to string & display in text view
-        SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
+        SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
         String currentDateTimeString = sdf.format(date);
         et_date.setText(currentDateTimeString);
 

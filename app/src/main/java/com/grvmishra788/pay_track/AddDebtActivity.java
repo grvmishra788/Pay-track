@@ -2,7 +2,9 @@ package com.grvmishra788.pay_track;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -15,33 +17,30 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.grvmishra788.pay_track.DS.Debt;
-import com.grvmishra788.pay_track.DS.Transaction;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.UUID;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import static com.grvmishra788.pay_track.GlobalConstants.DATE_FORMAT_DAY_AND_DATE;
+import static com.grvmishra788.pay_track.GlobalConstants.DEFAULT_FORMAT_DAY_AND_DATE;
 import static com.grvmishra788.pay_track.GlobalConstants.ITEM_TO_EDIT;
 import static com.grvmishra788.pay_track.GlobalConstants.POSITION_ITEM_TO_EDIT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_ACCOUNT;
-import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_PARENT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_ACCOUNT_NAME;
-import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_NAME;
-import static com.grvmishra788.pay_track.GlobalConstants.SUB_ITEM_TO_EDIT;
 
 public class AddDebtActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener{
 
     //constant Class TAG
     private static final String TAG = "Pay-Track: " + AddDebtActivity.class.getName();
+
+    //Variables to store User Settings
+    private SharedPreferences userPreferences;
+    private String defaultDateFormat;
 
     private TextView tv_submit, tv_person;
     private EditText et_amount, et_date, et_person, et_account, et_description;
@@ -61,6 +60,14 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_debt);
 
+        //--------------------init user settings----------------------//
+        userPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (userPreferences != null) {
+            defaultDateFormat = userPreferences.getString(getString(R.string.pref_key_date_format), "" );
+        } else {
+            defaultDateFormat = DEFAULT_FORMAT_DAY_AND_DATE;
+        }
+
         initViews();
         initDatePicker();
         initSpinner();
@@ -77,7 +84,7 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
 
             //convert date to string & display in text view
             Date date = debtToEdit.getDate();
-            SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
+            SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
             String dateString = sdf.format(date);
             et_date.setText(dateString);
 
@@ -150,7 +157,7 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
 
         date = Utilities.getTodayDateWithDefaultTime();
         //convert date to string & display in text view
-        SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_DAY_AND_DATE);
+        SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
         String currentDateString = sdf.format(date);
         et_date.setText(currentDateString);
     }
@@ -172,7 +179,7 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
         //create date object
         date = Utilities.getDateWithDefaultTime(year,month,day);
         //convert date to string & display in text view
-        SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_DAY_AND_DATE);
+        SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
         String currentDateTimeString = sdf.format(date);
         et_date.setText(currentDateTimeString);
 

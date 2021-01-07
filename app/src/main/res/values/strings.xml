@@ -28,6 +28,11 @@
     <string name="title_transaction_message">Pending Messages</string>
     <string name="title_analyze">Analyze Transactions</string>
     <string name="title_settings">Settings</string>
+    
+    <!--Preference Strings-->
+    <string name="pref_key_date_format">prefDateFormat</string>
+    <string name="pref_title_date_format">Default Date Format</string>
+    <string name="pref_summary_date_format">Select the default date format</string>
 
     <!--Account Fields-->
     <string name="nick_name">Nick Name</string>
