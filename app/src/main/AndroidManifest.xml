@@ -46,7 +46,11 @@
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity" />
-
+    
+        <activity
+            android:name=".AboutActivity"
+            android:parentActivityName=".MainActivity" />
+    
         <activity
             android:name=".SelectAccountActivity"
             android:parentActivityName=".MainActivity" />

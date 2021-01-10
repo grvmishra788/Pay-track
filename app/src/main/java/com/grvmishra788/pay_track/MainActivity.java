@@ -140,7 +140,8 @@ public class MainActivity extends AppCompatActivity {
 
                 // Handle navigation view item clicks here.
                 if (id == R.id.nav_about) {
-                    //TODO::create AboutActivity
+                    Intent intent = new Intent(getBaseContext(), AboutActivity.class);
+                    startActivity(intent);
                 } else if (id == R.id.nav_setting) {
                     Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
                     startActivity(intent);
