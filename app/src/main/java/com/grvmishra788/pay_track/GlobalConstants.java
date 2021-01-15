@@ -36,6 +36,10 @@ public abstract class GlobalConstants {
     public static final int REQ_CODE_SELECT_PARENT_CATEGORY = 10002;
     public static final int REQ_CODE_SELECT_CATEGORY = 10005;
 
+    //Date Sort types
+    public static final int DATE_SORT_RECENT_FIRST = 200;
+    public static final int DATE_SORT_RECENT_LAST = 201;
+
     //Intent params
     public static final String CATEGORY_INTENT_TYPE = "com.grvmishra788.pay_track.category_intent_type";
 

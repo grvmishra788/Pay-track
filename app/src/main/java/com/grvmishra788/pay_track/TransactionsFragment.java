@@ -2,7 +2,9 @@ package com.grvmishra788.pay_track;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,6 +38,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
 import static android.app.Activity.RESULT_OK;
+import static com.grvmishra788.pay_track.GlobalConstants.DATE_SORT_RECENT_FIRST;
+import static com.grvmishra788.pay_track.GlobalConstants.DATE_SORT_RECENT_LAST;
+import static com.grvmishra788.pay_track.GlobalConstants.DEFAULT_FORMAT_DAY_AND_DATE;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ADD_TRANSACTION;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_EDIT_TRANSACTION;
 import static com.grvmishra788.pay_track.GlobalConstants.SUB_ITEM_TO_EDIT;
@@ -43,6 +48,10 @@ import static com.grvmishra788.pay_track.GlobalConstants.SUB_ITEM_TO_EDIT;
 public class TransactionsFragment extends Fragment {
     //constant Class TAG
     private static final String TAG = "Pay-Track: " + TransactionsFragment.class.getName();
+
+    //Variables to store User Settings
+    private SharedPreferences userPreferences;
+    private int defaultDateSortType;
 
     private FloatingActionButton addTransactionButton;
 
@@ -82,6 +91,16 @@ public class TransactionsFragment extends Fragment {
             Log.d(TAG, "mTransactions is null");
             mTransactions = new ArrayList<>();
         }
+
+        //--------------------init user settings----------------------//
+        userPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if (userPreferences != null) {
+            defaultDateSortType = Integer.parseInt(userPreferences.getString(getString(R.string.pref_key_date_sort), String.valueOf(DATE_SORT_RECENT_FIRST)));
+        } else {
+            defaultDateSortType = DATE_SORT_RECENT_FIRST;
+        }
+        Log.d(TAG, "defaultDateSortType - " + defaultDateSortType);
+
 
         //init datedTransactionHashMap
         filterTransactionHashMap = new HashMap<>();
@@ -394,7 +413,10 @@ public class TransactionsFragment extends Fragment {
             filterMonths = new SortedList<Date>(Date.class, new SortedList.Callback<Date>() {
             @Override
             public int compare(Date o1, Date o2) {
-                return o2.compareTo(o1); // o2 compares to o1 for descending order
+                if(defaultDateSortType==DATE_SORT_RECENT_LAST)
+                    return o1.compareTo(o2); // o1 compares to o2 for ascending order
+                else
+                    return o2.compareTo(o1); // o2 compares to o1 for descending order
             }
 
             @Override

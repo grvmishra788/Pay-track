@@ -20,6 +20,7 @@ public class SettingsFragment extends PreferenceFragment {
 
         //init list preferences
         initListPreference(getString(R.string.pref_key_date_format));
+        initListPreference(getString(R.string.pref_key_date_sort));
     }
 
     private void initListPreference(String type){

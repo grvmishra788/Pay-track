@@ -1,6 +1,8 @@
 package com.grvmishra788.pay_track;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +21,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
+import static com.grvmishra788.pay_track.GlobalConstants.DATE_SORT_RECENT_FIRST;
+import static com.grvmishra788.pay_track.GlobalConstants.DATE_SORT_RECENT_LAST;
+import static com.grvmishra788.pay_track.GlobalConstants.DEFAULT_FORMAT_DAY_AND_DATE;
+
 public class AnalyzeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     //constants
     private static final String TAG = "Pay-Track: " + AnalyzeAdapter.class.getName(); //constant Class TAG
+
+    //Variables to store User Settings
+    private SharedPreferences userPreferences;
+    private int defaultDateSortType;
 
     public void setFilterTransactionHashMap(HashMap<Date, ArrayList<Transaction>> mFilterTransactionHashMap) {
         this.mFilterTransactionHashMap = mFilterTransactionHashMap;
@@ -34,6 +44,15 @@ public class AnalyzeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public AnalyzeAdapter(Context context, HashMap<Date, ArrayList<Transaction>> filterTransactionHashMap){
         mContext = context;
         mFilterTransactionHashMap = filterTransactionHashMap;
+        //--------------------init user settings----------------------//
+        userPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        if (userPreferences != null) {
+            defaultDateSortType = Integer.parseInt(userPreferences.getString(mContext.getString(R.string.pref_key_date_sort), String.valueOf(DATE_SORT_RECENT_FIRST)));
+        } else {
+            defaultDateSortType = DATE_SORT_RECENT_FIRST;
+        }
+        Log.d(TAG, "defaultDateSortType - " + defaultDateSortType);
+
         refreshMonthsList();
     }
 
@@ -127,7 +146,10 @@ public class AnalyzeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             months = new SortedList<Date>(Date.class, new SortedList.Callback<Date>() {
                 @Override
                 public int compare(Date o1, Date o2) {
-                    return o2.compareTo(o1); // o2 compares to o1 for descending order
+                    if(defaultDateSortType==DATE_SORT_RECENT_LAST)
+                        return o1.compareTo(o2); // o1 compares to o2 for ascending order
+                    else
+                        return o2.compareTo(o1); // o2 compares to o1 for descending order
                 }
 
                 @Override

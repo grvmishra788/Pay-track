@@ -29,6 +29,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
+import static com.grvmishra788.pay_track.GlobalConstants.DATE_SORT_RECENT_FIRST;
+import static com.grvmishra788.pay_track.GlobalConstants.DATE_SORT_RECENT_LAST;
 import static com.grvmishra788.pay_track.GlobalConstants.DEFAULT_FORMAT_DAY_AND_DATE;
 
 public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -39,6 +41,8 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     //Variables to store User Settings
     private SharedPreferences userPreferences;
     private String defaultDateFormat;
+    private int defaultDateSortType;
+
 
     //Variable to store context from which Adapter has been called
     private Context mContext;
@@ -77,10 +81,15 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         //--------------------init user settings----------------------//
         userPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         if (userPreferences != null) {
-            defaultDateFormat = userPreferences.getString(mContext.getString(R.string.pref_key_date_format), "" );
+            defaultDateFormat = userPreferences.getString(mContext.getString(R.string.pref_key_date_format), DEFAULT_FORMAT_DAY_AND_DATE );
+            defaultDateSortType = Integer.parseInt(userPreferences.getString(mContext.getString(R.string.pref_key_date_sort), String.valueOf(DATE_SORT_RECENT_FIRST)));
         } else {
             defaultDateFormat = DEFAULT_FORMAT_DAY_AND_DATE;
+            defaultDateSortType = DATE_SORT_RECENT_FIRST;
         }
+        Log.d(TAG, "defaultDateFormat - " + defaultDateFormat);
+        Log.d(TAG, "defaultDateSortType - " + defaultDateSortType);
+
         Log.i(TAG, TAG + ": Constructor ends");
     }
 
@@ -241,7 +250,10 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             dates = new SortedList<Date>(Date.class, new SortedList.Callback<Date>() {
             @Override
             public int compare(Date o1, Date o2) {
-                return o2.compareTo(o1); // o2 compares to o1 for descending order
+                if(defaultDateSortType==DATE_SORT_RECENT_LAST)
+                    return o1.compareTo(o2); // o1 compares to o2 for ascending order
+                else
+                    return o2.compareTo(o1); // o2 compares to o1 for descending order
             }
 
             @Override

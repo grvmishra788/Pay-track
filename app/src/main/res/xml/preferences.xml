@@ -9,4 +9,15 @@
 		android:defaultValue="EEE - MMM dd, yyyy"
 		android:negativeButtonText="@null"
 		android:positiveButtonText="@null" />
+	
+	<ListPreference
+		android:key="@string/pref_key_date_sort"
+		android:title="@string/pref_title_date_sort"
+		android:summary="@string/pref_summary_date_sort"
+		android:entries="@array/pref_date_sort_types"
+		android:entryValues="@array/pref_date_sort_values"
+		android:defaultValue="200"
+		android:negativeButtonText="@null"
+		android:positiveButtonText="@null" />
+	
 </PreferenceScreen>
