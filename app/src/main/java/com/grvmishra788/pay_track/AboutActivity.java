@@ -6,7 +6,7 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AboutActivity extends AppCompatActivity {
-    private static final String TAG = AboutActivity.class.getName(); //constant Class TAG
+    private static final String TAG = "Pay-Track: " + AboutActivity.class.getName(); //constant Class TAG
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "OnCreate() called ");
         super.onCreate(savedInstanceState);

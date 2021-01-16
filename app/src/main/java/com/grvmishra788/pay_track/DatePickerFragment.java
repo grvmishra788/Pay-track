@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 public class DatePickerFragment extends DialogFragment {
-    private static final String TAG = DatePickerFragment.class.getName();     //constant Class TAG
+    private static final String TAG = "Pay-Track: " + DatePickerFragment.class.getName();     //constant Class TAG
     private  DatePickerDialog mDialog;
     private Date mInitDate;
 

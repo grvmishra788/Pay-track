@@ -19,7 +19,7 @@ import static com.grvmishra788.pay_track.GlobalConstants.RUPEE_SYMBOL;
 
 public class Utilities {
     //constant Class TAG
-    private static final String TAG = Utilities.class.getName();
+    private static final String TAG = "Pay-Track: " + Utilities.class.getName();
 
     public static int getPxFromDip(Context context, int dpValue){
         float d = context.getResources().getDisplayMetrics().density;

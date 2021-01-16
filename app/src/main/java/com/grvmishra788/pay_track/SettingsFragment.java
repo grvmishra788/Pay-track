@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 
 public class SettingsFragment extends PreferenceFragment {
 
-    private static final String TAG = SettingsFragment.class.getName();     //constant Class TAG
+    private static final String TAG = "Pay-Track: " + SettingsFragment.class.getName();     //constant Class TAG
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

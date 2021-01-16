@@ -7,7 +7,7 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingsActivity  extends AppCompatActivity {
-    private static final String TAG = SettingsActivity.class.getName(); //constant Class TAG
+    private static final String TAG = "Pay-Track: " + SettingsActivity.class.getName(); //constant Class TAG
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "OnCreate() called ");
         super.onCreate(savedInstanceState);
