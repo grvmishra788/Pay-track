@@ -31,6 +31,7 @@ public class AnalyzeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     //Variables to store User Settings
     private SharedPreferences userPreferences;
+    private String defaultDateFormat;
     private int defaultDateSortType;
 
     public void setFilterTransactionHashMap(HashMap<Date, ArrayList<Transaction>> mFilterTransactionHashMap) {
@@ -47,10 +48,13 @@ public class AnalyzeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         //--------------------init user settings----------------------//
         userPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         if (userPreferences != null) {
+            defaultDateFormat = userPreferences.getString(mContext.getString(R.string.pref_key_date_format), DEFAULT_FORMAT_DAY_AND_DATE );
             defaultDateSortType = Integer.parseInt(userPreferences.getString(mContext.getString(R.string.pref_key_date_sort), String.valueOf(DATE_SORT_RECENT_FIRST)));
         } else {
+            defaultDateFormat = DEFAULT_FORMAT_DAY_AND_DATE;
             defaultDateSortType = DATE_SORT_RECENT_FIRST;
         }
+        Log.d(TAG, "defaultDateFormat - " + defaultDateFormat);
         Log.d(TAG, "defaultDateSortType - " + defaultDateSortType);
 
         refreshMonthsList();
@@ -76,7 +80,7 @@ public class AnalyzeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Date date = getMonthAt(position);
         Double[] expenseOverview = getExpensesOverview(date);
 
-        SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR);
+        SimpleDateFormat sdf = getMonthAndYearFormat();
         String dateString = sdf.format(date);
         ((MonthlyViewHolder) holder).tv_title.setText(dateString);
         ((MonthlyViewHolder) holder).tv_income.setText(Utilities.getAmountWithRupeeSymbol(expenseOverview[0]));
@@ -86,6 +90,13 @@ public class AnalyzeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else {
             ((MonthlyViewHolder) holder).tv_total.setText(" + " + Utilities.getAmountWithRupeeSymbol(expenseOverview[2]));
         }
+    }
+
+    private SimpleDateFormat getMonthAndYearFormat() {
+        if(InputValidationUtilities.isValidString(defaultDateFormat) && (defaultDateFormat.equals("MMMM dd, yyyy")||defaultDateFormat.equals("dd MMMM, yyyy")))
+            return new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR_LONG);
+        else
+            return new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR);
     }
 
     @Override

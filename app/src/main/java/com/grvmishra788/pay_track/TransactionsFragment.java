@@ -51,6 +51,7 @@ public class TransactionsFragment extends Fragment {
 
     //Variables to store User Settings
     private SharedPreferences userPreferences;
+    private String defaultDateFormat;
     private int defaultDateSortType;
 
     private FloatingActionButton addTransactionButton;
@@ -95,10 +96,13 @@ public class TransactionsFragment extends Fragment {
         //--------------------init user settings----------------------//
         userPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         if (userPreferences != null) {
+            defaultDateFormat = userPreferences.getString(getString(R.string.pref_key_date_format), DEFAULT_FORMAT_DAY_AND_DATE );
             defaultDateSortType = Integer.parseInt(userPreferences.getString(getString(R.string.pref_key_date_sort), String.valueOf(DATE_SORT_RECENT_FIRST)));
         } else {
+            defaultDateFormat = DEFAULT_FORMAT_DAY_AND_DATE;
             defaultDateSortType = DATE_SORT_RECENT_FIRST;
         }
+        Log.d(TAG, "defaultDateFormat - " + defaultDateFormat);
         Log.d(TAG, "defaultDateSortType - " + defaultDateSortType);
 
 
@@ -230,10 +234,17 @@ public class TransactionsFragment extends Fragment {
         months = new ArrayList<>();
         for (int i=0; i<filterMonths.size();i++){
             Date date = filterMonths.get(i);
-            SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR);
+            SimpleDateFormat sdf = getMonthAndYearFormat();
             String dateString = sdf.format(date);
             months.add(dateString);
         }
+    }
+
+    private SimpleDateFormat getMonthAndYearFormat() {
+        if(InputValidationUtilities.isValidString(defaultDateFormat) && (defaultDateFormat.equals("MMMM dd, yyyy")||defaultDateFormat.equals("dd MMMM, yyyy")))
+            return new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR_LONG);
+        else
+            return new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR);
     }
 
     private void refreshSpinner(){

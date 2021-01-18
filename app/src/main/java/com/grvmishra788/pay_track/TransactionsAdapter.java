@@ -72,12 +72,6 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         Log.i(TAG, TAG + ": Constructor starts");
         this.mContext = mContext;
         this.allDatedTransactionHashMap = allDatedTransactionHashMap;
-        //set default selected month
-        Date date = Utilities.getTodayDateWithDefaultTime();
-        SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR);
-        this.selectedMonthString = sdf.format(date);;
-        //init datedHM
-        initSelectedMonthDatedTransactionsHM();
         //--------------------init user settings----------------------//
         userPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         if (userPreferences != null) {
@@ -90,11 +84,19 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         Log.d(TAG, "defaultDateFormat - " + defaultDateFormat);
         Log.d(TAG, "defaultDateSortType - " + defaultDateSortType);
 
+        //set default selected month
+        Date date = Utilities.getTodayDateWithDefaultTime();
+        SimpleDateFormat sdf= getMonthAndYearFormat();
+        this.selectedMonthString = sdf.format(date);;
+        //init datedHM
+        initSelectedMonthDatedTransactionsHM();
+
+
         Log.i(TAG, TAG + ": Constructor ends");
     }
 
     public void initSelectedMonthDatedTransactionsHM() {
-        SimpleDateFormat sdf=new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR);
+        SimpleDateFormat sdf= getMonthAndYearFormat();
 
         if(datedTransactionHashMap==null){
             datedTransactionHashMap = new HashMap<>();
@@ -119,6 +121,13 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         createSortedDatesList();
 
         notifyDataSetChanged();
+    }
+
+    private SimpleDateFormat getMonthAndYearFormat() {
+        if(InputValidationUtilities.isValidString(defaultDateFormat) && (defaultDateFormat.equals("MMMM dd, yyyy")||defaultDateFormat.equals("dd MMMM, yyyy")))
+            return new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR_LONG);
+        else
+            return new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR);
     }
 
     @Override

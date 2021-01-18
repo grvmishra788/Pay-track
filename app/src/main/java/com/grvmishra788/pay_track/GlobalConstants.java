@@ -75,6 +75,7 @@ public abstract class GlobalConstants {
     public static final String DATE_FORMAT_SIMPLE_UNDERSCORE = "dd_MMM_yyyy";
     public static final String DATE_FORMAT_SIMPLE = "dd MM yyyy";
     public static final String DATE_FORMAT_MONTH_AND_YEAR = "MMM yyyy";
+    public static final String DATE_FORMAT_MONTH_AND_YEAR_LONG = "MMMM yyyy";
 
     //file extensions
     public static final String FILE_EXTENSION_CSV = ".csv";
