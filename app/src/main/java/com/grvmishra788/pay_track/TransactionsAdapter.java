@@ -38,12 +38,6 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     //constants
     private static final String TAG = "Pay-Track: " + TransactionsAdapter.class.getName(); //constant Class TAG
 
-    //Variables to store User Settings
-    private SharedPreferences userPreferences;
-    private String defaultDateFormat;
-    private int defaultDateSortType;
-
-
     //Variable to store context from which Adapter has been called
     private Context mContext;
 
@@ -72,31 +66,19 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         Log.i(TAG, TAG + ": Constructor starts");
         this.mContext = mContext;
         this.allDatedTransactionHashMap = allDatedTransactionHashMap;
-        //--------------------init user settings----------------------//
-        userPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        if (userPreferences != null) {
-            defaultDateFormat = userPreferences.getString(mContext.getString(R.string.pref_key_date_format), DEFAULT_FORMAT_DAY_AND_DATE );
-            defaultDateSortType = Integer.parseInt(userPreferences.getString(mContext.getString(R.string.pref_key_date_sort), String.valueOf(DATE_SORT_RECENT_FIRST)));
-        } else {
-            defaultDateFormat = DEFAULT_FORMAT_DAY_AND_DATE;
-            defaultDateSortType = DATE_SORT_RECENT_FIRST;
-        }
-        Log.d(TAG, "defaultDateFormat - " + defaultDateFormat);
-        Log.d(TAG, "defaultDateSortType - " + defaultDateSortType);
 
         //set default selected month
         Date date = Utilities.getTodayDateWithDefaultTime();
-        SimpleDateFormat sdf= getMonthAndYearFormat();
+        SimpleDateFormat sdf= PreferenceUtils.getDefaultMonthAndYearFormat(mContext);
         this.selectedMonthString = sdf.format(date);;
         //init datedHM
         initSelectedMonthDatedTransactionsHM();
-
 
         Log.i(TAG, TAG + ": Constructor ends");
     }
 
     public void initSelectedMonthDatedTransactionsHM() {
-        SimpleDateFormat sdf= getMonthAndYearFormat();
+        SimpleDateFormat sdf= PreferenceUtils.getDefaultMonthAndYearFormat(mContext);
 
         if(datedTransactionHashMap==null){
             datedTransactionHashMap = new HashMap<>();
@@ -121,13 +103,6 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         createSortedDatesList();
 
         notifyDataSetChanged();
-    }
-
-    private SimpleDateFormat getMonthAndYearFormat() {
-        if(InputValidationUtilities.isValidString(defaultDateFormat) && (defaultDateFormat.equals("MMMM dd, yyyy")||defaultDateFormat.equals("dd MMMM, yyyy")))
-            return new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR_LONG);
-        else
-            return new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR);
     }
 
     @Override
@@ -189,7 +164,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     //update grouped Transactions
                     ((TransactionsAdapter.TransactionsViewHolder)holder).setmGroupedTransactions(curDateTransactions);
 
-                    SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
+                    SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(mContext));
                     String dateString = sdf.format(date);
                     ((TransactionsAdapter.TransactionsViewHolder)holder).tv_date.setText(dateString);
 
@@ -259,7 +234,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             dates = new SortedList<Date>(Date.class, new SortedList.Callback<Date>() {
             @Override
             public int compare(Date o1, Date o2) {
-                if(defaultDateSortType==DATE_SORT_RECENT_LAST)
+                if(PreferenceUtils.getDefaultDateSortType(mContext)==DATE_SORT_RECENT_LAST)
                     return o1.compareTo(o2); // o1 compares to o2 for ascending order
                 else
                     return o2.compareTo(o1); // o2 compares to o1 for descending order

@@ -45,10 +45,6 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
     //constant Class TAG
     private static final String TAG = "Pay-Track: " + AddTransactionActivity.class.getName();
 
-    //Variables to store User Settings
-    private SharedPreferences userPreferences;
-    private String defaultDateFormat;
-
     private TextView tv_submit;
     private EditText et_amount, et_date, et_category, et_account, et_description;
     private Spinner transactionType;
@@ -79,14 +75,6 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_transaction);
 
-        //--------------------init user settings----------------------//
-        userPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (userPreferences != null) {
-            defaultDateFormat = userPreferences.getString(getString(R.string.pref_key_date_format), "" );
-        } else {
-            defaultDateFormat = DEFAULT_FORMAT_DAY_AND_DATE;
-        }
-
         initViews();
         initDatePicker();
         initSpinner();
@@ -102,7 +90,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
 
             //convert date to string & display in text view
             date = transactionToEdit.getDate();
-            SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
+            SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(this));
             String dateString = sdf.format(date);
             et_date.setText(dateString);
 
@@ -145,7 +133,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
             // get Date From Transaction Message
             date = transactionMessage.getDate();
             //convert date to string & display in text view
-            SimpleDateFormat sdf = new SimpleDateFormat(defaultDateFormat);
+            SimpleDateFormat sdf = new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(this));
             String dateString = sdf.format(date);
             et_date.setText(dateString);
 
@@ -168,7 +156,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
 
         date = Utilities.getTodayDateWithDefaultTime();
         //convert date to string & display in text view
-        SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
+        SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(this));
         String currentDateString = sdf.format(date);
         et_date.setText(currentDateString);
     }
@@ -423,7 +411,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
         //create date object
         date = Utilities.getDateWithDefaultTime(year, month, day);
         //convert date to string & display in text view
-        SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
+        SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(this));
         String currentDateTimeString = sdf.format(date);
         et_date.setText(currentDateTimeString);
 

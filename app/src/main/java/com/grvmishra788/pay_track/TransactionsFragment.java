@@ -49,11 +49,6 @@ public class TransactionsFragment extends Fragment {
     //constant Class TAG
     private static final String TAG = "Pay-Track: " + TransactionsFragment.class.getName();
 
-    //Variables to store User Settings
-    private SharedPreferences userPreferences;
-    private String defaultDateFormat;
-    private int defaultDateSortType;
-
     private FloatingActionButton addTransactionButton;
 
     //Transactions list
@@ -92,18 +87,6 @@ public class TransactionsFragment extends Fragment {
             Log.d(TAG, "mTransactions is null");
             mTransactions = new ArrayList<>();
         }
-
-        //--------------------init user settings----------------------//
-        userPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        if (userPreferences != null) {
-            defaultDateFormat = userPreferences.getString(getString(R.string.pref_key_date_format), DEFAULT_FORMAT_DAY_AND_DATE );
-            defaultDateSortType = Integer.parseInt(userPreferences.getString(getString(R.string.pref_key_date_sort), String.valueOf(DATE_SORT_RECENT_FIRST)));
-        } else {
-            defaultDateFormat = DEFAULT_FORMAT_DAY_AND_DATE;
-            defaultDateSortType = DATE_SORT_RECENT_FIRST;
-        }
-        Log.d(TAG, "defaultDateFormat - " + defaultDateFormat);
-        Log.d(TAG, "defaultDateSortType - " + defaultDateSortType);
 
 
         //init datedTransactionHashMap
@@ -234,17 +217,10 @@ public class TransactionsFragment extends Fragment {
         months = new ArrayList<>();
         for (int i=0; i<filterMonths.size();i++){
             Date date = filterMonths.get(i);
-            SimpleDateFormat sdf = getMonthAndYearFormat();
+            SimpleDateFormat sdf = PreferenceUtils.getDefaultMonthAndYearFormat(getContext());
             String dateString = sdf.format(date);
             months.add(dateString);
         }
-    }
-
-    private SimpleDateFormat getMonthAndYearFormat() {
-        if(InputValidationUtilities.isValidString(defaultDateFormat) && (defaultDateFormat.equals("MMMM dd, yyyy")||defaultDateFormat.equals("dd MMMM, yyyy")))
-            return new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR_LONG);
-        else
-            return new SimpleDateFormat(GlobalConstants.DATE_FORMAT_MONTH_AND_YEAR);
     }
 
     private void refreshSpinner(){
@@ -424,7 +400,7 @@ public class TransactionsFragment extends Fragment {
             filterMonths = new SortedList<Date>(Date.class, new SortedList.Callback<Date>() {
             @Override
             public int compare(Date o1, Date o2) {
-                if(defaultDateSortType==DATE_SORT_RECENT_LAST)
+                if(PreferenceUtils.getDefaultDateSortType(getContext())==DATE_SORT_RECENT_LAST)
                     return o1.compareTo(o2); // o1 compares to o2 for ascending order
                 else
                     return o2.compareTo(o1); // o2 compares to o1 for descending order

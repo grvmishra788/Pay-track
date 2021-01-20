@@ -31,10 +31,6 @@ public class DebtsAdapter extends RecyclerView.Adapter<DebtsAdapter.DebtsViewHol
     //constants
     private static final String TAG = "Pay-Track: " + DebtsAdapter.class.getName(); //constant Class TAG
 
-    //Variables to store User Settings
-    private SharedPreferences userPreferences;
-    private String defaultDateFormat;
-
     //Variable to store context from which Adapter has been called
     private Context mContext;
 
@@ -51,15 +47,6 @@ public class DebtsAdapter extends RecyclerView.Adapter<DebtsAdapter.DebtsViewHol
         Log.d(TAG, TAG + ": Constructor starts");
         this.mContext = context;
         this.mDebts = mDebts;
-
-        //--------------------init user settings----------------------//
-        userPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        if (userPreferences != null) {
-            defaultDateFormat = userPreferences.getString(mContext.getString(R.string.pref_key_date_format), "" );
-        } else {
-            defaultDateFormat = DEFAULT_FORMAT_DAY_AND_DATE;
-        }
-
         Log.d(TAG, TAG + ": Constructor ends");
     }
 
@@ -93,7 +80,7 @@ public class DebtsAdapter extends RecyclerView.Adapter<DebtsAdapter.DebtsViewHol
         holder.amount.setText(amountValue);
 
         //set date
-        SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
+        SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(mContext));
         String dateString = sdf.format(debt.getDate());
         holder.date.setText(dateString);
 

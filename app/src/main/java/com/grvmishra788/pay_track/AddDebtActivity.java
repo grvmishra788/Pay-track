@@ -38,10 +38,6 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
     //constant Class TAG
     private static final String TAG = "Pay-Track: " + AddDebtActivity.class.getName();
 
-    //Variables to store User Settings
-    private SharedPreferences userPreferences;
-    private String defaultDateFormat;
-
     private TextView tv_submit, tv_person;
     private EditText et_amount, et_date, et_person, et_account, et_description;
     private Spinner debtType;
@@ -60,14 +56,6 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_debt);
 
-        //--------------------init user settings----------------------//
-        userPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (userPreferences != null) {
-            defaultDateFormat = userPreferences.getString(getString(R.string.pref_key_date_format), "" );
-        } else {
-            defaultDateFormat = DEFAULT_FORMAT_DAY_AND_DATE;
-        }
-
         initViews();
         initDatePicker();
         initSpinner();
@@ -84,7 +72,7 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
 
             //convert date to string & display in text view
             Date date = debtToEdit.getDate();
-            SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
+            SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(this));
             String dateString = sdf.format(date);
             et_date.setText(dateString);
 
@@ -157,7 +145,7 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
 
         date = Utilities.getTodayDateWithDefaultTime();
         //convert date to string & display in text view
-        SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
+        SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(this));
         String currentDateString = sdf.format(date);
         et_date.setText(currentDateString);
     }
@@ -179,7 +167,7 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
         //create date object
         date = Utilities.getDateWithDefaultTime(year,month,day);
         //convert date to string & display in text view
-        SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
+        SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(this));
         String currentDateTimeString = sdf.format(date);
         et_date.setText(currentDateTimeString);
 

@@ -35,11 +35,6 @@ class TransactionMessagesAdapter extends RecyclerView.Adapter<TransactionMessage
     //constants
     private static final String TAG = "Pay-Track: " + TransactionMessagesAdapter.class.getName(); //constant Class TAG
 
-    //Variables to store User Settings
-    private SharedPreferences userPreferences;
-    private String defaultDateFormat;
-    private int defaultDateSortType;
-
     //Variable to store context from which Adapter has been called
     private Context mContext;
 
@@ -57,22 +52,10 @@ class TransactionMessagesAdapter extends RecyclerView.Adapter<TransactionMessage
     private TreeSet<TransactionMessage> selectedTransactionMessages = new TreeSet<>();
 
     public TransactionMessagesAdapter(Context mContext, HashMap<Date, ArrayList<TransactionMessage>> datedTransactionMessagesHashMap) {
+        Log.d(TAG, TAG + ": Constructor starts");
         this.mContext = mContext;
         this.datedTransactionMessagesHashMap = datedTransactionMessagesHashMap;
-        //--------------------init user settings----------------------//
-        userPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        if (userPreferences != null) {
-            defaultDateFormat = userPreferences.getString(mContext.getString(R.string.pref_key_date_format), DEFAULT_FORMAT_DAY_AND_DATE );
-            defaultDateSortType = Integer.parseInt(userPreferences.getString(mContext.getString(R.string.pref_key_date_sort), String.valueOf(DATE_SORT_RECENT_FIRST)));
-        } else {
-            defaultDateFormat = DEFAULT_FORMAT_DAY_AND_DATE;
-            defaultDateSortType = DATE_SORT_RECENT_FIRST;
-        }
-        Log.d(TAG, "defaultDateFormat - " + defaultDateFormat);
-        Log.d(TAG, "defaultDateSortType - " + defaultDateSortType);
-
-
-
+        Log.d(TAG, TAG + ": Constructor ends");
     }
 
     @NonNull
@@ -107,7 +90,7 @@ class TransactionMessagesAdapter extends RecyclerView.Adapter<TransactionMessage
                 //update grouped Transactions
                 holder.setmGroupedTransactionMessages(curDateTransactionMessages);
 
-                SimpleDateFormat sdf=new SimpleDateFormat(defaultDateFormat);
+                SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(mContext));
                 String dateString = sdf.format(date);
                 holder.tv_date.setText(dateString);
 
@@ -144,7 +127,7 @@ class TransactionMessagesAdapter extends RecyclerView.Adapter<TransactionMessage
         dates = new SortedList<Date>(Date.class, new SortedList.Callback<Date>() {
             @Override
             public int compare(Date o1, Date o2) {
-                if(defaultDateSortType==DATE_SORT_RECENT_LAST)
+                if(PreferenceUtils.getDefaultDateSortType(mContext)==DATE_SORT_RECENT_LAST)
                     return o1.compareTo(o2); // o1 compares to o2 for ascending order
                 else
                     return o2.compareTo(o1); // o2 compares to o1 for descending order
