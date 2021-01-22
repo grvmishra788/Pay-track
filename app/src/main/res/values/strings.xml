@@ -107,7 +107,7 @@
     <!--Analyze filterBy choices-->
     <string-array name="analyze_filterBy">
         <item>By Category</item>
-        <item>By Time</item>
+        <item>By Month</item>
     </string-array>
     
     <!--Import fields-->

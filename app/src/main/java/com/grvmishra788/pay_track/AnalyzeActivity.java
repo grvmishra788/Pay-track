@@ -1,9 +1,7 @@
 package com.grvmishra788.pay_track;
 
 import android.app.DatePickerDialog;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -31,7 +29,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import static com.grvmishra788.pay_track.GlobalConstants.DEFAULT_FORMAT_DAY_AND_DATE;
 public class AnalyzeActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     //constant Class TAG
     private static final String TAG = "Pay-Track: " + AnalyzeActivity.class.getName();
@@ -49,7 +46,7 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
     private ImageButton ib_startDate, ib_endDate;
     private Date startDate, endDate;
     private int dateType = -1;
-    private GlobalConstants.Filter type = GlobalConstants.Filter.BY_DATE;
+    private GlobalConstants.Filter type = GlobalConstants.Filter.BY_MONTH;
 
     //recyclerView variables
     private RecyclerView analyzeRecyclerView;
@@ -97,7 +94,7 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
         analyzeRecyclerViewLayoutManager = new LinearLayoutManager(this);
         dateAdapter = new AnalyzeAdapter(this, filterTransactionHashMap);
         categoryAdapter = new AnalyzeCategoryAdapter(this, filterCategoryTransactionHashMap, filterSubCategoryTransactionHashMap);
-        if(type== GlobalConstants.Filter.BY_DATE) {
+        if(type== GlobalConstants.Filter.BY_MONTH) {
             analyzeRecyclerViewAdapter = dateAdapter;
         } else if (type == GlobalConstants.Filter.BY_CATEGORY) {
             analyzeRecyclerViewAdapter = categoryAdapter;
@@ -129,7 +126,7 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
                         analyzeRecyclerViewAdapter = categoryAdapter;
                         break;
                     default:
-                        type = GlobalConstants.Filter.BY_DATE;
+                        type = GlobalConstants.Filter.BY_MONTH;
                         analyzeRecyclerViewAdapter = dateAdapter;
                         break;
                 }
@@ -349,7 +346,7 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
         initFilterCategoryTransactionHashMap();
         initFilterSubCategoryTransactionHashMap();
 
-        if(type== GlobalConstants.Filter.BY_DATE) {
+        if(type== GlobalConstants.Filter.BY_MONTH) {
             ((AnalyzeAdapter)analyzeRecyclerViewAdapter).setFilterTransactionHashMap(filterTransactionHashMap);
             ((AnalyzeAdapter)analyzeRecyclerViewAdapter).refreshMonthsList();
         } else if (type == GlobalConstants.Filter.BY_CATEGORY) {
