@@ -1,10 +1,8 @@
 package com.grvmishra788.pay_track;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,9 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
-import static com.grvmishra788.pay_track.GlobalConstants.DATE_SORT_RECENT_FIRST;
 import static com.grvmishra788.pay_track.GlobalConstants.DATE_SORT_RECENT_LAST;
-import static com.grvmishra788.pay_track.GlobalConstants.DEFAULT_FORMAT_DAY_AND_DATE;
 
 public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -55,11 +51,14 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private TreeSet<Transaction> selectedTransactions = new TreeSet<>();
 
     //Variable to store selected month
-    private String selectedMonthString;
+    private String selectedMonthOrCategoryString;
 
     //Variable to represent two types of recyclerview items
     private static int TYPE_SUMMARY = 1;
     private static int TYPE_ITEM = 2;
+
+    //Variable to store filter type - BY_MONTH or BY_CATEGORY
+    private GlobalConstants.Filter type = GlobalConstants.Filter.BY_MONTH;
 
     //Constructor: binds Transaction object data to TransactionsAdapter
     public TransactionsAdapter(Context mContext, HashMap<Date, ArrayList<Transaction>> allDatedTransactionHashMap) {
@@ -70,16 +69,18 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         //set default selected month
         Date date = Utilities.getTodayDateWithDefaultTime();
         SimpleDateFormat sdf= PreferenceUtils.getDefaultMonthAndYearFormat(mContext);
-        this.selectedMonthString = sdf.format(date);;
-        //init datedHM
-        initSelectedMonthDatedTransactionsHM();
+        this.selectedMonthOrCategoryString =  sdf.format(date);
+        //set type and init datedHM
+        setTypeAndInitDatedHM(GlobalConstants.Filter.BY_MONTH);
 
         Log.i(TAG, TAG + ": Constructor ends");
     }
 
-    public void initSelectedMonthDatedTransactionsHM() {
-        SimpleDateFormat sdf= PreferenceUtils.getDefaultMonthAndYearFormat(mContext);
+    public void setTypeAndInitDatedHM(GlobalConstants.Filter type) {
+        this.type = type;
 
+        //init datedHM based on type
+        SimpleDateFormat sdf= PreferenceUtils.getDefaultMonthAndYearFormat(mContext);
         if(datedTransactionHashMap==null){
             datedTransactionHashMap = new HashMap<>();
         }
@@ -91,12 +92,34 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         Iterator it = allDatedTransactionHashMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Date, ArrayList<Transaction>> pair = (Map.Entry)it.next();
-            Date date = pair.getKey();
-            String dateStr = sdf.format(date);
-            if(dateStr.equals(selectedMonthString)){
-                datedTransactionHashMap.put(pair.getKey(), pair.getValue());
+        if(type == GlobalConstants.Filter.BY_CATEGORY) {
+            while (it.hasNext()) {
+                Map.Entry<Date, ArrayList<Transaction>> pair = (Map.Entry)it.next();
+                    ArrayList<Transaction> transactionsInDate = pair.getValue();
+                    ArrayList<Transaction> transactionsInDateAndCategory = new ArrayList<>();
+                    for (Transaction transaction:transactionsInDate){
+                        String categoryOfTransaction = transaction.getCategory();
+                        String subCategoryOfTransaction = transaction.getSubCategory();
+                        String overallCategory = categoryOfTransaction;
+                        if(InputValidationUtilities.isValidString(subCategoryOfTransaction)){
+                            overallCategory+="/"+subCategoryOfTransaction;
+                        }
+                        if((overallCategory.toLowerCase()).equals(selectedMonthOrCategoryString.toLowerCase())){
+                            transactionsInDateAndCategory.add(transaction);
+                        }
+                    }
+                    if(transactionsInDateAndCategory!=null && transactionsInDateAndCategory.size()!=0){
+                        datedTransactionHashMap.put(pair.getKey(), transactionsInDateAndCategory);
+                    }
+            }
+        } else {
+            while (it.hasNext()) {
+                Map.Entry<Date, ArrayList<Transaction>> pair = (Map.Entry) it.next();
+                Date date = pair.getKey();
+                String dateStr = sdf.format(date);
+                if (dateStr.equals(selectedMonthOrCategoryString)) {
+                    datedTransactionHashMap.put(pair.getKey(), pair.getValue());
+                }
             }
         }
 
@@ -318,12 +341,12 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return 0;
     }
 
-    public String getSelectedMonthString() {
-        return selectedMonthString;
+    public String getSelectedMonthOrCategoryString() {
+        return selectedMonthOrCategoryString;
     }
 
-    public void setSelectedMonthString(String selectedMonthString) {
-        this.selectedMonthString = selectedMonthString;
+    public void setSelectedMonthOrCategoryString(String selectedMonthOrCategoryString) {
+        this.selectedMonthOrCategoryString = selectedMonthOrCategoryString;
     }
 
     public class TransactionsViewHolder extends RecyclerView.ViewHolder {

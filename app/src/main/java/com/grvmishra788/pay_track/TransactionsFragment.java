@@ -2,9 +2,7 @@ package com.grvmishra788.pay_track;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,9 +36,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
 import static android.app.Activity.RESULT_OK;
-import static com.grvmishra788.pay_track.GlobalConstants.DATE_SORT_RECENT_FIRST;
 import static com.grvmishra788.pay_track.GlobalConstants.DATE_SORT_RECENT_LAST;
-import static com.grvmishra788.pay_track.GlobalConstants.DEFAULT_FORMAT_DAY_AND_DATE;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ADD_TRANSACTION;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_EDIT_TRANSACTION;
 import static com.grvmishra788.pay_track.GlobalConstants.SUB_ITEM_TO_EDIT;
@@ -53,9 +49,11 @@ public class TransactionsFragment extends Fragment {
 
     //Transactions list
     private ArrayList<Transaction> mTransactions;
-    private HashMap<Date, ArrayList<Transaction>> filterTransactionHashMap;
+    private HashMap<Date, ArrayList<Transaction>> filterTransactionHashMap; // month -> transactions
     private SortedList<Date> filterMonths;
-    private HashMap<Date, ArrayList<Transaction>> datedTransactionHashMap;
+    private HashMap<String, ArrayList<Transaction>> filterCategoryTransactionHashMap; // category -> transactions
+    private SortedList<String> filterCategories;
+    private HashMap<Date, ArrayList<Transaction>> datedTransactionHashMap; // date -> transactions
 
     //recyclerView variables
     private RecyclerView transactionsRecyclerView;
@@ -70,10 +68,14 @@ public class TransactionsFragment extends Fragment {
     //Variable to store transactions when launching Contextual action mode
     private TreeSet<Transaction> selectedTransactions = new TreeSet<>();
 
+    //Variable to store filter type - BY_MONTH or BY_CATEGORY
+    private GlobalConstants.Filter type = GlobalConstants.Filter.BY_MONTH;
+
     //Variable to store date range
     private Spinner filterTransactions;
     private ArrayAdapter<String> filterAdapter;
     private ArrayList<String> months;
+    private ArrayList<String> categories;
 
     @Nullable
     @Override
@@ -88,15 +90,14 @@ public class TransactionsFragment extends Fragment {
             mTransactions = new ArrayList<>();
         }
 
-
-        //init datedTransactionHashMap
+        //init filterTransactionHashMap and filterCategoryTransactionHashMap
         filterTransactionHashMap = new HashMap<>();
-        initFilterTransactionHashMap();
+        filterCategoryTransactionHashMap = new HashMap<>();
+        initFilterTransactionHashMaps();
 
         //init datedTransactionHashMap
         datedTransactionHashMap = new HashMap<>();
         initDatedTransactionHashMap();
-
 
         //init RecyclerView
         transactionsRecyclerView = (RecyclerView) view.findViewById(R.id.show_transaction_recycler_view);
@@ -184,15 +185,19 @@ public class TransactionsFragment extends Fragment {
         Log.i(TAG,"initSpinner()");
         filterTransactions = (Spinner) v.findViewById(R.id.spinner_filter);
         //init list of months
-        initMonthsList();
+        initMonthsAndCategoriesList();
         //set visibility for spinner
-        if(months.size()==0){
+        if((type== GlobalConstants.Filter.BY_MONTH && months.size()==0) || (type== GlobalConstants.Filter.BY_CATEGORY && categories.size()==0)){
             filterTransactions.setVisibility(View.GONE);
         } else if(filterTransactions.getVisibility()==View.GONE){
             filterTransactions.setVisibility(View.VISIBLE);
         }
         // Create an ArrayAdapter using the string array and a custom spinner layout
-        filterAdapter = new ArrayAdapter<String>(getActivity(), R.layout.layout_custom_spinner_item_transpose, months);
+        if((type== GlobalConstants.Filter.BY_CATEGORY && categories.size()!=0)){
+            filterAdapter = new ArrayAdapter<String>(getActivity(), R.layout.layout_custom_spinner_item_transpose, categories);
+        } else {
+            filterAdapter = new ArrayAdapter<String>(getActivity(), R.layout.layout_custom_spinner_item_transpose, months);
+        }
         // Specify the layout to use when the list of choices appears
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
@@ -201,8 +206,8 @@ public class TransactionsFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.d(TAG, "onItemSelected() - index : " + i);
-                transactionsRecyclerViewAdapter.setSelectedMonthString(filterAdapter.getItem(i));
-                transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
+                transactionsRecyclerViewAdapter.setSelectedMonthOrCategoryString(filterAdapter.getItem(i));
+                transactionsRecyclerViewAdapter.setTypeAndInitDatedHM(type);
                 transactionsRecyclerViewAdapter.notifyDataSetChanged();
             }
 
@@ -213,7 +218,8 @@ public class TransactionsFragment extends Fragment {
         });
     }
 
-    private void initMonthsList() {
+    private void initMonthsAndCategoriesList() {
+        //INIT MONTHS
         months = new ArrayList<>();
         for (int i=0; i<filterMonths.size();i++){
             Date date = filterMonths.get(i);
@@ -221,6 +227,14 @@ public class TransactionsFragment extends Fragment {
             String dateString = sdf.format(date);
             months.add(dateString);
         }
+
+        //INIT CATEGORIES
+        categories = new ArrayList<>();
+        for (int i=0; i<filterCategories.size();i++){
+            String categoryString = filterCategories.get(i);
+            categories.add(categoryString);
+        }
+
     }
 
     private void refreshSpinner(){
@@ -230,10 +244,11 @@ public class TransactionsFragment extends Fragment {
             selectedItem = (String) filterTransactions.getSelectedItem();
             oldPos = filterAdapter.getPosition(selectedItem);
         }
-        createSortedMonthsList();
-        initMonthsList();
+        createSortedMonthsAndCategoriesList();
+        initMonthsAndCategoriesList();
         if(filterTransactions!=null){
-            if(months.size()==0){
+            //set visibility for spinner
+            if((type== GlobalConstants.Filter.BY_MONTH && months.size()==0) || (type== GlobalConstants.Filter.BY_CATEGORY && categories.size()==0)){
                 filterTransactions.setVisibility(View.GONE);
             } else if(filterTransactions.getVisibility()==View.GONE){
                 filterTransactions.setVisibility(View.VISIBLE);
@@ -241,17 +256,31 @@ public class TransactionsFragment extends Fragment {
         }
         if(filterAdapter!=null) {
             filterAdapter.clear();
-            filterAdapter.addAll(months);
+            if (type== GlobalConstants.Filter.BY_CATEGORY) {
+                filterAdapter.addAll(categories);
+            } else {
+                filterAdapter.addAll(months);
+            }
+
             filterAdapter.notifyDataSetChanged();
-            if(InputValidationUtilities.isValidString(selectedItem))
-                newPos = months.indexOf(selectedItem);
+            int size = 0;
+            if(InputValidationUtilities.isValidString(selectedItem)){
+                if(type== GlobalConstants.Filter.BY_CATEGORY) {
+                    newPos = categories.indexOf(selectedItem);
+                    size = categories.size();
+                }
+                else {
+                    newPos = months.indexOf(selectedItem);
+                    size = months.size();
+                }
+            }
             if(newPos>=0){
                 filterTransactions.setSelection(newPos);
-            } else if(oldPos>=0){
-                filterTransactions.setSelection(oldPos);
+            } else if(size>0){
+                filterTransactions.setSelection(0); //select 0th index if index missing
                 selectedItem = (String) filterTransactions.getSelectedItem();
-                transactionsRecyclerViewAdapter.setSelectedMonthString(selectedItem);
-                transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
+                transactionsRecyclerViewAdapter.setSelectedMonthOrCategoryString(selectedItem);
+                transactionsRecyclerViewAdapter.setTypeAndInitDatedHM(type);
                 transactionsRecyclerViewAdapter.notifyDataSetChanged();
             }
         }
@@ -278,15 +307,15 @@ public class TransactionsFragment extends Fragment {
                 mTransactions.remove(oldTransaction);
                 mTransactions.add(newTransaction);
 
-                removeTransactionFromFilterHashMap(oldTransaction);
+                removeTransactionFromFilterHashMaps(oldTransaction);
                 refreshSpinner();
                 removeTransactionFromHashMap(oldTransaction);
-                transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
+                transactionsRecyclerViewAdapter.setTypeAndInitDatedHM(type);
                 transactionsRecyclerViewAdapter.notifyDataSetChanged();
-                addTransactionToFilterHashMap(newTransaction);
+                addTransactionToFilterHashMaps(newTransaction);
                 refreshSpinner();
                 addTransactionToDatedHashMap(newTransaction);
-                transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
+                transactionsRecyclerViewAdapter.setTypeAndInitDatedHM(type);
                 transactionsRecyclerViewAdapter.notifyDataSetChanged();
 
             } else {
@@ -297,7 +326,8 @@ public class TransactionsFragment extends Fragment {
         }
     }
 
-    private void addTransactionToFilterHashMap(Transaction transaction) {
+    private void addTransactionToFilterHashMaps(Transaction transaction) {
+        //Add to filterTransactionHashMap
         Date dateOfTransaction = transaction.getDate();
         if(filterTransactionHashMap==null){
             filterTransactionHashMap = new HashMap<>();
@@ -317,7 +347,34 @@ public class TransactionsFragment extends Fragment {
         } else {
             Log.e(TAG,"Date of " + transaction.toString() + " is null!");
         }
+
+        //Add to filterCategoryTransactionHashMap
+        String categoryOfTransaction = transaction.getCategory();
+        String subCategoryOfTransaction = transaction.getSubCategory();
+        String overallCategory = categoryOfTransaction;
+        if(InputValidationUtilities.isValidString(subCategoryOfTransaction)){
+            overallCategory+="/"+subCategoryOfTransaction;
+        }
+
+        if(filterCategoryTransactionHashMap==null){
+            filterCategoryTransactionHashMap = new HashMap<>();
+        }
+        if(InputValidationUtilities.isValidString(overallCategory)){
+            ArrayList<Transaction> curCategoryTransactions = null;
+            if(filterCategoryTransactionHashMap.containsKey(overallCategory)){
+                curCategoryTransactions = filterCategoryTransactionHashMap.get(overallCategory);
+            }
+            if (curCategoryTransactions == null) {
+                curCategoryTransactions = new ArrayList<>();
+            }
+            curCategoryTransactions.add(transaction);
+            filterCategoryTransactionHashMap.put(overallCategory, curCategoryTransactions);
+
+        } else {
+            Log.e(TAG,"Category of " + transaction.toString() + " is null!");
+        }
     }
+
 
     private void addTransactionToDatedHashMap(Transaction transaction) {
         Date dateOfTransaction = transaction.getDate();
@@ -340,7 +397,8 @@ public class TransactionsFragment extends Fragment {
         }
     }
 
-    private void removeTransactionFromFilterHashMap(Transaction transaction) {
+    private void removeTransactionFromFilterHashMaps(Transaction transaction) {
+        //Remove from filterTransactionHashMap
         Date dateOfTransaction = transaction.getDate();
         if(dateOfTransaction!=null){
             ArrayList<Transaction> curDateTransactions = null;
@@ -359,6 +417,31 @@ public class TransactionsFragment extends Fragment {
             }
         } else {
             Log.e(TAG,"Date of " + transaction.toString() + " is null!");
+        }
+
+        //Remove from filterCategoryTransactionHashMap
+        String categoryOfTransaction = transaction.getCategory();
+        String subCategoryOfTransaction = transaction.getSubCategory();
+        String overallCategory = categoryOfTransaction;
+        if(InputValidationUtilities.isValidString(subCategoryOfTransaction)){
+            overallCategory+="/"+subCategoryOfTransaction;
+        }
+        if(InputValidationUtilities.isValidString(overallCategory)){
+            ArrayList<Transaction> curCategoryTransactions = null;
+            if(filterCategoryTransactionHashMap.containsKey(overallCategory)){
+                curCategoryTransactions = filterCategoryTransactionHashMap.get(overallCategory);
+                for(int i=0; i<curCategoryTransactions.size(); i++){
+                    if(curCategoryTransactions.get(i).getId().equals(transaction.getId())){
+                        curCategoryTransactions.remove(i);
+                        break;
+                    }
+                }
+                if(curCategoryTransactions==null || curCategoryTransactions.size()==0){
+                    filterCategoryTransactionHashMap.remove(overallCategory);
+                }
+            }
+        } else {
+            Log.e(TAG,"Category of " + transaction.toString() + " is null!");
         }
     }
 
@@ -383,10 +466,10 @@ public class TransactionsFragment extends Fragment {
         }
     }
 
-    private void initFilterTransactionHashMap() {
+    private void initFilterTransactionHashMaps() {
         if(mTransactions!=null){
             for(Transaction transaction:mTransactions){
-                addTransactionToFilterHashMap(transaction);
+                addTransactionToFilterHashMaps(transaction);
             }
             refreshSpinner();
         } else {
@@ -394,7 +477,8 @@ public class TransactionsFragment extends Fragment {
         }
     }
 
-    private void createSortedMonthsList() {
+    private void createSortedMonthsAndCategoriesList() {
+        //CREATE MONTHS LIST
         List<Date> monthsList = new ArrayList<Date>(filterTransactionHashMap.keySet()); // <== Set to List
         if(filterMonths==null)
             filterMonths = new SortedList<Date>(Date.class, new SortedList.Callback<Date>() {
@@ -439,6 +523,54 @@ public class TransactionsFragment extends Fragment {
         }
         filterMonths.endBatchedUpdates();
         Log.d(TAG,"All months - " + filterMonths);
+
+        //CREATE CATEGORIES LIST
+        List<String> categoriesList = new ArrayList<String>(filterCategoryTransactionHashMap.keySet()); // <== Set to List
+        if(filterCategories==null){
+            filterCategories = new SortedList<String>(String.class, new SortedList.Callback<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    return o1.compareTo(o2);    // sort A to Z
+                }
+
+                @Override
+                public void onChanged(int position, int count) {
+
+                }
+
+                @Override
+                public boolean areContentsTheSame(String oldItem, String newItem) {
+                    return (oldItem.toLowerCase()).equals(newItem.toLowerCase());
+                }
+
+                @Override
+                public boolean areItemsTheSame(String oldItem, String newItem) {
+                    return (oldItem.toLowerCase()).equals(newItem.toLowerCase());
+                }
+
+                @Override
+                public void onInserted(int position, int count) {
+
+                }
+
+                @Override
+                public void onRemoved(int position, int count) {
+
+                }
+
+                @Override
+                public void onMoved(int fromPosition, int toPosition) {
+
+                }
+            });
+        }
+        filterCategories.clear();
+        filterCategories.beginBatchedUpdates();
+        for (int i = 0; i < categoriesList.size(); i++) {
+            filterCategories.add(categoriesList.get(i));
+        }
+        filterCategories.endBatchedUpdates();
+        Log.d(TAG,"All categories - " + filterCategories);
     }
 
     private void initDatedTransactionHashMap() {
@@ -489,7 +621,7 @@ public class TransactionsFragment extends Fragment {
                         Transaction transaction = transactionIterator.next();
                         deleteTransaction(transaction);
                     }
-                    transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
+                    transactionsRecyclerViewAdapter.setTypeAndInitDatedHM(type);
                     transactionsRecyclerViewAdapter.notifyDataSetChanged();
                     mode.finish();
                 }
@@ -523,10 +655,10 @@ public class TransactionsFragment extends Fragment {
         if(((MainActivity) getActivity()).getPayTrackDBHelper().insertDataToTransactionsTable(transaction)){
             Log.d(TAG,"Transaction inserted to db - " + transaction.toString());
             mTransactions.add(transaction);
-            addTransactionToFilterHashMap(transaction);
+            addTransactionToFilterHashMaps(transaction);
             refreshSpinner();
             addTransactionToDatedHashMap(transaction);
-            transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
+            transactionsRecyclerViewAdapter.setTypeAndInitDatedHM(type);
             transactionsRecyclerViewAdapter.notifyDataSetChanged();
             Log.i(TAG, "Added transaction - " + transaction.toString());
             return true;
@@ -546,10 +678,10 @@ public class TransactionsFragment extends Fragment {
         }
 
         mTransactions.remove(transaction);
-        removeTransactionFromFilterHashMap(transaction);
+        removeTransactionFromFilterHashMaps(transaction);
         refreshSpinner();
         removeTransactionFromHashMap(transaction);
-        transactionsRecyclerViewAdapter.initSelectedMonthDatedTransactionsHM();
+        transactionsRecyclerViewAdapter.setTypeAndInitDatedHM(type);
         transactionsRecyclerViewAdapter.notifyDataSetChanged();
     }
 
