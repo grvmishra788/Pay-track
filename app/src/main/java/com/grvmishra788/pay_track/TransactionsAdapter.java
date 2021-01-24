@@ -71,7 +71,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         SimpleDateFormat sdf= PreferenceUtils.getDefaultMonthAndYearFormat(mContext);
         this.selectedMonthOrCategoryString =  sdf.format(date);
         //set type and init datedHM
-        setTypeAndInitDatedHM(GlobalConstants.Filter.BY_MONTH);
+        setTypeAndInitDatedHM(PreferenceUtils.getGroupTransactionFilter(mContext));
 
         Log.i(TAG, TAG + ": Constructor ends");
     }

@@ -9,7 +9,7 @@
         android:id="@+id/spinner_filter"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:layout_gravity="center"
+        android:layout_gravity="right"
         android:background="@drawable/spinner_background_transpose"/>
 
     <androidx.recyclerview.widget.RecyclerView

@@ -42,4 +42,17 @@ public final class PreferenceUtils {
         return defaultDateSortType;
     }
 
+    public static GlobalConstants.Filter getGroupTransactionFilter(Context context){
+        GlobalConstants.Filter groupTransactionsFilter = GlobalConstants.Filter.BY_MONTH;
+        SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        if (userPreferences != null) {
+            String prefStr = userPreferences.getString(context.getString(R.string.pref_key_group_transactions),context.getResources().getStringArray(R.array.analyze_filterBy)[0]);
+            if(prefStr.equals(context.getResources().getStringArray(R.array.analyze_filterBy)[1])){
+                groupTransactionsFilter = GlobalConstants.Filter.BY_CATEGORY;
+            }
+        }
+        Log.d(TAG, "groupTransactionsFilter - " + groupTransactionsFilter);
+        return groupTransactionsFilter;
+    }
+
 }

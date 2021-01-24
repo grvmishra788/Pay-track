@@ -69,7 +69,7 @@ public class TransactionsFragment extends Fragment {
     private TreeSet<Transaction> selectedTransactions = new TreeSet<>();
 
     //Variable to store filter type - BY_MONTH or BY_CATEGORY
-    private GlobalConstants.Filter type = GlobalConstants.Filter.BY_MONTH;
+    private GlobalConstants.Filter type;
 
     //Variable to store date range
     private Spinner filterTransactions;
@@ -89,6 +89,9 @@ public class TransactionsFragment extends Fragment {
             Log.d(TAG, "mTransactions is null");
             mTransactions = new ArrayList<>();
         }
+
+        //init type variable
+        type = PreferenceUtils.getGroupTransactionFilter(getContext());
 
         //init filterTransactionHashMap and filterCategoryTransactionHashMap
         filterTransactionHashMap = new HashMap<>();

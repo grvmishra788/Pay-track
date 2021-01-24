@@ -5,7 +5,7 @@
             <solid android:color="@color/colorPrimary"/>
         </shape>
     </item>
-    <item android:gravity="center" android:right="50dp">
+    <item android:gravity="right" android:right="@dimen/size_20_dp">
         <layer-list>
             <item android:width="12dp" android:height="12dp"  android:gravity="center" android:bottom="10dp">
                 <rotate

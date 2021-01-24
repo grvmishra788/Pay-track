@@ -20,4 +20,14 @@
 		android:negativeButtonText="@null"
 		android:positiveButtonText="@null" />
 	
+	<ListPreference
+		android:key="@string/pref_key_group_transactions"
+		android:title="@string/pref_title_group_transactions"
+		android:summary="@string/pref_summary_group_transactions"
+		android:entries="@array/analyze_filterBy"
+		android:entryValues="@array/analyze_filterBy"
+		android:defaultValue="By Month"
+		android:negativeButtonText="@null"
+		android:positiveButtonText="@null" />
+	
 </PreferenceScreen>

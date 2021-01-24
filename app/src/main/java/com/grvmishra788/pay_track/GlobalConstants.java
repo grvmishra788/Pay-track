@@ -86,7 +86,7 @@ public abstract class GlobalConstants {
     }
 
     public static enum Filter{
-        BY_CATEGORY, BY_MONTH
+        BY_MONTH, BY_CATEGORY
     }
 
     public static enum DebtType{

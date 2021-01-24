@@ -37,6 +37,9 @@
 	<string name="pref_key_date_sort">prefDateSort</string>
 	<string name="pref_title_date_sort">Default Date Sort</string>
 	<string name="pref_summary_date_sort">Select the default date sort type</string>
+    <string name="pref_key_group_transactions">prefGroupTransaction</string>
+    <string name="pref_title_group_transactions">Group transactions by</string>
+    <string name="pref_summary_group_transactions">Select the filter to group transactions by</string>
 
     <!--Account Fields-->
     <string name="nick_name">Nick Name</string>
@@ -106,8 +109,8 @@
     
     <!--Analyze filterBy choices-->
     <string-array name="analyze_filterBy">
-        <item>By Category</item>
         <item>By Month</item>
+        <item>By Category</item>
     </string-array>
     
     <!--Import fields-->
