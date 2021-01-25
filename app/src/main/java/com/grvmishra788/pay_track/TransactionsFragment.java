@@ -364,6 +364,7 @@ public class TransactionsFragment extends Fragment {
         }
         if(InputValidationUtilities.isValidString(overallCategory)){
             ArrayList<Transaction> curCategoryTransactions = null;
+            //put in transactions  for overall category key
             if(filterCategoryTransactionHashMap.containsKey(overallCategory)){
                 curCategoryTransactions = filterCategoryTransactionHashMap.get(overallCategory);
             }
@@ -372,6 +373,19 @@ public class TransactionsFragment extends Fragment {
             }
             curCategoryTransactions.add(transaction);
             filterCategoryTransactionHashMap.put(overallCategory, curCategoryTransactions);
+
+            //put in transactions  for top level category key
+            if(InputValidationUtilities.isValidString(subCategoryOfTransaction)) {
+                curCategoryTransactions = null;
+                if (filterCategoryTransactionHashMap.containsKey(categoryOfTransaction)) {
+                    curCategoryTransactions = filterCategoryTransactionHashMap.get(categoryOfTransaction);
+                }
+                if (curCategoryTransactions == null) {
+                    curCategoryTransactions = new ArrayList<>();
+                }
+                curCategoryTransactions.add(transaction);
+                filterCategoryTransactionHashMap.put(categoryOfTransaction, curCategoryTransactions);
+            }
 
         } else {
             Log.e(TAG,"Category of " + transaction.toString() + " is null!");
@@ -430,6 +444,7 @@ public class TransactionsFragment extends Fragment {
             overallCategory+="/"+subCategoryOfTransaction;
         }
         if(InputValidationUtilities.isValidString(overallCategory)){
+            //remove transactions  for overall category key
             ArrayList<Transaction> curCategoryTransactions = null;
             if(filterCategoryTransactionHashMap.containsKey(overallCategory)){
                 curCategoryTransactions = filterCategoryTransactionHashMap.get(overallCategory);
@@ -441,6 +456,20 @@ public class TransactionsFragment extends Fragment {
                 }
                 if(curCategoryTransactions==null || curCategoryTransactions.size()==0){
                     filterCategoryTransactionHashMap.remove(overallCategory);
+                }
+            }
+
+            //remove transactions  for top level category key
+            if(InputValidationUtilities.isValidString(subCategoryOfTransaction) && filterCategoryTransactionHashMap.containsKey(categoryOfTransaction)){
+                curCategoryTransactions = filterCategoryTransactionHashMap.get(categoryOfTransaction);
+                for(int i=0; i<curCategoryTransactions.size(); i++){
+                    if(curCategoryTransactions.get(i).getId().equals(transaction.getId())){
+                        curCategoryTransactions.remove(i);
+                        break;
+                    }
+                }
+                if(curCategoryTransactions==null || curCategoryTransactions.size()==0){
+                    filterCategoryTransactionHashMap.remove(categoryOfTransaction);
                 }
             }
         } else {

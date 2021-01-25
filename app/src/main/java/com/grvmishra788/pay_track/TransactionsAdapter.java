@@ -106,6 +106,8 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         }
                         if((overallCategory.toLowerCase()).equals(selectedMonthOrCategoryString.toLowerCase())){
                             transactionsInDateAndCategory.add(transaction);
+                        } else if(InputValidationUtilities.isValidString(subCategoryOfTransaction) && (categoryOfTransaction.toLowerCase()).equals(selectedMonthOrCategoryString.toLowerCase())){
+                            transactionsInDateAndCategory.add(transaction);
                         }
                     }
                     if(transactionsInDateAndCategory!=null && transactionsInDateAndCategory.size()!=0){
