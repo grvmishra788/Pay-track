@@ -87,8 +87,12 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         datedTransactionHashMap.clear();
 
         if(allDatedTransactionHashMap!=null && allDatedTransactionHashMap.size()!=0) {
-            //add dummy item for position zero
-            datedTransactionHashMap.put(Utilities.getRandomDateFromFuture(), null);
+            //add dummy item for position zero i.e. to show Overview card
+            if(PreferenceUtils.getDefaultDateSortType(mContext)==DATE_SORT_RECENT_LAST){
+                datedTransactionHashMap.put(Utilities.getRandomDateFromPast(), null);
+            } else {
+                datedTransactionHashMap.put(Utilities.getRandomDateFromFuture(), null);
+            }
         }
 
         Iterator it = allDatedTransactionHashMap.entrySet().iterator();
