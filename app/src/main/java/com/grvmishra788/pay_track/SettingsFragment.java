@@ -22,6 +22,7 @@ public class SettingsFragment extends PreferenceFragment {
         initListPreference(getString(R.string.pref_key_date_format));
         initListPreference(getString(R.string.pref_key_date_sort));
         initListPreference(getString(R.string.pref_key_group_transactions));
+        initListPreference(getString(R.string.pref_key_default_group_transaction));
     }
 
     private void initListPreference(String type){

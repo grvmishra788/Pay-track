@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 
 import static com.grvmishra788.pay_track.GlobalConstants.DATE_SORT_RECENT_FIRST;
 import static com.grvmishra788.pay_track.GlobalConstants.DEFAULT_FORMAT_DAY_AND_DATE;
+import static com.grvmishra788.pay_track.GlobalConstants.LAST_SELECTED;
 
 public final class PreferenceUtils {
     //constant Class TAG
@@ -53,6 +54,35 @@ public final class PreferenceUtils {
         }
         Log.d(TAG, "groupTransactionsFilter - " + groupTransactionsFilter);
         return groupTransactionsFilter;
+    }
+
+    public static int getDefaultGroupTransaction(Context context){
+        int defaultGroupTransaction = LAST_SELECTED;
+        SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        if (userPreferences != null) {
+            defaultGroupTransaction = Integer.parseInt(userPreferences.getString(context.getString(R.string.pref_key_default_group_transaction), String.valueOf(LAST_SELECTED)));
+        }
+        Log.d(TAG, "defaultGroupTransaction - " + defaultGroupTransaction);
+        return defaultGroupTransaction;
+    }
+
+    //function to save string To SharedPreferences
+    public static void saveStringToSharedPreferences(Context context, String strType, String str) {
+        Log.d(TAG, "Started saving string to Shared Preferences for type - " + strType);
+        SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor userPreferencesEditor = userPreferences.edit();
+        userPreferencesEditor.putString(strType, str);
+        userPreferencesEditor.apply();
+        Log.d(TAG, "Completed saving string to Shared Preferences for type - " + strType);
+    }
+
+    //function to load string From SharedPreferences
+    public static String loadStringFromSharedPreferences(Context context, String strType) {
+        Log.d(TAG, "Started loading string from Shared Preferences for type - " + strType);
+        SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String str = userPreferences.getString(strType, null);
+        Log.d(TAG, "Completed loading string to Shared Preferences for type - " + strType);
+        return str;
     }
 
 }

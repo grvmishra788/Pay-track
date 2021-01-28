@@ -37,6 +37,7 @@ import androidx.recyclerview.widget.SortedList;
 
 import static android.app.Activity.RESULT_OK;
 import static com.grvmishra788.pay_track.GlobalConstants.DATE_SORT_RECENT_LAST;
+import static com.grvmishra788.pay_track.GlobalConstants.LAST_SELECTED;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ADD_TRANSACTION;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_EDIT_TRANSACTION;
 import static com.grvmishra788.pay_track.GlobalConstants.SUB_ITEM_TO_EDIT;
@@ -205,11 +206,20 @@ public class TransactionsFragment extends Fragment {
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         filterTransactions.setAdapter(filterAdapter);
+        if(PreferenceUtils.getDefaultGroupTransaction(getContext())==LAST_SELECTED){
+            String typeStr = (type== GlobalConstants.Filter.BY_CATEGORY?getContext().getString(R.string.pref_last_selected_category):getContext().getString(R.string.pref_last_selected_month));
+            String selectedItem = PreferenceUtils.loadStringFromSharedPreferences(getContext(), typeStr);
+            setFilterSelection(selectedItem);
+        }
+
         filterTransactions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.d(TAG, "onItemSelected() - index : " + i);
-                transactionsRecyclerViewAdapter.setSelectedMonthOrCategoryString(filterAdapter.getItem(i));
+                String selectedItem = filterAdapter.getItem(i);
+                transactionsRecyclerViewAdapter.setSelectedMonthOrCategoryString(selectedItem);
+                String typeStr = (type== GlobalConstants.Filter.BY_CATEGORY?getContext().getString(R.string.pref_last_selected_category):getContext().getString(R.string.pref_last_selected_month));
+                PreferenceUtils.saveStringToSharedPreferences(getContext(), typeStr, selectedItem);
                 transactionsRecyclerViewAdapter.setTypeAndInitDatedHM(type);
                 transactionsRecyclerViewAdapter.notifyDataSetChanged();
             }
@@ -241,11 +251,9 @@ public class TransactionsFragment extends Fragment {
     }
 
     private void refreshSpinner(){
-        int oldPos = -1, newPos=-1;
         String selectedItem = "";
         if(filterTransactions!=null && filterAdapter!=null){
             selectedItem = (String) filterTransactions.getSelectedItem();
-            oldPos = filterAdapter.getPosition(selectedItem);
         }
         createSortedMonthsAndCategoriesList();
         initMonthsAndCategoriesList();
@@ -266,26 +274,39 @@ public class TransactionsFragment extends Fragment {
             }
 
             filterAdapter.notifyDataSetChanged();
-            int size = 0;
-            if(InputValidationUtilities.isValidString(selectedItem)){
-                if(type== GlobalConstants.Filter.BY_CATEGORY) {
-                    newPos = categories.indexOf(selectedItem);
-                    size = categories.size();
-                }
-                else {
-                    newPos = months.indexOf(selectedItem);
-                    size = months.size();
-                }
+
+            if(!InputValidationUtilities.isValidString(selectedItem) && PreferenceUtils.getDefaultGroupTransaction(getContext())==LAST_SELECTED){
+                String typeStr = (type== GlobalConstants.Filter.BY_CATEGORY?getContext().getString(R.string.pref_last_selected_category):getContext().getString(R.string.pref_last_selected_month));
+                selectedItem = PreferenceUtils.loadStringFromSharedPreferences(getContext(), typeStr);
             }
-            if(newPos>=0){
-                filterTransactions.setSelection(newPos);
-            } else if(size>0){
-                filterTransactions.setSelection(0); //select 0th index if index missing
-                selectedItem = (String) filterTransactions.getSelectedItem();
-                transactionsRecyclerViewAdapter.setSelectedMonthOrCategoryString(selectedItem);
-                transactionsRecyclerViewAdapter.setTypeAndInitDatedHM(type);
-                transactionsRecyclerViewAdapter.notifyDataSetChanged();
+            setFilterSelection(selectedItem);
+        }
+    }
+
+    private void setFilterSelection(String selectedItem) {
+        int newPos=-1;
+        int size = 0;
+        if(InputValidationUtilities.isValidString(selectedItem)){
+            if(type== GlobalConstants.Filter.BY_CATEGORY) {
+                newPos = categories.indexOf(selectedItem);
+                size = categories.size();
             }
+            else {
+                newPos = months.indexOf(selectedItem);
+                size = months.size();
+            }
+        }
+
+        if(newPos>=0){
+            filterTransactions.setSelection(newPos);
+        } else if(size>0){
+            filterTransactions.setSelection(0); //select 0th index if index missing
+            selectedItem = (String) filterTransactions.getSelectedItem();
+            transactionsRecyclerViewAdapter.setSelectedMonthOrCategoryString(selectedItem);
+            String typeStr = (type== GlobalConstants.Filter.BY_CATEGORY?getContext().getString(R.string.pref_last_selected_category):getContext().getString(R.string.pref_last_selected_month));
+            PreferenceUtils.saveStringToSharedPreferences(getContext(), typeStr, selectedItem);
+            transactionsRecyclerViewAdapter.setTypeAndInitDatedHM(type);
+            transactionsRecyclerViewAdapter.notifyDataSetChanged();
         }
     }
 

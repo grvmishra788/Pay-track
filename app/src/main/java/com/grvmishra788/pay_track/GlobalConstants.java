@@ -40,6 +40,10 @@ public abstract class GlobalConstants {
     public static final int DATE_SORT_RECENT_FIRST = 200;
     public static final int DATE_SORT_RECENT_LAST = 201;
 
+    //Default Transaction Grouping Type
+    public static final int LAST_SELECTED = 300;
+    public static final int FIRST_IN_THE_LIST = 301;
+
     //Intent params
     public static final String CATEGORY_INTENT_TYPE = "com.grvmishra788.pay_track.category_intent_type";
 

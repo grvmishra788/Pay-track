@@ -40,7 +40,14 @@
     <string name="pref_key_group_transactions">prefGroupTransaction</string>
     <string name="pref_title_group_transactions">Group transactions by</string>
     <string name="pref_summary_group_transactions">Select the filter to group transactions by</string>
-
+    <string name="pref_key_default_group_transaction">prefDefaultGroupTransaction</string>
+    <string name="pref_title_default_group_transaction">Default Transaction Group</string>
+    <string name="pref_summary_default_group_transaction">Select the default group of transactions</string>
+    <!--Preference strings not preset in settings fragment-->
+    <string name = "pref_last_selected_category">Last Selected Category</string>
+    <string name = "pref_last_selected_month">Last Selected Month</string>
+    
+    
     <!--Account Fields-->
     <string name="nick_name">Nick Name</string>
     <string name="type">Type</string>
