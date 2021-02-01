@@ -66,6 +66,16 @@ public final class PreferenceUtils {
         return defaultGroupTransaction;
     }
 
+    public static boolean getIsAccountCheckRequired(Context context){
+        boolean isAccountCheckRequired = false;
+        SharedPreferences userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        if (userPreferences != null) {
+            isAccountCheckRequired = userPreferences.getBoolean(context.getString(R.string.pref_key_check_account),false);
+        }
+        Log.d(TAG, "isAccountCheckRequired - " + isAccountCheckRequired);
+        return isAccountCheckRequired;
+    }
+
     //function to save string To SharedPreferences
     public static void saveStringToSharedPreferences(Context context, String strType, String str) {
         Log.d(TAG, "Started saving string to Shared Preferences for type - " + strType);

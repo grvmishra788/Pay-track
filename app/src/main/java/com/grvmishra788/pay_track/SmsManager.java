@@ -46,14 +46,23 @@ public class SmsManager extends BroadcastReceiver {
                     Date date = Utilities.getTodayDateWithDefaultTime();
                     UUID id = UUID.randomUUID();
                     TransactionMessage transactionMessage = new TransactionMessage(id, strMsgSrc, strMsgBody, date);
-                    if(payTrackDBHelper.insertDataToTransactionMessagesTable(transactionMessage)){
-                        Toast.makeText(context, "Added Transaction Message to db", Toast.LENGTH_SHORT).show();;
-                    } else {
-                        Toast.makeText(context, "Couldn't Add Transaction Message to db", Toast.LENGTH_SHORT).show();
-                    }
 
+                    //get Account from Transaction Message
+                    String accountNickName = TransactionMessageParser.getAccountNickName(context, strMsgSrc, strMsgBody);
+
+                    if(PreferenceUtils.getIsAccountCheckRequired(context) && !InputValidationUtilities.isValidString(accountNickName)){
+                        String msg = "Message from " + strMsgSrc + ": doesn't belong to any of your added accounts!";
+                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, msg);
+                    } else {
+                        if(payTrackDBHelper.insertDataToTransactionMessagesTable(transactionMessage)){
+                            Toast.makeText(context, "Added message from " + strMsgSrc + " to db!", Toast.LENGTH_SHORT).show();;
+                        } else {
+                            Toast.makeText(context, "Couldn't add message from " + strMsgSrc + " to db!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 } else {
-                    String msg = strMsgBody + " - doesn't have amount";
+                    String msg = "Message from " + strMsgSrc + ": doesn't have amount!";
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
                     Log.d(TAG, msg);
                 }
