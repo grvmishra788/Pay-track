@@ -58,6 +58,7 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate() starts!");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analyze);
         setTitle(R.string.title_analyze);
@@ -102,7 +103,7 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
         }
         analyzeRecyclerView.setLayoutManager(analyzeRecyclerViewLayoutManager);
         analyzeRecyclerView.setAdapter(analyzeRecyclerViewAdapter);
-
+        Log.i(TAG, "onCreate() ends!");
     }
 
     private void initFilterSpinner() {
@@ -300,14 +301,14 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
         public void onClick(View view) {
             dateType = view.getId();
             if(dateType!=-1 && (dateType==et_endDate.getId() || dateType==ib_endDate.getId())){
-                Log.d(TAG, "onClickListener called for end date");
+                Log.i(TAG, "onClickListener called for end date");
                 if(startDate==null){
                     Toast.makeText(AnalyzeActivity.this, "You must select start date first!", Toast.LENGTH_SHORT).show();
                 } else {
                     DialogFragment mDatePicker = new DatePickerFragment(startDate);
                     mDatePicker.show(getSupportFragmentManager(), "Start Date Picker Dialog");
                 }
-                Log.d(TAG, "onClickListener finished for end date");
+                Log.i(TAG, "onClickListener finished for end date");
             } else if(dateType!=-1 && (dateType==et_startDate.getId() || dateType==ib_startDate.getId())) {
                 DialogFragment mDatePicker = new DatePickerFragment();
                 mDatePicker.show(getSupportFragmentManager(), "End Date Picker Dialog");
