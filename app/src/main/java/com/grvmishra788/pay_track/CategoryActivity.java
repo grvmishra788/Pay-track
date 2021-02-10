@@ -287,7 +287,7 @@ public class CategoryActivity extends AppCompatActivity {
             else {
                 selectedItems.add(position);
                 Category category = mCategories.get(position);
-                SortedList<SubCategory> subCategories = category.getSubCategories();
+                ArrayList<SubCategory> subCategories = category.getSubCategories();
                 if (subCategories != null) {
                     for (int i=0; i<subCategories.size(); i++) {
                         SubCategory subCategory = subCategories.get(i);
@@ -509,7 +509,7 @@ public class CategoryActivity extends AppCompatActivity {
     private void updateCategory(int position, Category oldCategory, Category newCategory) {
         if (payTrackDBHelper.updateDataInCategoriesTable(oldCategory, newCategory)) {
             String newCategoryName = newCategory.getCategoryName();
-            SortedList<SubCategory> subCategories = oldCategory.getSubCategories();
+            ArrayList<SubCategory> subCategories = oldCategory.getSubCategories();
             if (subCategories != null) {
                 for (int i=0; i<subCategories.size(); i++) {
                     SubCategory subCategory = subCategories.get(i);

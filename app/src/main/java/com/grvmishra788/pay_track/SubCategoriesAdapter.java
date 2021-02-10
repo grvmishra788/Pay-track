@@ -38,9 +38,55 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
     private TreeSet<SubCategory> selectedSubCategories = new TreeSet<>();
 
 
-    public SubCategoriesAdapter(Context mContext, SortedList<SubCategory> mSubCategories) {
+    public SubCategoriesAdapter(Context mContext, ArrayList<SubCategory> subCategories) {
         this.mContext = mContext;
-        this.mSubCategories = mSubCategories;
+        if(mSubCategories ==null)
+            mSubCategories = new SortedList<SubCategory>(SubCategory.class, new SortedList.Callback<SubCategory>() {
+
+                @Override
+                public void onInserted(int position, int count) {
+
+                }
+
+                @Override
+                public void onRemoved(int position, int count) {
+
+                }
+
+                @Override
+                public void onMoved(int fromPosition, int toPosition) {
+
+                }
+
+                @Override
+                public int compare(SubCategory o1, SubCategory o2) {
+                    return o1.getSubCategoryName().toLowerCase().compareTo(o2.getSubCategoryName().toLowerCase());
+                }
+
+                @Override
+                public void onChanged(int position, int count) {
+
+                }
+
+                @Override
+                public boolean areContentsTheSame(SubCategory o1, SubCategory o2) {
+                    return o1.getSubCategoryName().toLowerCase().equals(o2.getSubCategoryName().toLowerCase());
+                }
+
+                @Override
+                public boolean areItemsTheSame(SubCategory o1, SubCategory o2) {
+                    return o1.getSubCategoryName().toLowerCase().equals(o2.getSubCategoryName().toLowerCase());
+                }
+            });
+        if(subCategories!=null){
+            mSubCategories.clear();
+            mSubCategories.beginBatchedUpdates();
+            for (int i = 0; i < subCategories.size(); i++) {
+                mSubCategories.add(subCategories.get(i));
+            }
+            mSubCategories.endBatchedUpdates();
+        }
+        Log.d(TAG,"All months - " + mSubCategories);
     }
 
     @NonNull
@@ -88,8 +134,57 @@ public class SubCategoriesAdapter extends RecyclerView.Adapter<SubCategoriesAdap
 
     }
 
-    public void setSubCategories(SortedList<SubCategory> subCategories) {
-        this.mSubCategories = subCategories;
+    public void setSubCategories(ArrayList<SubCategory> subCategories) {
+        if(mSubCategories ==null)
+            mSubCategories = new SortedList<SubCategory>(SubCategory.class, new SortedList.Callback<SubCategory>() {
+
+                @Override
+                public void onInserted(int position, int count) {
+
+                }
+
+                @Override
+                public void onRemoved(int position, int count) {
+
+                }
+
+                @Override
+                public void onMoved(int fromPosition, int toPosition) {
+
+                }
+
+                @Override
+                public int compare(SubCategory o1, SubCategory o2) {
+                    return o1.getSubCategoryName().toLowerCase().compareTo(o2.getSubCategoryName().toLowerCase());
+                }
+
+                @Override
+                public void onChanged(int position, int count) {
+
+                }
+
+                @Override
+                public boolean areContentsTheSame(SubCategory o1, SubCategory o2) {
+                    return o1.getSubCategoryName().toLowerCase().equals(o2.getSubCategoryName().toLowerCase());
+                }
+
+                @Override
+                public boolean areItemsTheSame(SubCategory o1, SubCategory o2) {
+                    return o1.getSubCategoryName().toLowerCase().equals(o2.getSubCategoryName().toLowerCase());
+                }
+            });
+
+        if(subCategories!=null){
+            mSubCategories.clear();
+            mSubCategories.beginBatchedUpdates();
+            for (int i = 0; i < subCategories.size(); i++) {
+                mSubCategories.add(subCategories.get(i));
+            }
+            mSubCategories.endBatchedUpdates();
+        }
+
+        notifyDataSetChanged();
+        Log.d(TAG,"All months - " + mSubCategories);
     }
 
     public OnSubCategoryClickListener getOnSubCategoryClickListener() {

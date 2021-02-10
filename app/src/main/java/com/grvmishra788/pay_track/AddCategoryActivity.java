@@ -12,6 +12,7 @@ import com.grvmishra788.pay_track.DS.Category;
 import com.grvmishra788.pay_track.DS.SubCategory;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import androidx.annotation.Nullable;
@@ -245,7 +246,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                             if(categoryToEdit!=null){   //Editing Category to sub-category
 
                                 //category to sub-category edit
-                                SortedList<SubCategory> subCategories = categoryToEdit.getSubCategories();
+                                ArrayList<SubCategory> subCategories = categoryToEdit.getSubCategories();
                                 if(subCategories==null){    //original category doesn't have sub-category
 
                                     Intent resultIntent = new Intent();

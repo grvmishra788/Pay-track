@@ -113,7 +113,7 @@ public class AnalyzeCategoryAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Category category = categories.get(position);
-        SortedList<SubCategory> subCategories = category.getSubCategories();
+        ArrayList<SubCategory> subCategories = category.getSubCategories();
         if (subCategories == null || subCategories.size()==0 ) {
             ((CategoryViewHolder)holder).horizontal_bar.setVisibility(View.GONE);
         } else {
