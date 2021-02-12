@@ -1,6 +1,7 @@
 package com.grvmishra788.pay_track;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.grvmishra788.pay_track.BackEnd.DbHelper;
 import com.grvmishra788.pay_track.DS.BankAccount;
@@ -16,6 +17,10 @@ import static com.grvmishra788.pay_track.GlobalConstants.SMS_ACCOUNT_NO_REGEX;
 import static com.grvmishra788.pay_track.GlobalConstants.SMS_AMOUNT_REGEX;
 
 public class TransactionMessageParser {
+
+    //constant Class TAG
+    private static final String TAG = "Pay-Track: " + TransactionMessageParser.class.getName();
+
 
     public static boolean hasAmount(String msg){
         Pattern pattern = Pattern.compile(SMS_AMOUNT_REGEX);
@@ -56,47 +61,59 @@ public class TransactionMessageParser {
         //init vars
         String matchedAccount = "";
         ArrayList<CashAccount> accounts = new DbHelper(context).getAllAccounts();
-        ArrayList<CashAccount> matches = new ArrayList<>();
 
-        //match based on bank/service name
-        for (CashAccount account: accounts) {
-            if(account instanceof BankAccount){
-                String bankName = ((BankAccount) account).getBankName().toLowerCase();
-                if(sender.toLowerCase().contains(bankName) || msg.toLowerCase().contains(bankName)){
-                    matches.add(account);
-                }
-            } else if (account instanceof DigitalAccount) {
-                String serviceName = ((DigitalAccount) account).getServiceName().toLowerCase();
-                if(sender.toLowerCase().contains(serviceName) || msg.toLowerCase().contains(serviceName)){
-                    matches.add(account);
+        //get account no from msg
+        List<String> allMatches = new ArrayList<String>();
+        Matcher m = Pattern.compile(SMS_ACCOUNT_NO_REGEX)
+                .matcher(msg);
+        while (m.find()) {
+            allMatches.add(m.group());
+        }
+
+        //match base on account no
+        if(allMatches.size()>0){
+            //if 1 or more matches, get the first match as account no
+            String accountNo = allMatches.get(0);
+            accountNo = accountNo.substring(accountNo.length()-3);  //get Last 3 digits of account number
+            for (CashAccount account:accounts){
+                if(account instanceof BankAccount && ((BankAccount) account).getAccountNumber().contains(accountNo)){
+                    matchedAccount = account.getNickName();
+                    break;
                 }
             }
         }
 
-        if(matches.size()==1) {
-            matchedAccount = matches.get(0).getNickName();
-        } else {
+        //match based on bank/service name
+        if(!InputValidationUtilities.isValidString(matchedAccount)){
+            ArrayList<CashAccount> senderMatches = new ArrayList<>();
+            ArrayList<CashAccount> bodyMatches = new ArrayList<>();
 
-            //get account no from msg
-            List<String> allMatches = new ArrayList<String>();
-            Matcher m = Pattern.compile(SMS_ACCOUNT_NO_REGEX)
-                    .matcher(msg);
-            while (m.find()) {
-                allMatches.add(m.group());
-            }
-
-            //match account no
-            if(allMatches.size()>0){
-                //if 1 or more matches, get the first match as account no
-                String accountNo = allMatches.get(0);
-                accountNo = accountNo.substring(accountNo.length()-3);  //get Last 3 digits of account number
-                for (CashAccount account:accounts){
-                    if(account instanceof BankAccount && ((BankAccount) account).getAccountNumber().contains(accountNo)){
-                        matchedAccount = account.getNickName();
-                        break;
+            for (CashAccount account: accounts) {
+                if(account instanceof BankAccount){
+                    String bankName = ((BankAccount) account).getBankName().toLowerCase();
+                    if(sender.toLowerCase().contains(bankName) ){
+                        senderMatches.add(account);
+                    } else if (msg.toLowerCase().contains(bankName)){
+                        bodyMatches.add(account);
+                    }
+                } else if (account instanceof DigitalAccount) {
+                    String serviceName = ((DigitalAccount) account).getServiceName().toLowerCase();
+                    if(sender.toLowerCase().contains(serviceName)){
+                        senderMatches.add(account);
+                    } else if (msg.toLowerCase().contains(serviceName)){
+                        bodyMatches.add(account);
                     }
                 }
             }
+
+            if(senderMatches.size()==1) {
+                matchedAccount = senderMatches.get(0).getNickName();
+            } else if (bodyMatches.size()==1){
+                matchedAccount = bodyMatches.get(0).getNickName();
+            } else {
+                Log.e(TAG, "No single account match!");
+            }
+
         }
         return matchedAccount;
     }
