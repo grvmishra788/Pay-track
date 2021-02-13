@@ -70,6 +70,11 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
         if(account instanceof BankAccount){
             //hide unwanted views
             accountsViewHolder.ll_serviceName.setVisibility(View.GONE);
+            //unhide wanted views
+            accountsViewHolder.ll_accountNumber.setVisibility(View.VISIBLE);
+            accountsViewHolder.ll_bankName.setVisibility(View.VISIBLE);
+            accountsViewHolder.ll_email.setVisibility(View.VISIBLE);
+            accountsViewHolder.ll_mobile.setVisibility(View.VISIBLE);
             //set texts
             accountsViewHolder.tv_nickName.setText(account.getNickName());
             accountsViewHolder.tv_bankName.setText(((BankAccount) account).getBankName());
@@ -81,6 +86,10 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
             //hide unwanted views
             accountsViewHolder.ll_bankName.setVisibility(View.GONE);
             accountsViewHolder.ll_accountNumber.setVisibility(View.GONE);
+            //unhide wanted views
+            accountsViewHolder.ll_serviceName.setVisibility(View.VISIBLE);
+            accountsViewHolder.ll_email.setVisibility(View.VISIBLE);
+            accountsViewHolder.ll_mobile.setVisibility(View.VISIBLE);
             //set texts
             accountsViewHolder.tv_nickName.setText(account.getNickName());
             accountsViewHolder.tv_serviceName.setText(((DigitalAccount) account).getServiceName());
