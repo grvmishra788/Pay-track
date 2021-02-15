@@ -122,13 +122,15 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.d(TAG, "onItemSelected() - index : " + i);
                 switch (i) {
-                    case 0:
+                    case 1:
                         type = GlobalConstants.Filter.BY_CATEGORY;
                         analyzeRecyclerViewAdapter = categoryAdapter;
+                        Log.d(TAG, "Analyze transactions BY_CATEGORY");
                         break;
                     default:
                         type = GlobalConstants.Filter.BY_MONTH;
                         analyzeRecyclerViewAdapter = dateAdapter;
+                        Log.d(TAG, "Analyze transactions BY_MONTH");
                         break;
                 }
                 analyzeRecyclerView.setAdapter(analyzeRecyclerViewAdapter);
