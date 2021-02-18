@@ -62,6 +62,7 @@ public class DebtsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView() starts...");
         View view = inflater.inflate(R.layout.layout_debts_fragment, container, false);
 
         //init debts list
@@ -122,7 +123,7 @@ public class DebtsFragment extends Fragment {
                 startActivityForResult(addDebtIntent, REQ_CODE_ADD_DEBT);
             }
         });
-        
+        Log.i(TAG, "onCreateView() ends!");
         return view;
     }
 

@@ -14,6 +14,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,10 +42,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static com.grvmishra788.pay_track.GlobalConstants.ACCOUNTS_TAB_INDEX;
 import static com.grvmishra788.pay_track.GlobalConstants.DATE_FORMAT_SIMPLE_UNDERSCORE;
+import static com.grvmishra788.pay_track.GlobalConstants.DEBTS_TAB_INDEX;
 import static com.grvmishra788.pay_track.GlobalConstants.MY_PERMISSIONS_REQUEST;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ANALYZE_TRANSACTIONS;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SHOW_PENDING_MESSAGES;
+import static com.grvmishra788.pay_track.GlobalConstants.TRANSACTIONS_TAB_INDEX;
 import static com.grvmishra788.pay_track.GlobalConstants.TRANSACTION_OBJECT;
 
 public class MainActivity extends AppCompatActivity {
@@ -80,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        //init title toolbar
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         //init db
         payTrackDBHelper = new DbHelper(this);
 
@@ -87,14 +94,54 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout = findViewById(R.id.layoutBottomTabs);
         mViewPager = findViewById(R.id.viewPager);
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        mViewPagerAdapter.addFragment(new AccountsFragment(), getString(R.string.tab_1_name));
-        mViewPagerAdapter.addFragment(new TransactionsFragment(), getString(R.string.tab_2_name));
-        mViewPagerAdapter.addFragment(new DebtsFragment(), getString(R.string.tab_3_name));
+        //ORDER -> TRANSACTIONS_TAB_INDEX, DEBTS_TAB_INDEX, ACCOUNTS_TAB_INDEX
+        mViewPagerAdapter.addFragment(new TransactionsFragment(), getString(R.string.tab_transactions_name));
+        mViewPagerAdapter.addFragment(new DebtsFragment(), getString(R.string.tab_debts_name));
+        mViewPagerAdapter.addFragment(new AccountsFragment(), getString(R.string.tab_accounts_name));
+
         mViewPager.setAdapter(mViewPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
 
+        //set tab icons
+        mTabLayout.getTabAt(TRANSACTIONS_TAB_INDEX).setIcon(R.drawable.ic_transaction);
+        mTabLayout.getTabAt(DEBTS_TAB_INDEX).setIcon(R.drawable.ic_debt);
+        mTabLayout.getTabAt(ACCOUNTS_TAB_INDEX).setIcon(R.drawable.ic_account);
+
+        //set empty tab text for each tab
+        for(int i=0; i<mTabLayout.getTabCount();i++){
+            mTabLayout.getTabAt(i).setText("");
+        }
+
+        //add listener to change icon colors & activity title on tab selected
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                tab.getIcon().setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+                int resId = -1;
+                if(tab.getPosition()==TRANSACTIONS_TAB_INDEX){
+                    resId = R.string.tab_transactions_name ;
+                } else if(tab.getPosition()==DEBTS_TAB_INDEX){
+                    resId = R.string.tab_debts_name ;
+                } else if(tab.getPosition()==ACCOUNTS_TAB_INDEX){
+                    resId = R.string.tab_accounts_name ;
+                }
+                toolbar.setTitle(resId);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                tab.getIcon().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_IN);
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
         //set Transactions tab as default
-        mViewPager.setCurrentItem(1);
+        mViewPager.setCurrentItem(TRANSACTIONS_TAB_INDEX);
+        mTabLayout.getTabAt(TRANSACTIONS_TAB_INDEX).getIcon().setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
         //setup action bar and navigation drawer
         setUpToolBarAndNavDrawer();
@@ -110,6 +157,8 @@ public class MainActivity extends AppCompatActivity {
     private void setUpToolBarAndNavDrawer() {
         //set action bar
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //set Transactions tab as default title
+        toolbar.setTitle(R.string.tab_transactions_name);
         setSupportActionBar(toolbar);
 
         //setup drawer toggle
@@ -180,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<Transaction> transactions = (ArrayList<Transaction>) data.getSerializableExtra(TRANSACTION_OBJECT);
             if(transactions!=null){
                 for(Transaction transaction: transactions){
-                    ((TransactionsFragment) mViewPagerAdapter.getItem(1)).addTransaction(transaction);
+                    ((TransactionsFragment) mViewPagerAdapter.getItem(TRANSACTIONS_TAB_INDEX)).addTransaction(transaction);
                 }
             }
         }
@@ -402,7 +451,7 @@ public class MainActivity extends AppCompatActivity {
                                         boolean isSubCategoryInDb = (!InputValidationUtilities.isValidString(transaction.getSubCategory())) || Utilities.entryPresentInDB(MainActivity.this, DatabaseConstants.SUB_CATEGORIES_TABLE, DatabaseConstants.SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME,transaction.getSubCategory());
                                         if(isAccountInDb && isCategoryInDb && isSubCategoryInDb) {
                                             if (!payTrackDBHelper.transactionPresentInDb(transaction)) {
-                                                if(((TransactionsFragment) mViewPagerAdapter.getItem(1)).addTransaction(transaction)) {
+                                                if(((TransactionsFragment) mViewPagerAdapter.getItem(TRANSACTIONS_TAB_INDEX)).addTransaction(transaction)) {
                                                     count++;
                                                 }
                                             } else {
