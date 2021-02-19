@@ -17,7 +17,6 @@ import java.util.HashMap;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.SortedList;
 
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE;
 import static com.grvmishra788.pay_track.BackEnd.DatabaseConstants.CATEGORIES_TABLE_COL_CATEGORY_NAME;
@@ -131,7 +130,7 @@ public class AddCategoryActivity extends AppCompatActivity {
     private View.OnClickListener addParentClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Intent selectParentIntent = new Intent(AddCategoryActivity.this, CategoryActivity.class);
+            Intent selectParentIntent = new Intent(AddCategoryActivity.this, SelectCategoryActivity.class);
             selectParentIntent.putExtra(GlobalConstants.CATEGORY_INTENT_TYPE, SELECT_PARENT_CATEGORY);
             startActivityForResult(selectParentIntent, REQ_CODE_SELECT_PARENT_CATEGORY);
         }

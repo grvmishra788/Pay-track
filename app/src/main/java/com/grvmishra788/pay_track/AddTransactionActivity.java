@@ -2,9 +2,7 @@ package com.grvmishra788.pay_track;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -28,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import static com.grvmishra788.pay_track.GlobalConstants.DEFAULT_FORMAT_DAY_AND_DATE;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_ACCOUNT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_SELECT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_ACCOUNT_NAME;
@@ -219,7 +216,7 @@ public class AddTransactionActivity extends AppCompatActivity implements DatePic
     private View.OnClickListener selectCategoryListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Intent selectParentIntent = new Intent(getBaseContext(), CategoryActivity.class);
+            Intent selectParentIntent = new Intent(getBaseContext(), SelectCategoryActivity.class);
             selectParentIntent.putExtra(GlobalConstants.CATEGORY_INTENT_TYPE, SELECT_CATEGORY);
             startActivityForResult(selectParentIntent, REQ_CODE_SELECT_CATEGORY);
         }

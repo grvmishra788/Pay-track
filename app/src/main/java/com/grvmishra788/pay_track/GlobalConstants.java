@@ -87,7 +87,8 @@ public abstract class GlobalConstants {
     //tab indexes
     public static final int TRANSACTIONS_TAB_INDEX = 0;
     public static final int DEBTS_TAB_INDEX = 1;
-    public static final int ACCOUNTS_TAB_INDEX = 2;
+    public static final int CATEGORIES_TAB_INDEX = 2;
+    public static final int ACCOUNTS_TAB_INDEX = 3;
 
     //enums
     public static enum TransactionType{

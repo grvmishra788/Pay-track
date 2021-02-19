@@ -13,10 +13,6 @@
             android:title="All"
             app:actionViewClass="android.widget.TextView" />
         <item
-            android:id="@+id/nav_categories"
-            android:title="Categories"
-            app:actionViewClass="android.widget.TextView" />
-        <item
             android:id="@+id/nav_pending_messages"
             android:title="Pending Messages"
             app:actionViewClass="android.widget.TextView" />

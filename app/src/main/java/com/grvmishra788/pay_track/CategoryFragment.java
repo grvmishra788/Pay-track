@@ -1,14 +1,15 @@
 package com.grvmishra788.pay_track;
 
-import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.grvmishra788.pay_track.BackEnd.DbHelper;
@@ -19,14 +20,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
+import static android.app.Activity.RESULT_OK;
 import static com.grvmishra788.pay_track.GlobalConstants.CATEGORY_INTENT_TYPE;
 import static com.grvmishra788.pay_track.GlobalConstants.CATEGORY_OBJECT;
 import static com.grvmishra788.pay_track.GlobalConstants.ITEM_TO_EDIT;
@@ -36,26 +40,15 @@ import static com.grvmishra788.pay_track.GlobalConstants.OLD_SUB_CATEGORY_OBJECT
 import static com.grvmishra788.pay_track.GlobalConstants.POSITION_ITEM_TO_EDIT;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_ADD_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.REQ_CODE_EDIT_CATEGORY;
-import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_ACCOUNT_NAME;
-import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_CATEGORY_NAME;
-import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_SUB_CATEGORY_ACCOUNT_NAME;
-import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_SUB_CATEGORY_NAME;
-import static com.grvmishra788.pay_track.GlobalConstants.SELECTED_SUB_CATEGORY_PARENT_NAME;
-import static com.grvmishra788.pay_track.GlobalConstants.SELECT_CATEGORY;
-import static com.grvmishra788.pay_track.GlobalConstants.SELECT_PARENT_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SHOW_CATEGORY;
 import static com.grvmishra788.pay_track.GlobalConstants.SUB_CATEGORY_OBJECT;
 import static com.grvmishra788.pay_track.GlobalConstants.SUB_ITEM_TO_EDIT;
 
-public class CategoryActivity extends AppCompatActivity {
-
+public class CategoryFragment extends Fragment {
     //constant Class TAG
-    private static final String TAG = "Pay-Track: " + CategoryActivity.class.getName();
+    private static final String TAG = "Pay-Track: " + CategoryFragment.class.getName();
 
     private FloatingActionButton addCategoryButton;
-
-    //boolean to store activity type
-    private int categoryActivityType;
 
     //Categories list
     private SortedList<Category> mCategories;
@@ -75,165 +68,102 @@ public class CategoryActivity extends AppCompatActivity {
     //Variable to store subcategories when launching Contextual action mode
     private TreeSet<SubCategory> selectedSubCategories = new TreeSet<>();
 
-    @SuppressLint("RestrictedApi")
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.i(TAG, "onCreate() starts...");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_category);
-
-        //get categoryActivityType from Starting intent
-        Intent startingIntent = getIntent();
-        if (startingIntent.hasExtra(CATEGORY_INTENT_TYPE)) {
-            categoryActivityType = startingIntent.getIntExtra(CATEGORY_INTENT_TYPE, SHOW_CATEGORY);
-        } else {
-            categoryActivityType = SHOW_CATEGORY;
-        }
-
-        setTitleAsPerActivityType();
+        View view = inflater.inflate(R.layout.activity_category, container, false);
 
         //init db
-        payTrackDBHelper = new DbHelper(this);
+        payTrackDBHelper = new DbHelper(getContext());
 
-        //init accounts list
+        //init categories list
         initCategoriesList();
 
         //init RecyclerView
-        categoriesRecyclerView = (RecyclerView) findViewById(R.id.show_category_recycler_view);
+        categoriesRecyclerView = (RecyclerView) view.findViewById(R.id.show_category_recycler_view);
         categoriesRecyclerView.setHasFixedSize(true);    //hasFixedSize=true increases app performance as Recyclerview is not going to change in size
-        categoriesRecyclerViewLayoutManager = new LinearLayoutManager(this);
-        categoriesRecyclerViewAdapter = new CategoriesAdapter(this, mCategories, categoryActivityType);
+        categoriesRecyclerViewLayoutManager = new LinearLayoutManager(getContext());
+        categoriesRecyclerViewAdapter = new CategoriesAdapter(getContext(), mCategories, SHOW_CATEGORY);
         //TODO : set observer to check if data is empty
 //        categoriesRecyclerViewAdapter.registerAdapterDataObserver(observer); //register data observer for recyclerView
         categoriesRecyclerView.setLayoutManager(categoriesRecyclerViewLayoutManager);
         categoriesRecyclerView.setAdapter(categoriesRecyclerViewAdapter);
 
         //init FAB
-        addCategoryButton = findViewById(R.id.addItemFAB);
-        if (categoryActivityType == SELECT_CATEGORY) {
-            addCategoryButton.setVisibility(View.GONE);
-            categoriesRecyclerViewAdapter.setmOnItemClickListener(new OnItemClickListener() {
-                @Override
-                public void onItemClick(int position) {
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra(SELECTED_CATEGORY_NAME, mCategories.get(position).getCategoryName());
-                    resultIntent.putExtra(SELECTED_CATEGORY_ACCOUNT_NAME, mCategories.get(position).getAccountNickName());
-                    setResult(RESULT_OK, resultIntent);
-                    finish();
+        addCategoryButton = view.findViewById(R.id.addItemFAB);
+        addCategoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i(TAG, "addCategoryButton::onClick()");
+                Intent addCategoryIntent = new Intent(getActivity(), AddCategoryActivity.class);
+                startActivityForResult(addCategoryIntent, REQ_CODE_ADD_CATEGORY);
+            }
+        });
+
+        categoriesRecyclerViewAdapter.setmOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(int position) {
+                if (isMultiSelect) {
+                    //if multiple selection is enabled then select item on single click
+                    selectMultiple(position);
+                } else {
+                    Intent editActivityIntent = new Intent(getActivity(), AddCategoryActivity.class);
+                    editActivityIntent.putExtra(ITEM_TO_EDIT, mCategories.get(position));
+                    editActivityIntent.putExtra(POSITION_ITEM_TO_EDIT, position);
+                    startActivityForResult(editActivityIntent, REQ_CODE_EDIT_CATEGORY);
                 }
+            }
 
-                @Override
-                public void onItemLongClick(int position) {
-
-                }
-            });
-
-            categoriesRecyclerViewAdapter.setSubCategoryClickListener(new OnSubCategoryClickListener() {
-                @Override
-                public void onItemClick(int position, SubCategory subCategory) {
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra(SELECTED_SUB_CATEGORY_NAME, subCategory.getSubCategoryName());
-                    resultIntent.putExtra(SELECTED_SUB_CATEGORY_PARENT_NAME, subCategory.getParent());
-                    resultIntent.putExtra(SELECTED_SUB_CATEGORY_ACCOUNT_NAME, subCategory.getAccountNickName());
-                    setResult(RESULT_OK, resultIntent);
-                    finish();
-                }
-
-                @Override
-                public void onItemLongClick(int position, SubCategory subCategory) {
-
-                }
-            });
-
-        } else if (categoryActivityType == SELECT_PARENT_CATEGORY) {
-            addCategoryButton.setVisibility(View.GONE);
-            categoriesRecyclerViewAdapter.setmOnItemClickListener(new OnItemClickListener() {
-                @Override
-                public void onItemClick(int position) {
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra(SELECTED_CATEGORY_NAME, mCategories.get(position).getCategoryName());
-                    resultIntent.putExtra(SELECTED_CATEGORY_ACCOUNT_NAME, mCategories.get(position).getAccountNickName());
-                    setResult(RESULT_OK, resultIntent);
-                    finish();
-                }
-
-                @Override
-                public void onItemLongClick(int position) {
-
-                }
-            });
-        } else {
-
-            addCategoryButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.i(TAG, "addCategoryButton::onClick()");
-                    Intent addCategoryIntent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
-                    startActivityForResult(addCategoryIntent, REQ_CODE_ADD_CATEGORY);
-                }
-            });
-
-            categoriesRecyclerViewAdapter.setmOnItemClickListener(new OnItemClickListener() {
-
-                @Override
-                public void onItemClick(int position) {
-                    if (isMultiSelect) {
-                        //if multiple selection is enabled then select item on single click
-                        selectMultiple(position);
-                    } else {
-                        Intent editActivityIntent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
-                        editActivityIntent.putExtra(ITEM_TO_EDIT, mCategories.get(position));
-                        editActivityIntent.putExtra(POSITION_ITEM_TO_EDIT, position);
-                        startActivityForResult(editActivityIntent, REQ_CODE_EDIT_CATEGORY);
+            @Override
+            public void onItemLongClick(int position) {
+                Log.d(TAG, "onItemLongClick called at position - " + position);
+                if (!isMultiSelect) {
+                    //init select items and isMultiSelect on long click
+                    selectedItems = new TreeSet<>();
+                    selectedSubCategories = new TreeSet<>();
+                    isMultiSelect = true;
+                    if (actionMode == null) {
+                        //show ActionMode on long click
+                        actionMode = ((AppCompatActivity)getContext()).startSupportActionMode(actionModeCallbacks);
                     }
+                    selectMultiple(position);
                 }
+            }
+        });
 
-                @Override
-                public void onItemLongClick(int position) {
-                    Log.d(TAG, "onItemLongClick called at position - " + position);
-                    if (!isMultiSelect) {
-                        //init select items and isMultiSelect on long click
-                        selectedItems = new TreeSet<>();
-                        selectedSubCategories = new TreeSet<>();
-                        isMultiSelect = true;
-                        if (actionMode == null) {
-                            //show ActionMode on long click
-                            actionMode = startSupportActionMode(actionModeCallbacks);
-                        }
-                        selectMultiple(position);
-                    }
-                }
-            });
-
-            categoriesRecyclerViewAdapter.setSubCategoryClickListener(new OnSubCategoryClickListener() {
-                @Override
-                public void onItemClick(int position, SubCategory subCategory) {
-                    if (!isMultiSelect) {
-                        Intent editActivityIntent = new Intent(CategoryActivity.this, AddCategoryActivity.class);
-                        editActivityIntent.putExtra(SUB_ITEM_TO_EDIT, subCategory);
-                        startActivityForResult(editActivityIntent, REQ_CODE_EDIT_CATEGORY);
-                    } else {
-                        selectMultiple(subCategory);
-                    }
-                }
-
-                @Override
-                public void onItemLongClick(int position, SubCategory subCategory) {
-                    Log.d(TAG, "onItemLongClick called at position - " + position);
-                    if (!isMultiSelect) {
-                        //init select items and isMultiSelect on long click
-                        selectedItems = new TreeSet<>();
-                        selectedSubCategories = new TreeSet<>();
-                        isMultiSelect = true;
-                        if (actionMode == null) {
-                            //show ActionMode on long click
-                            actionMode = startSupportActionMode(actionModeCallbacks);
-                        }
-                    }
+        categoriesRecyclerViewAdapter.setSubCategoryClickListener(new OnSubCategoryClickListener() {
+            @Override
+            public void onItemClick(int position, SubCategory subCategory) {
+                if (!isMultiSelect) {
+                    Intent editActivityIntent = new Intent(getContext(), AddCategoryActivity.class);
+                    editActivityIntent.putExtra(SUB_ITEM_TO_EDIT, subCategory);
+                    startActivityForResult(editActivityIntent, REQ_CODE_EDIT_CATEGORY);
+                } else {
                     selectMultiple(subCategory);
                 }
-            });
-        }
-        Log.i(TAG, "onCreate() ends!");
+            }
+
+            @Override
+            public void onItemLongClick(int position, SubCategory subCategory) {
+                Log.d(TAG, "onItemLongClick called at position - " + position);
+                if (!isMultiSelect) {
+                    //init select items and isMultiSelect on long click
+                    selectedItems = new TreeSet<>();
+                    selectedSubCategories = new TreeSet<>();
+                    isMultiSelect = true;
+                    if (actionMode == null) {
+                        //show ActionMode on long click
+                        actionMode = ((AppCompatActivity)getContext()).startSupportActionMode(actionModeCallbacks);
+                    }
+                }
+                selectMultiple(subCategory);
+            }
+        });
+
+        return view;
     }
 
     private void initCategoriesList() {
@@ -363,7 +293,7 @@ public class CategoryActivity extends AppCompatActivity {
         public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
 
             //create AlertDialog to check if user actually wants to delete Items
-            final AlertDialog.Builder alert = new AlertDialog.Builder(CategoryActivity.this);
+            final AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
             alert.setTitle("Delete Items");
             alert.setMessage("Are you sure you want to delete?");
             alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -411,18 +341,8 @@ public class CategoryActivity extends AppCompatActivity {
         }
     };
 
-    private void setTitleAsPerActivityType() {
-        if (categoryActivityType == SELECT_PARENT_CATEGORY) {
-            setTitle(R.string.title_select_parent_categories);
-        } else if (categoryActivityType == SELECT_CATEGORY) {
-            setTitle(R.string.title_select_categories);
-        } else {
-            setTitle(R.string.title_categories);
-        }
-    }
-
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.i(TAG, "onActivityResult() starts...");
         if (resultCode == RESULT_OK) {
@@ -485,6 +405,7 @@ public class CategoryActivity extends AppCompatActivity {
         }
 
     }
+
 
     private void addCategory(Category newCategory) {
         if (payTrackDBHelper.insertDataToCategoriesTable(newCategory)) {

@@ -10,6 +10,7 @@
     <!--MainActivity Tab names-->
     <string name="tab_transactions_name"><b>Transactions</b></string>
     <string name="tab_debts_name"><b>Debts</b></string>
+    <string name="tab_categories_name"><b>Categories</b></string>
     <string name="tab_accounts_name"><b>Accounts</b></string>
 
     <!--Title-->
@@ -24,7 +25,6 @@
     <string name="title_edit_category">Edit Category</string>
     <string name="title_select_parent_categories">Select Parent Category</string>
     <string name="title_select_categories">Select Category</string>
-    <string name="title_categories">Categories</string>
     <string name="title_transaction_message">Pending Messages</string>
     <string name="title_analyze">Analyze Transactions</string>
     <string name="title_settings">Settings</string>

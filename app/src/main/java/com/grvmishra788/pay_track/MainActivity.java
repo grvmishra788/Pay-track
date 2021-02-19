@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static com.grvmishra788.pay_track.GlobalConstants.ACCOUNTS_TAB_INDEX;
+import static com.grvmishra788.pay_track.GlobalConstants.CATEGORIES_TAB_INDEX;
 import static com.grvmishra788.pay_track.GlobalConstants.DATE_FORMAT_SIMPLE_UNDERSCORE;
 import static com.grvmishra788.pay_track.GlobalConstants.DEBTS_TAB_INDEX;
 import static com.grvmishra788.pay_track.GlobalConstants.MY_PERMISSIONS_REQUEST;
@@ -94,9 +95,10 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout = findViewById(R.id.layoutBottomTabs);
         mViewPager = findViewById(R.id.viewPager);
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        //ORDER -> TRANSACTIONS_TAB_INDEX, DEBTS_TAB_INDEX, ACCOUNTS_TAB_INDEX
+        //ORDER -> TRANSACTIONS_TAB_INDEX, DEBTS_TAB_INDEX, CATEGORIES_TAB_INDEX, ACCOUNTS_TAB_INDEX
         mViewPagerAdapter.addFragment(new TransactionsFragment(), getString(R.string.tab_transactions_name));
         mViewPagerAdapter.addFragment(new DebtsFragment(), getString(R.string.tab_debts_name));
+        mViewPagerAdapter.addFragment(new CategoryFragment(), getString(R.string.tab_categories_name));
         mViewPagerAdapter.addFragment(new AccountsFragment(), getString(R.string.tab_accounts_name));
 
         mViewPager.setAdapter(mViewPagerAdapter);
@@ -105,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         //set tab icons
         mTabLayout.getTabAt(TRANSACTIONS_TAB_INDEX).setIcon(R.drawable.ic_transaction);
         mTabLayout.getTabAt(DEBTS_TAB_INDEX).setIcon(R.drawable.ic_debt);
+        mTabLayout.getTabAt(CATEGORIES_TAB_INDEX).setIcon(R.drawable.ic_categories);
         mTabLayout.getTabAt(ACCOUNTS_TAB_INDEX).setIcon(R.drawable.ic_account);
 
         //set empty tab text for each tab
@@ -122,6 +125,8 @@ public class MainActivity extends AppCompatActivity {
                     resId = R.string.tab_transactions_name ;
                 } else if(tab.getPosition()==DEBTS_TAB_INDEX){
                     resId = R.string.tab_debts_name ;
+                } else if(tab.getPosition()==CATEGORIES_TAB_INDEX){
+                    resId = R.string.tab_categories_name ;
                 } else if(tab.getPosition()==ACCOUNTS_TAB_INDEX){
                     resId = R.string.tab_accounts_name ;
                 }
@@ -196,9 +201,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                     //finish this MainActivity after transferring control to SettingsActivity
                     finish();
-                } else if (id == R.id.nav_categories){
-                    Intent intent = new Intent(getBaseContext(), CategoryActivity.class);
-                    startActivity(intent);
                 } else if (id == R.id.nav_pending_messages){
                     Intent intent = new Intent(getBaseContext(), TransactionMessagesActivity.class);
                     startActivityForResult(intent, REQ_CODE_SHOW_PENDING_MESSAGES);
