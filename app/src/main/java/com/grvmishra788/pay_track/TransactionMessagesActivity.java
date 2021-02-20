@@ -203,6 +203,7 @@ public class TransactionMessagesActivity extends AppCompatActivity {
                     if(deleteTransactionMessageByObject(message)){
                         deletedMessages.add(message);
                         removeTransactionMessageFromHashMap(message);
+                        transactionMessagesRecyclerViewAdapter.createSortedDatesList();
                         transactionMessagesRecyclerViewAdapter.notifyDataSetChanged();
                     } else {
                         Toast.makeText(this, "Couldn't delete", Toast.LENGTH_LONG).show();
@@ -310,7 +311,7 @@ public class TransactionMessagesActivity extends AppCompatActivity {
                         TransactionMessage transactionMessage = transactionMessageIterator.next();
                         deleteTransactionMessage(transactionMessage);
                     }
-
+                    transactionMessagesRecyclerViewAdapter.createSortedDatesList();
                     transactionMessagesRecyclerViewAdapter.notifyDataSetChanged();
                     mode.finish();
                 }
@@ -347,6 +348,7 @@ public class TransactionMessagesActivity extends AppCompatActivity {
             Log.d(TAG, "TransactionMessage deleted from db : " + transactionMessage.toString());
             if(deleteTransactionMessageByObject(transactionMessage)){
                 removeTransactionMessageFromHashMap(transactionMessage);
+                transactionMessagesRecyclerViewAdapter.createSortedDatesList();
                 transactionMessagesRecyclerViewAdapter.notifyDataSetChanged();
             } else {
                 Log.i(TAG, "Message already deleted from transaction messages");

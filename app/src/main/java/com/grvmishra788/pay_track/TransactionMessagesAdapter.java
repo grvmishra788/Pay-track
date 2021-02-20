@@ -55,6 +55,8 @@ class TransactionMessagesAdapter extends RecyclerView.Adapter<TransactionMessage
         Log.d(TAG, TAG + ": Constructor starts");
         this.mContext = mContext;
         this.datedTransactionMessagesHashMap = datedTransactionMessagesHashMap;
+        //create sorted Dates List
+        createSortedDatesList();
         Log.d(TAG, TAG + ": Constructor ends");
     }
 
@@ -72,10 +74,6 @@ class TransactionMessagesAdapter extends RecyclerView.Adapter<TransactionMessage
     @Override
     public void onBindViewHolder(@NonNull TransactionMessagesViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder() :: " + position );
-        if(position==0){
-            createSortedDatesList();
-        }
-
         Date date = dates.get(position);
 
         //convert date to string & display in text view
@@ -122,9 +120,10 @@ class TransactionMessagesAdapter extends RecyclerView.Adapter<TransactionMessage
             return 0;
     }
 
-    private void createSortedDatesList() {
+    public void createSortedDatesList() {
         List<Date> datesList = new ArrayList<Date>(datedTransactionMessagesHashMap.keySet()); // <== Set to List
-        dates = new SortedList<Date>(Date.class, new SortedList.Callback<Date>() {
+        if(dates==null)
+            dates = new SortedList<Date>(Date.class, new SortedList.Callback<Date>() {
             @Override
             public int compare(Date o1, Date o2) {
                 if(PreferenceUtils.getDefaultDateSortType(mContext)==DATE_SORT_RECENT_LAST)
@@ -159,6 +158,8 @@ class TransactionMessagesAdapter extends RecyclerView.Adapter<TransactionMessage
             public void onMoved(int fromPosition, int toPosition) {
             }
         });
+        else
+            dates.clear();
         dates.beginBatchedUpdates();
         for (int i = 0; i < datesList.size(); i++) {
             dates.add(datesList.get(i));
