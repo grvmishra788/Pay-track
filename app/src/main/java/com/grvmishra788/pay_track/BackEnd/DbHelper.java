@@ -667,64 +667,80 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         String query = "SELECT * FROM " + CATEGORIES_TABLE + " WHERE " + CATEGORIES_TABLE_COL_ACCOUNT_NAME + "=?";
         Cursor cursor = null;
+        int ans = 0;
         try {
             cursor = database.rawQuery(query, new String[]{account.getNickName()});
+            if(cursor!=null ) {
+                ans = cursor.getCount();
+            }
         } catch (SQLException e) {
-            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
+            }
         }
-        if(cursor==null ) {
-            return 0;
-        } else {
-            return cursor.getCount();
-        }
+        return ans;
     }
 
     public int getNumberOfLinksToSubCategoriesTable(CashAccount account){
         SQLiteDatabase database = this.getWritableDatabase();
         String query = "SELECT * FROM " + SUB_CATEGORIES_TABLE + " WHERE " + SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME + "=?";
         Cursor cursor = null;
+        int ans = 0;
         try {
             cursor = database.rawQuery(query, new String[]{account.getNickName()});
+            if(cursor!=null ) {
+                ans =  cursor.getCount();
+            }
         } catch (SQLException e) {
-            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
+            }
         }
-        if(cursor==null ) {
-            return 0;
-        } else {
-            return cursor.getCount();
-        }
+        return ans;
     }
 
     public int getNumberOfLinksToTransactionsTable(CashAccount account){
         SQLiteDatabase database = this.getWritableDatabase();
         String query = "SELECT * FROM " + TRANSACTIONS_TABLE + " WHERE " + TRANSACTIONS_TABLE_COL_ACCOUNT + "=?";
         Cursor cursor = null;
+        int ans = 0;
         try {
             cursor = database.rawQuery(query, new String[]{account.getNickName()});
+            if(cursor!=null ) {
+                ans = cursor.getCount();
+            }
         } catch (SQLException e) {
-            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
+            }
         }
-        if(cursor==null ) {
-            return 0;
-        } else {
-            return cursor.getCount();
-        }
+        return ans;
     }
 
     public int getNumberOfLinksToDebtsTable(CashAccount account){
         SQLiteDatabase database = this.getWritableDatabase();
         String query = "SELECT * FROM " + DEBTS_TABLE + " WHERE " + DEBTS_TABLE_COL_ACCOUNT + "=?";
         Cursor cursor = null;
+        int ans = 0;
         try {
             cursor = database.rawQuery(query, new String[]{account.getNickName()});
+            if(cursor!=null ) {
+                ans = cursor.getCount();
+            }
         } catch (SQLException e) {
-            Log.e(TAG, "Unable to execute delete query - error code : " + e.getMessage());
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
+            }
         }
-        if(cursor==null ) {
-            return 0;
-        } else {
-            return cursor.getCount();
-        }
+        return ans;
     }
 
     /*
@@ -733,200 +749,259 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public ArrayList<CashAccount> getAllAccounts() {
         SQLiteDatabase database = this.getReadableDatabase();
-        Cursor cursor = database.rawQuery("Select * FROM " + ACCOUNTS_TABLE, null);
-        if (cursor.getCount() == 0) {
-            Log.d(TAG, "No accounts in db!");
-            return null;
-        } else {
-            ArrayList<CashAccount> accounts = new ArrayList<>();
-            while (cursor.moveToNext()) {
-                int type = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_TYPE)));
-                if (type == BANK_ACCOUNT) {
+        Cursor cursor = null;
+        ArrayList<CashAccount> accounts = null;
+        try {
+            cursor = database.rawQuery("Select * FROM " + ACCOUNTS_TABLE, null);
+            if (cursor==null || cursor.getCount() == 0) {
+                Log.d(TAG, "No accounts in db!");
+            } else {
+                accounts = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    int type = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_TYPE)));
+                    if (type == BANK_ACCOUNT) {
 
-                    String nick_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_NICK_NAME));
-                    String bank_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BANK_NAME));
-                    String account_no = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_ACCOUNT_NO));
-                    String email = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_EMAIL));
-                    String mobile = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_MOBILE));
-                    Double balance = Double.parseDouble(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BALANCE)));
+                        String nick_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_NICK_NAME));
+                        String bank_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BANK_NAME));
+                        String account_no = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_ACCOUNT_NO));
+                        String email = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_EMAIL));
+                        String mobile = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_MOBILE));
+                        Double balance = Double.parseDouble(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BALANCE)));
 
-                    accounts.add(new BankAccount(nick_name, balance, account_no, bank_name, email, mobile));
+                        accounts.add(new BankAccount(nick_name, balance, account_no, bank_name, email, mobile));
 
-                } else if (type == DIGITAL_ACCOUNT) {
+                    } else if (type == DIGITAL_ACCOUNT) {
 
-                    String nick_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_NICK_NAME));
-                    String service_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_SERVICE_NAME));
-                    String email = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_EMAIL));
-                    String mobile = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_MOBILE));
-                    Double balance = Double.parseDouble(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BALANCE)));
+                        String nick_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_NICK_NAME));
+                        String service_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_SERVICE_NAME));
+                        String email = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_EMAIL));
+                        String mobile = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_MOBILE));
+                        Double balance = Double.parseDouble(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BALANCE)));
 
-                    accounts.add(new DigitalAccount(nick_name, balance, service_name, email, mobile));
-                } else {
+                        accounts.add(new DigitalAccount(nick_name, balance, service_name, email, mobile));
+                    } else {
 
-                    String nick_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_NICK_NAME));
-                    Double balance = Double.parseDouble(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BALANCE)));
+                        String nick_name = cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_NICK_NAME));
+                        Double balance = Double.parseDouble(cursor.getString(cursor.getColumnIndex(ACCOUNTS_TABLE_COL_BALANCE)));
 
-                    accounts.add(new CashAccount(nick_name, balance));
+                        accounts.add(new CashAccount(nick_name, balance));
+                    }
                 }
             }
-            return accounts;
+        } catch (SQLException e){
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
+            }
         }
+        return accounts;
     }
 
     public ArrayList<Debt> getAllDebts() {
         SQLiteDatabase database = this.getReadableDatabase();
-        Cursor cursor = database.rawQuery("Select * FROM " + DEBTS_TABLE, null);
-        if (cursor.getCount() == 0) {
-            Log.d(TAG, "No debts in db!");
-            return null;
-        } else {
-            ArrayList<Debt> debts = new ArrayList<>();
-            while (cursor.moveToNext()) {
-                Double amount = cursor.getDouble(cursor.getColumnIndex(DEBTS_TABLE_COL_AMOUNT));
-                String person = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_PERSON));
-                Date date = new Date(cursor.getLong(cursor.getColumnIndex(DEBTS_TABLE_COL_DATE)));
-                String description = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_DESCRIPTION));
+        Cursor cursor = null;
+        ArrayList<Debt> debts = null;
+        try{
+            cursor = database.rawQuery("Select * FROM " + DEBTS_TABLE, null);
+            if (cursor==null || cursor.getCount() == 0) {
+                Log.d(TAG, "No debts in db!");
+            } else {
+                debts = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    Double amount = cursor.getDouble(cursor.getColumnIndex(DEBTS_TABLE_COL_AMOUNT));
+                    String person = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_PERSON));
+                    Date date = new Date(cursor.getLong(cursor.getColumnIndex(DEBTS_TABLE_COL_DATE)));
+                    String description = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_DESCRIPTION));
 
-                int typeVal = cursor.getInt(cursor.getColumnIndex(DEBTS_TABLE_COL_TYPE));
-                GlobalConstants.DebtType type = ((typeVal == 1) ? GlobalConstants.DebtType.RECEIVE : GlobalConstants.DebtType.PAY);
+                    int typeVal = cursor.getInt(cursor.getColumnIndex(DEBTS_TABLE_COL_TYPE));
+                    GlobalConstants.DebtType type = ((typeVal == 1) ? GlobalConstants.DebtType.RECEIVE : GlobalConstants.DebtType.PAY);
 
-                String account = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_ACCOUNT));
-                UUID id = UUID.fromString(cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_ID)));
-                debts.add(new Debt(id, amount, date, description, type, account, person));
+                    String account = cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_ACCOUNT));
+                    UUID id = UUID.fromString(cursor.getString(cursor.getColumnIndex(DEBTS_TABLE_COL_ID)));
+                    debts.add(new Debt(id, amount, date, description, type, account, person));
+                }
             }
-            return debts;
+        } catch (SQLException e){
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
+            }
         }
+        return debts;
     }
 
     public ArrayList<SubCategory> getAllSubCategories() {
         SQLiteDatabase database = this.getReadableDatabase();
-        Cursor cursor = database.rawQuery("Select * FROM " + SUB_CATEGORIES_TABLE, null);
-        if (cursor.getCount() == 0) {
-            Log.d(TAG, "No subcategories in db!");
-            return null;
-        } else {
-            ArrayList<SubCategory> subCategories = new ArrayList<>();
-            while (cursor.moveToNext()) {
-                String subCategoryName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME));
-                String accountNickName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME));
-                String description = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_DESCRIPTION));
-                String parent = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_PARENT));
-                subCategories.add(new SubCategory(subCategoryName, accountNickName, description, parent));
-            }
-
-            //sort SubCategories
-            Collections.sort(subCategories, new Comparator<SubCategory>() {
-                @Override
-                public int compare(SubCategory subCategory, SubCategory subCategory1) {
-                    return subCategory.getSubCategoryName().toLowerCase().compareTo(subCategory1.getSubCategoryName().toLowerCase());
+        Cursor cursor =null;
+        ArrayList<SubCategory> subCategories = null;
+        try {
+            cursor = database.rawQuery("Select * FROM " + SUB_CATEGORIES_TABLE, null);
+            if (cursor==null || cursor.getCount() == 0) {
+                Log.d(TAG, "No subcategories in db!");
+            } else {
+                subCategories = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    String subCategoryName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME));
+                    String accountNickName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME));
+                    String description = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_DESCRIPTION));
+                    String parent = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_PARENT));
+                    subCategories.add(new SubCategory(subCategoryName, accountNickName, description, parent));
                 }
-            });
-            return subCategories;
+
+                //sort SubCategories
+                Collections.sort(subCategories, new Comparator<SubCategory>() {
+                    @Override
+                    public int compare(SubCategory subCategory, SubCategory subCategory1) {
+                        return subCategory.getSubCategoryName().toLowerCase().compareTo(subCategory1.getSubCategoryName().toLowerCase());
+                    }
+                });
+            }
+        } catch (SQLException e){
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
+            }
         }
+        return subCategories;
     }
 
     public SortedList<Category> getAllCategories() {
         SQLiteDatabase database = this.getReadableDatabase();
-        Cursor cursor = database.rawQuery("Select * FROM " + CATEGORIES_TABLE, null);
-        if (cursor.getCount() == 0) {
-            Log.d(TAG, "No categories in db!");
-            return null;
-        } else {
-            SortedList<Category> categories = new SortedList<Category>(Category.class, new SortedList.Callback<Category>() {
-                @Override
-                public int compare(Category o1, Category o2) {
-                    return o1.getCategoryName().toLowerCase().compareTo(o2.getCategoryName().toLowerCase());
+        Cursor cursor = null;
+        SortedList<Category> categories = null;
+        try {
+            cursor = database.rawQuery("Select * FROM " + CATEGORIES_TABLE, null);
+            if (cursor==null || cursor.getCount() == 0) {
+                Log.d(TAG, "No categories in db!");
+            } else {
+               categories = new SortedList<Category>(Category.class, new SortedList.Callback<Category>() {
+                    @Override
+                    public int compare(Category o1, Category o2) {
+                        return o1.getCategoryName().toLowerCase().compareTo(o2.getCategoryName().toLowerCase());
+                    }
+
+                    @Override
+                    public void onChanged(int position, int count) {
+
+                    }
+
+                    @Override
+                    public boolean areContentsTheSame(Category oldItem, Category newItem) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean areItemsTheSame(Category item1, Category item2) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onInserted(int position, int count) {
+
+                    }
+
+                    @Override
+                    public void onRemoved(int position, int count) {
+
+                    }
+
+                    @Override
+                    public void onMoved(int fromPosition, int toPosition) {
+
+                    }
+                });
+                while (cursor.moveToNext()) {
+                    String categoryName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_CATEGORY_NAME));
+                    String accountNickName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_ACCOUNT_NAME));
+                    String description = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_DESCRIPTION));
+                    ArrayList<SubCategory> subCategories = getAllSubCategoriesInParent(categoryName);
+                    categories.add(new Category(categoryName, accountNickName, description, subCategories));
                 }
-
-                @Override
-                public void onChanged(int position, int count) {
-
-                }
-
-                @Override
-                public boolean areContentsTheSame(Category oldItem, Category newItem) {
-                    return false;
-                }
-
-                @Override
-                public boolean areItemsTheSame(Category item1, Category item2) {
-                    return false;
-                }
-
-                @Override
-                public void onInserted(int position, int count) {
-
-                }
-
-                @Override
-                public void onRemoved(int position, int count) {
-
-                }
-
-                @Override
-                public void onMoved(int fromPosition, int toPosition) {
-
-                }
-            });
-            while (cursor.moveToNext()) {
-                String categoryName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_CATEGORY_NAME));
-                String accountNickName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_ACCOUNT_NAME));
-                String description = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_DESCRIPTION));
-                ArrayList<SubCategory> subCategories = getAllSubCategoriesInParent(categoryName);
-                categories.add(new Category(categoryName, accountNickName, description, subCategories));
+                return categories;
             }
-            return categories;
+        } catch (SQLException e){
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
+            }
         }
+        return categories;
     }
 
     public ArrayList<TransactionMessage> getAllTransactionMessages() {
         SQLiteDatabase database = this.getReadableDatabase();
-        Cursor cursor = database.rawQuery("Select * FROM " + TRANSACTION_MESSAGES_TABLE, null);
-        if (cursor.getCount() == 0) {
-            Log.d(TAG, "No transaction Messages in db!");
-            return null;
-        } else {
-            ArrayList<TransactionMessage> transactionMessages = new ArrayList<>();
-            while (cursor.moveToNext()) {
+        Cursor cursor = null;
+        ArrayList<TransactionMessage> transactionMessages = null;
+        try {
+            cursor = database.rawQuery("Select * FROM " + TRANSACTION_MESSAGES_TABLE, null);
+            if (cursor==null || cursor.getCount() == 0) {
+                Log.d(TAG, "No transaction Messages in db!");
+            } else {
+                 transactionMessages = new ArrayList<>();
+                while (cursor.moveToNext()) {
 
-                UUID id = UUID.fromString(cursor.getString(cursor.getColumnIndex(TRANSACTION_MESSAGES_TABLE_COL_ID)));
-                String src = cursor.getString(cursor.getColumnIndex(TRANSACTION_MESSAGES_TABLE_COL_SRC));
-                String body = cursor.getString(cursor.getColumnIndex(TRANSACTION_MESSAGES_TABLE_COL_BODY));
-                Date date = new Date(cursor.getLong(cursor.getColumnIndex(TRANSACTION_MESSAGES_TABLE_COL_DATE)));
+                    UUID id = UUID.fromString(cursor.getString(cursor.getColumnIndex(TRANSACTION_MESSAGES_TABLE_COL_ID)));
+                    String src = cursor.getString(cursor.getColumnIndex(TRANSACTION_MESSAGES_TABLE_COL_SRC));
+                    String body = cursor.getString(cursor.getColumnIndex(TRANSACTION_MESSAGES_TABLE_COL_BODY));
+                    Date date = new Date(cursor.getLong(cursor.getColumnIndex(TRANSACTION_MESSAGES_TABLE_COL_DATE)));
 
-                transactionMessages.add(new TransactionMessage(id, src, body, date));
+                    transactionMessages.add(new TransactionMessage(id, src, body, date));
+                }
+                return transactionMessages;
             }
-            return transactionMessages;
+
+        } catch (SQLException e){
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
+            }
         }
+
+        return transactionMessages;
     }
 
     public ArrayList<Transaction> getAllTransactions() {
         SQLiteDatabase database = this.getReadableDatabase();
-        Cursor cursor = database.rawQuery("Select * FROM " + TRANSACTIONS_TABLE, null);
-        if (cursor.getCount() == 0) {
-            Log.d(TAG, "No transactions in db!");
-            return null;
-        } else {
-            ArrayList<Transaction> transactions = new ArrayList<>();
-            while (cursor.moveToNext()) {
-                Double amount = cursor.getDouble(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_AMOUNT));
-                String category = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_CATEGORY));
-                String subCategory=null;
-                if(!cursor.isNull(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_SUB_CATEGORY)))
-                    subCategory = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_SUB_CATEGORY));
-                Date date = new Date(cursor.getLong(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_DATE)));
-                String description = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_DESCRIPTION));
+        Cursor cursor = null;
+        ArrayList<Transaction> transactions = null;
+        try {
+            cursor = database.rawQuery("Select * FROM " + TRANSACTIONS_TABLE, null);
+            if (cursor==null || cursor.getCount() == 0) {
+                Log.d(TAG, "No transactions in db!");
+            } else {
+                transactions = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    Double amount = cursor.getDouble(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_AMOUNT));
+                    String category = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_CATEGORY));
+                    String subCategory=null;
+                    if(!cursor.isNull(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_SUB_CATEGORY)))
+                        subCategory = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_SUB_CATEGORY));
+                    Date date = new Date(cursor.getLong(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_DATE)));
+                    String description = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_DESCRIPTION));
 
-                int typeVal = cursor.getInt(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_TYPE));
-                GlobalConstants.TransactionType type = ((typeVal == 1) ? GlobalConstants.TransactionType.CREDIT : GlobalConstants.TransactionType.DEBIT);
+                    int typeVal = cursor.getInt(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_TYPE));
+                    GlobalConstants.TransactionType type = ((typeVal == 1) ? GlobalConstants.TransactionType.CREDIT : GlobalConstants.TransactionType.DEBIT);
 
-                String account = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_ACCOUNT));
-                UUID id = UUID.fromString(cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_ID)));
+                    String account = cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_ACCOUNT));
+                    UUID id = UUID.fromString(cursor.getString(cursor.getColumnIndex(TRANSACTIONS_TABLE_COL_ID)));
 
-                transactions.add(new Transaction(id, amount, category, subCategory, date, description, type, account));
+                    transactions.add(new Transaction(id, amount, category, subCategory, date, description, type, account));
+                }
+                return transactions;
             }
-            return transactions;
+        } catch (SQLException e){
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
+            }
         }
+        return transactions;
     }
 
     /*
@@ -936,48 +1011,58 @@ public class DbHelper extends SQLiteOpenHelper {
     public boolean entryPresentInDB(String tableName, String colName, String value) {
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = null;
+        boolean ans = false;
         try {
             cursor = database.query(tableName, null, colName + "=?", new String[]{value}, null, null, null, null);
+            if (cursor != null && cursor.getCount() != 0){
+                ans = true;
+            }
             Log.d(TAG, "Successfully executed query.");
-        } catch (SQLException e) {
-            Log.e(TAG, "Unable to execute query!");
+        } catch (SQLException e){
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
+            }
         }
-
-        if (cursor == null)
-            return false;
-
-        if (cursor.getCount() == 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return ans;
     }
 
     public ArrayList<SubCategory> getAllSubCategoriesInParent(String parent) {
         SQLiteDatabase database = this.getReadableDatabase();
-        Cursor cursor = database.query(SUB_CATEGORIES_TABLE, null, SUB_CATEGORIES_TABLE_COL_PARENT + "=?", new String[]{parent}, null, null, null, null);
+        Cursor cursor = null;
+        ArrayList<SubCategory> subCategoriesUnderParent = null;
+        try {
+            cursor = database.query(SUB_CATEGORIES_TABLE, null, SUB_CATEGORIES_TABLE_COL_PARENT + "=?", new String[]{parent}, null, null, null, null);
 
-        if (cursor.getCount() == 0) {
-            Log.d(TAG, "No subcategories in db with parent - " + parent);
-            return null;
-        } else {
-            ArrayList<SubCategory> subCategoriesUnderParent = new ArrayList<>();
-            while (cursor.moveToNext()) {
-                String subCategoryName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME));
-                String accountNickName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME));
-                String description = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_DESCRIPTION));
-                subCategoriesUnderParent.add(new SubCategory(subCategoryName, accountNickName, description, parent));
-            }
-
-            //sort the categories
-            Collections.sort(subCategoriesUnderParent, new Comparator<SubCategory>() {
-                @Override
-                public int compare(SubCategory subCategory, SubCategory subCategory1) {
-                    return subCategory.getSubCategoryName().toLowerCase().compareTo(subCategory1.getSubCategoryName().toLowerCase());
+            if (cursor == null ||cursor.getCount() == 0) {
+                Log.d(TAG, "No subcategories in db with parent - " + parent);
+            } else {
+                subCategoriesUnderParent = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    String subCategoryName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME));
+                    String accountNickName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME));
+                    String description = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_DESCRIPTION));
+                    subCategoriesUnderParent.add(new SubCategory(subCategoryName, accountNickName, description, parent));
                 }
-            });
-            return subCategoriesUnderParent;
+
+                //sort the categories
+                Collections.sort(subCategoriesUnderParent, new Comparator<SubCategory>() {
+                    @Override
+                    public int compare(SubCategory subCategory, SubCategory subCategory1) {
+                        return subCategory.getSubCategoryName().toLowerCase().compareTo(subCategory1.getSubCategoryName().toLowerCase());
+                    }
+                });
+            }
+        } catch (SQLException e){
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
+            }
         }
+
+        return subCategoriesUnderParent;
     }
 
     public Category getCategory(String name) {
@@ -986,27 +1071,27 @@ public class DbHelper extends SQLiteOpenHelper {
         }
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = null;
+        Category category = null;
         try {
             cursor = database.query(CATEGORIES_TABLE, null, CATEGORIES_TABLE_COL_CATEGORY_NAME + "=?", new String[]{name}, null, null, null, null);
+            if (cursor!=null && cursor.getCount() == 1) {
+                while (cursor.moveToNext()) {
+                    String categoryName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_CATEGORY_NAME));
+                    String accountNickName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_ACCOUNT_NAME));
+                    String description = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_DESCRIPTION));
+                    ArrayList<SubCategory> subCategories = getAllSubCategoriesInParent(categoryName);
+                    category = new Category(categoryName, accountNickName, description, subCategories);
+                }
+            }
             Log.d(TAG, "Successfully executed query.");
-        } catch (SQLException e) {
-            Log.e(TAG, "Unable to execute query!");
-        }
-
-        if (cursor == null)
-            return null;
-
-        if (cursor.getCount() == 1) {
-            while (cursor.moveToNext()) {
-                String categoryName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_CATEGORY_NAME));
-                String accountNickName = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_ACCOUNT_NAME));
-                String description = cursor.getString(cursor.getColumnIndex(CATEGORIES_TABLE_COL_DESCRIPTION));
-                ArrayList<SubCategory> subCategories = getAllSubCategoriesInParent(categoryName);
-                return new Category(categoryName, accountNickName, description, subCategories);
+        } catch (SQLException e){
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
             }
         }
-        cursor.close();
-        return null;
+        return category;
     }
 
     public SubCategory getSubCategory(String name) {
@@ -1015,27 +1100,27 @@ public class DbHelper extends SQLiteOpenHelper {
         }
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = null;
+        SubCategory subCategory = null;
         try {
             cursor = database.query(SUB_CATEGORIES_TABLE, null, SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME + "=?", new String[]{name}, null, null, null, null);
+            if (cursor!=null && cursor.getCount() == 1) {
+                while (cursor.moveToNext()) {
+                    String categoryName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME));
+                    String accountNickName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME));
+                    String description = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_DESCRIPTION));
+                    String parent = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_PARENT));
+                    subCategory = new SubCategory(categoryName, accountNickName, description, parent);
+                }
+            }
             Log.d(TAG, "Successfully executed query.");
-        } catch (SQLException e) {
-            Log.e(TAG, "Unable to execute query!");
-        }
-
-        if (cursor == null)
-            return null;
-
-        if (cursor.getCount() == 1) {
-            while (cursor.moveToNext()) {
-                String categoryName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_CATEGORY_NAME));
-                String accountNickName = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_ACCOUNT_NAME));
-                String description = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_DESCRIPTION));
-                String parent = cursor.getString(cursor.getColumnIndex(SUB_CATEGORIES_TABLE_COL_PARENT));
-                return new SubCategory(categoryName, accountNickName, description, parent);
+        } catch (SQLException e){
+            Log.e(TAG, "Unable to execute query - error code : " + e.getMessage());
+        } finally {
+            if(cursor!=null){
+                cursor.close();
             }
         }
-        cursor.close();
-        return null;
+        return subCategory;
     }
 
     public Cursor rawTable(String tableName) {
@@ -1066,31 +1151,26 @@ public class DbHelper extends SQLiteOpenHelper {
     public boolean transactionPresentInDb(Transaction transaction) {
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = null;
+        boolean ans = false;
         try {
-            
+
             String query = "SELECT * FROM " + TRANSACTIONS_TABLE + " WHERE " +
                     TRANSACTIONS_TABLE_COL_AMOUNT + "=\"" + transaction.getAmount() + "\" AND " +
-                    ((InputValidationUtilities.isValidString(transaction.getDescription())) ? (TRANSACTIONS_TABLE_COL_DESCRIPTION + "=\"" + transaction.getDescription() + "\" AND "):"") +
+                    ((InputValidationUtilities.isValidString(transaction.getDescription())) ? (TRANSACTIONS_TABLE_COL_DESCRIPTION + "=\"" + transaction.getDescription() + "\" AND ") : "") +
                     TRANSACTIONS_TABLE_COL_CATEGORY + "=\"" + transaction.getCategory() + "\" AND " +
-                    ((InputValidationUtilities.isValidString(transaction.getSubCategory())) ? (TRANSACTIONS_TABLE_COL_SUB_CATEGORY + "=\"" + transaction.getSubCategory() + "\" AND "):"") +
-                    TRANSACTIONS_TABLE_COL_TYPE + "=" + ((transaction.getType()== GlobalConstants.TransactionType.CREDIT)?"\"1\"":"\"0\"") + " AND " +
+                    ((InputValidationUtilities.isValidString(transaction.getSubCategory())) ? (TRANSACTIONS_TABLE_COL_SUB_CATEGORY + "=\"" + transaction.getSubCategory() + "\" AND ") : "") +
+                    TRANSACTIONS_TABLE_COL_TYPE + "=" + ((transaction.getType() == GlobalConstants.TransactionType.CREDIT) ? "\"1\"" : "\"0\"") + " AND " +
                     TRANSACTIONS_TABLE_COL_DATE + "=\"" + transaction.getDate().getTime() + "\" AND " +
-                    TRANSACTIONS_TABLE_COL_ACCOUNT + "=\"" + transaction.getAccount() + "\""
-                    ;
+                    TRANSACTIONS_TABLE_COL_ACCOUNT + "=\"" + transaction.getAccount() + "\"";
 
             cursor = database.rawQuery(query, null);
+            if (cursor != null && cursor.getCount() != 0) {
+                ans = true;
+            }
             Log.d(TAG, "Successfully executed query.");
         } catch (SQLException e) {
             Log.e(TAG, "Unable to execute query!");
         }
-
-        if (cursor == null)
-            return false;
-
-        if (cursor.getCount() == 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return ans;
     }
 }
