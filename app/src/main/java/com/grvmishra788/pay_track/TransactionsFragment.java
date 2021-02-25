@@ -357,7 +357,7 @@ public class TransactionsFragment extends Fragment {
             filterTransactionHashMap = new HashMap<>();
         }
         if(dateOfTransaction!=null){
-            Date monthStartDate = Utilities.getStartDateOfMonthWithDefaultTime(dateOfTransaction);
+            Date monthStartDate = DateUtilities.getStartDateOfMonthWithDefaultTime(dateOfTransaction);
             ArrayList<Transaction> curMonthTransactions = null;
             if(filterTransactionHashMap.containsKey(monthStartDate)){
                 curMonthTransactions = filterTransactionHashMap.get(monthStartDate);
@@ -440,7 +440,7 @@ public class TransactionsFragment extends Fragment {
         Date dateOfTransaction = transaction.getDate();
         if(dateOfTransaction!=null){
             ArrayList<Transaction> curDateTransactions = null;
-            Date monthStartDate = Utilities.getStartDateOfMonthWithDefaultTime(dateOfTransaction);
+            Date monthStartDate = DateUtilities.getStartDateOfMonthWithDefaultTime(dateOfTransaction);
             if(filterTransactionHashMap.containsKey(monthStartDate)){
                 curDateTransactions = filterTransactionHashMap.get(monthStartDate);
                 for(int i=0; i<curDateTransactions.size(); i++){

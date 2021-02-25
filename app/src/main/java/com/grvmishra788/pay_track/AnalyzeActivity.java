@@ -156,8 +156,8 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
         ib_endDate.setOnClickListener(dateClickListener);
         et_endDate.setOnClickListener(dateClickListener);
 
-        endDate = Utilities.getTodayDateWithDefaultTime();
-        startDate = Utilities.getOneYearBackwardDate(endDate);
+        endDate = DateUtilities.getTodayDateWithDefaultTime();
+        startDate = DateUtilities.getOneYearBackwardDate(endDate);
         //convert start date to string & display in text view
         SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(this));
         String currentDateTimeString = sdf.format(startDate);
@@ -195,7 +195,7 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
             filterTransactionHashMap = new HashMap<>();
         }
         if(dateOfTransaction!=null){
-            Date monthStartDate = Utilities.getStartDateOfMonthWithDefaultTime(dateOfTransaction);
+            Date monthStartDate = DateUtilities.getStartDateOfMonthWithDefaultTime(dateOfTransaction);
             ArrayList<Transaction> curMonthTransactions = null;
             if(filterTransactionHashMap.containsKey(monthStartDate)){
                 curMonthTransactions = filterTransactionHashMap.get(monthStartDate);
@@ -324,20 +324,20 @@ public class AnalyzeActivity extends AppCompatActivity implements DatePickerDial
 
         //create date object
         if(dateType!=-1 && (dateType==et_startDate.getId() || dateType==ib_startDate.getId())){
-            startDate = Utilities.getDateWithDefaultTime(year, month, day);
+            startDate = DateUtilities.getDateWithDefaultTime(year, month, day);
             //convert date to string & display in text view
             SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(this));
             String currentDateTimeString = sdf.format(startDate);
             et_startDate.setText(currentDateTimeString);
             if(endDate!=null && endDate.before(startDate)){
-                endDate = Utilities.getOneYearForwardDate(endDate);
+                endDate = DateUtilities.getOneYearForwardDate(endDate);
                 //convert end date to string & display in text view
                currentDateTimeString = sdf.format(endDate);
                 et_endDate.setText(currentDateTimeString);
             }
             Log.d(TAG, "OnDateSetListener() call completed - date : " + currentDateTimeString);
         } else if (dateType!=-1 && (dateType==et_endDate.getId() || dateType==ib_endDate.getId())){
-            endDate = Utilities.getDateWithDefaultTime(year, month, day);
+            endDate = DateUtilities.getDateWithDefaultTime(year, month, day);
             //convert date to string & display in text view
             SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(this));
             String currentDateTimeString = sdf.format(endDate);

@@ -406,9 +406,9 @@ public class CSVParser {
                     }
                     //set Date
                     SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_SIMPLE);
-                    Date date = Utilities.getTodayDateWithDefaultTime();
+                    Date date = DateUtilities.getTodayDateWithDefaultTime();
                     try {
-                        date = Utilities.getDateWithDefaultTime(sdf.parse(dateStr));
+                        date = DateUtilities.getDateWithDefaultTime(sdf.parse(dateStr));
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }

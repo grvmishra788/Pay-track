@@ -43,7 +43,7 @@ public class SmsManager extends BroadcastReceiver {
 
                 if(TransactionMessageParser.hasAmount(strMsgBody)){
                     // set Today as default date
-                    Date date = Utilities.getTodayDateWithDefaultTime();
+                    Date date = DateUtilities.getTodayDateWithDefaultTime();
                     UUID id = UUID.randomUUID();
                     TransactionMessage transactionMessage = new TransactionMessage(id, strMsgSrc, strMsgBody, date);
 

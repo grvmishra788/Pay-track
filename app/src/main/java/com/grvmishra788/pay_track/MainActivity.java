@@ -529,7 +529,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if (!exportDir.exists()) { exportDir.mkdirs(); }
 
-            Date date = Utilities.getTodayDateWithDefaultTime();
+            Date date = DateUtilities.getTodayDateWithDefaultTime();
             SimpleDateFormat sdf=new SimpleDateFormat(DATE_FORMAT_SIMPLE_UNDERSCORE);
             String dateString = sdf.format(date);
 

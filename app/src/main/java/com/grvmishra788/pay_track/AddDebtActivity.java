@@ -143,7 +143,7 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
         ib_date.setOnClickListener(dateClickListener);
         et_date.setOnClickListener(dateClickListener);
 
-        date = Utilities.getTodayDateWithDefaultTime();
+        date = DateUtilities.getTodayDateWithDefaultTime();
         //convert date to string & display in text view
         SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(this));
         String currentDateString = sdf.format(date);
@@ -165,7 +165,7 @@ public class AddDebtActivity extends AppCompatActivity implements DatePickerDial
         Log.i(TAG, "OnDateSetListener() called");
         
         //create date object
-        date = Utilities.getDateWithDefaultTime(year,month,day);
+        date = DateUtilities.getDateWithDefaultTime(year,month,day);
         //convert date to string & display in text view
         SimpleDateFormat sdf=new SimpleDateFormat(PreferenceUtils.getDefaultDateFormat(this));
         String currentDateTimeString = sdf.format(date);

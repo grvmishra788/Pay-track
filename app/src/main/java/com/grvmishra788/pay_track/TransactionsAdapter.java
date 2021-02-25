@@ -67,7 +67,7 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.allDatedTransactionHashMap = allDatedTransactionHashMap;
 
         //set default selected month
-        Date date = Utilities.getTodayDateWithDefaultTime();
+        Date date = DateUtilities.getTodayDateWithDefaultTime();
         SimpleDateFormat sdf= PreferenceUtils.getDefaultMonthAndYearFormat(mContext);
         this.selectedMonthOrCategoryString =  sdf.format(date);
         //set type and init datedHM
@@ -89,9 +89,9 @@ public class TransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if(allDatedTransactionHashMap!=null && allDatedTransactionHashMap.size()!=0) {
             //add dummy item for position zero i.e. to show Overview card
             if(PreferenceUtils.getDefaultDateSortType(mContext)==DATE_SORT_RECENT_LAST){
-                datedTransactionHashMap.put(Utilities.getRandomDateFromPast(), null);
+                datedTransactionHashMap.put(DateUtilities.getRandomDateFromPast(), null);
             } else {
-                datedTransactionHashMap.put(Utilities.getRandomDateFromFuture(), null);
+                datedTransactionHashMap.put(DateUtilities.getRandomDateFromFuture(), null);
             }
         }
 
